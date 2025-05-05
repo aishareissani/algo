@@ -1,3 +1,5 @@
-code.c
+#include <stdio.h>
 
-  halo
+int main(){
+    printf("Halo semua");git 
+}
