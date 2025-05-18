@@ -1,13 +1,11 @@
 import React from "react";
+import LoadingScreen from "./components/loading_screen";
 
-export default function App() {
+function App() {
   return (
-    <div className="app-container">
-      <h1>Halo Dunia dari Vite + React! hai</h1>
-      <p>
-        Edit <code>src/App.jsx</code> dan simpan untuk live reload.
-      </p>
-      <p>Hi semua test test</p>
+    <div>
+      <h1>Welcome</h1>
+      <LoadingScreen />
     </div>
   );
 }
