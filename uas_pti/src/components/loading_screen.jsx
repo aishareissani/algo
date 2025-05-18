@@ -1,6 +1,8 @@
-// Dalam file src/components/LoadingScreen.jsx
-import loadingScreen from '../assets/locations/loading_screen.png';
+import React from "react";
+import "../styles.css";
 
 function LoadingScreen() {
-  return <img src={loadingScreen} alt="Loading screen" />;
+  return <div className="loadScreen"></div>;
 }
+
+export default LoadingScreen;
