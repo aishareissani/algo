@@ -3,14 +3,15 @@
 @tailwind utilities;
 
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Dongle&family=Geo:ital@0;1&family=Press+Start+2P&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 body {
-  margin: 0;
-  padding: 0;
   font-family: "Press Start 2P", system-ui;
   background: linear-gradient(to bottom, #f7f2e7, #d8e1c5);
   color: #4d4d4d;
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 .loading-screen {
@@ -21,65 +22,93 @@ body {
 }
 
 .character-screen {
-  background-image: url("/assets/locations/chara_screen.jpg"); /* shared */
+  background-image: url("/assets/locations/chara_screen.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
 }
 
-/* Title shadow */
 .judul {
-  color: white;
+  color: #fff;
   text-shadow: 3px 3px 5px #3b5a30;
 }
 
-/* Animations */
+.glass-box {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #8cb369;
+}
+
+.arrow-btn {
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
 @keyframes fadeIn {
-  0% {
+  from {
     opacity: 0;
     transform: translateY(-20px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
 @keyframes fadeInLine {
-  0% {
+  from {
     opacity: 0;
     transform: translateY(20px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
 @keyframes fadeInButton {
-  0% {
+  from {
     opacity: 0;
     transform: translateY(10px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
 .animate-fadeIn {
-  animation: fadeIn 2s ease-in-out forwards;
+  animation: fadeIn 2s ease-out forwards;
 }
 .animate-fadeInLine {
-  animation: fadeInLine 0.5s ease-in-out forwards;
+  animation: fadeInLine 0.6s ease-out forwards;
 }
 .animate-fadeInButton {
-  animation: fadeInButton 0.8s ease-in-out forwards;
+  animation: fadeInButton 1s ease-out forwards;
 }
+
 .fade-line {
   opacity: 0;
-  animation: fadeInLine 0.5s ease-in-out forwards;
 }
+
 .delay-\[500ms\] {
   animation-delay: 0.5s;
 }
@@ -94,15 +123,23 @@ body {
 }
 
 .nextButton {
-  font-family: "Press Start 2P", system-ui;
   background: linear-gradient(45deg, #8cb369, #5a8c3b);
   color: #fff;
+  font-family: "Press Start 2P", system-ui;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .nextButton:hover {
-  transform: scale(1.2);
   box-shadow: 6px 6px 15px rgba(90, 140, 59, 0.6), inset -2px -2px 7px rgba(255, 255, 255, 0.3);
 }
 
+.glass-input {
+  font-family: "Dongle", sans-serif;
+  font-size: 1.6rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease;
+}
