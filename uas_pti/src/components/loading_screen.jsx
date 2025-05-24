@@ -1,7 +1,13 @@
 import React from "react";
-import "../styles.css";
+import { useNavigate } from "react-router-dom";
 
 function LoadingScreen() {
+  const navigate = useNavigate();
+
+  const handleNextClick = () => {
+    navigate("/choose_character");
+  };
+
   return (
     <div className="loadScreen">
       <h1 className="judul">
@@ -9,7 +15,9 @@ function LoadingScreen() {
         <div>MENJELAJAHI</div>
         <div>NUSANTARA</div>
       </h1>
-      <button className="nextButton">NEXT</button>
+      <button className="nextButton" onClick={handleNextClick}>
+        NEXT
+      </button>
     </div>
   );
 }
