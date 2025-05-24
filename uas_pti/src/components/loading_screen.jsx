@@ -1,27 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import "../styles.css";
 
 function LoadingScreen() {
-  const navigate = useNavigate();
-
-  // Debugging untuk memastikan tombol NEXT bekerja:
-  console.log("LoadingScreen Rendered");
-
   return (
     <div className="loadScreen">
       <h1 className="judul">
-        <span>UCUP</span>
-        <span>MENJELAJAHI</span>
-        <span>NUSANTARA</span>
+        <div>UCUP</div>
+        <div>MENJELAJAHI</div>
+        <div>NUSANTARA</div>
       </h1>
-      <input
-        type="button"
-        value="NEXT"
-        onClick={() => {
-          console.log("Navigating to /choose-character");
-          navigate("/choose-character");
-        }}
-      />
+      <button className="nextButton">NEXT</button>
     </div>
   );
 }
