@@ -1,3 +1,4 @@
+// loading_screen.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,7 +11,7 @@ function LoadingScreen() {
 
   return (
     <div className="loading-screen bg-loading-screen fixed top-0 left-0 w-screen h-screen bg-no-repeat bg-center bg-cover z-1000 flex flex-col items-center justify-center">
-      <h1 className="judul text-white text-judul uppercase flex flex-col items-center justify-center leading-[1.5] tracking-widest2 text-center select-none animate-fadeIn">
+      <h1 className="judul_load text-white text-judul uppercase flex flex-col items-center justify-center leading-[1.5] tracking-widest2 text-center select-none animate-fadeIn">
         <div className="fade-line animate-fadeInLine delay-[500ms]">UCUP</div>
         <div className="fade-line animate-fadeInLine delay-[1000ms]">MENJELAJAHI</div>
         <div className="fade-line animate-fadeInLine delay-[1500ms]">NUSANTARA</div>
