@@ -1,5 +1,5 @@
-// choose_character.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles.css";
 
 const characters = [
@@ -11,6 +11,7 @@ const characters = [
 function ChooseCharacter() {
   const [name, setName] = useState("");
   const [selectedCharacter, setSelectedCharacter] = useState(0);
+  const navigate = useNavigate();
 
   const handlePrevious = () => {
     setSelectedCharacter((prev) => (prev === 0 ? characters.length - 1 : prev - 1));
@@ -18,6 +19,17 @@ function ChooseCharacter() {
 
   const handleNext = () => {
     setSelectedCharacter((prev) => (prev === characters.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleStartExploring = () => {
+    if (name.trim()) {
+      navigate("/map", {
+        state: {
+          playerName: name,
+          characterName: characters[selectedCharacter].name,
+        },
+      });
+    }
   };
 
   return (
@@ -41,9 +53,10 @@ function ChooseCharacter() {
           </button>
         </div>
 
-        <input type="text" placeholder="Enter your name" value={name} onChange={(e) => setName(e.target.value)} className="glass-input w-md h-[30px] text-[25px] m-[10px] text-center py-3 px-4 text-gray-800 placeholder-gray-00" />
+        <input type="text" placeholder="Enter your name" value={name} onChange={(e) => setName(e.target.value)} className="glass-input w-md h-[30px] text-[25px] m-[10px] text-center py-3 px-4 text-gray-800 placeholder-gray-500" />
 
         <button
+          onClick={handleStartExploring} // Panggil fungsi ini saat button diklik
           disabled={!name.trim()}
           className={
             "button_start w-xl text-[14px] rounded-[20px] py-[14px] px-[20px] transition-all duration-300 shadow-btn-default hover:scale-105 hover:shadow-btn-hover " +
