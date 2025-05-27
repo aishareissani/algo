@@ -6,14 +6,14 @@ function Map() {
   const location = useLocation();
   const { characterName = "claire", playerName = "Player" } = location.state || {};
 
-  const [playerPos, setPlayerPos] = useState({ x: 400, y: 300 });
+  const [playerPos, setPlayerPos] = useState({ x: 2110, y: 730 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
 
   const mapRef = useRef(null);
   const playerRef = useRef(null);
 
-  const WORLD_WIDTH = 1600;
-  const WORLD_HEIGHT = 1200;
+  const WORLD_WIDTH = 3700;
+  const WORLD_HEIGHT = 1954;
   const VIEWPORT_WIDTH = 800;
   const VIEWPORT_HEIGHT = 600;
   const PLAYER_SIZE = 40;
@@ -44,7 +44,7 @@ function Map() {
           case "ArrowDown":
           case "s":
           case "S":
-            newY = Math.min(WORLD_HEIGHT - PLAYER_SIZE, prev.y + MOVE_SPEED);
+            newY = Math.min(1745, prev.y + MOVE_SPEED); // Custom Y limit
             break;
           case "ArrowLeft":
           case "a":
@@ -54,7 +54,7 @@ function Map() {
           case "ArrowRight":
           case "d":
           case "D":
-            newX = Math.min(WORLD_WIDTH - PLAYER_SIZE, prev.x + MOVE_SPEED);
+            newX = Math.min(3575, prev.x + MOVE_SPEED); // Custom X limit
             break;
           default:
             return prev;
@@ -85,10 +85,11 @@ function Map() {
             <div
               className="mini-map-player"
               style={{
-                left: (playerPos.x / WORLD_WIDTH) * 100 + "%",
-                top: (playerPos.y / WORLD_HEIGHT) * 100 + "%",
+                left: ((playerPos.x + PLAYER_SIZE / 2) / WORLD_WIDTH) * 100 + "%",
+                top: ((playerPos.y + 60 / 2) / WORLD_HEIGHT) * 100 + "%",
               }}
             />
+
             <div
               className="mini-map-viewport"
               style={{

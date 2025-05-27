@@ -169,7 +169,6 @@ body {
   background-position: center;
 }
 
-/* Game Container */
 .game-container {
   position: fixed;
   top: 0;
@@ -183,7 +182,6 @@ body {
   justify-content: center;
 }
 
-/* Game Viewport (Camera Window) */
 .game-viewport {
   width: 800px;
   height: 600px;
@@ -195,25 +193,23 @@ body {
   background: #87ceeb;
 }
 
-/* Game World (Larger than viewport) */
 .game-world {
   position: absolute;
-  width: 1600px;
-  height: 1200px;
+  width: 3700px;
+  height: 1954px;
   top: 0;
   left: 0;
   will-change: transform;
 }
 
-/* Map background specific style */
 .map-background {
   background-image: url("/assets/locations/map_screen.png");
+  background-size: 100% 100%;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
 }
 
-/* Player */
 .player {
   position: absolute;
   width: 40px;
@@ -230,7 +226,6 @@ body {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
 }
 
-/* HUD/UI Overlay */
 .game-hud {
   position: absolute;
   top: 0;
@@ -241,17 +236,17 @@ body {
   z-index: 20;
 }
 
-/* Mini Map */
 .mini-map {
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 160px;
-  height: 120px;
+  width: 190px;
+  height: 100px;
   background: rgba(0, 0, 0, 0.8);
   border: 2px solid #fff;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
+  aspect-ratio: 1.895 /1;
 }
 
 .mini-map-world {
@@ -262,6 +257,7 @@ body {
   background-image: url("/assets/locations/map_screen.png");
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center;
 }
 
 .mini-map-player {
@@ -280,7 +276,6 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Player Info */
 .player-info {
   position: absolute;
   top: 20px;
@@ -304,7 +299,6 @@ body {
   border: 1px solid #fff;
 }
 
-/* Controls Hint */
 .controls-hint {
   position: absolute;
   bottom: 20px;
@@ -319,7 +313,6 @@ body {
   line-height: 1.5;
 }
 
-/* Responsive Design */
 @media (max-width: 900px) {
   .game-viewport {
     width: 90vw;
@@ -329,8 +322,8 @@ body {
   }
 
   .mini-map {
-    width: 120px;
-    height: 90px;
+    width: 190px;
+    height: 100px;
   }
 
   .controls-hint {
@@ -352,5 +345,10 @@ body {
   .hud-avatar {
     width: 24px;
     height: 24px;
+  }
+
+  .mini-map {
+    width: 100px;
+    height: 53px;
   }
 }
