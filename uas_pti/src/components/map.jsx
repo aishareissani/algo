@@ -71,10 +71,10 @@ function Map() {
   return (
     <div className="game-container">
       <div className="game-viewport" ref={mapRef}>
-        <div className="game-world map-background" style={{ transform: `translate(-${cameraPos.x}px, -${cameraPos.y}px)` }}>
+        <div className="game-world map-background" style={{ transform: "translate(-" + cameraPos.x + "px, -" + cameraPos.y + "px)" }}>
           <div className="player" ref={playerRef} style={{ left: playerPos.x, top: playerPos.y }}>
-            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="player-sprite" draggable={false} />
-            <div className="player-shadow" />
+            <img src={"/assets/avatar/" + characterName + ".png"} alt={characterName} className="player-sprite" draggable={false} />
+            <div />
           </div>
         </div>
       </div>
@@ -102,7 +102,7 @@ function Map() {
         </div>
 
         <div className="player-info">
-          <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
+          <img src={"/assets/avatar/" + characterName + ".png"} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
           </div>

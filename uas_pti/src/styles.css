@@ -230,17 +230,6 @@ body {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
 }
 
-.player-shadow {
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30px;
-  height: 10px;
-  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4), transparent);
-  border-radius: 50%;
-}
-
 /* HUD/UI Overlay */
 .game-hud {
   position: absolute;
