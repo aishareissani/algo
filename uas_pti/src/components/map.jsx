@@ -44,6 +44,7 @@ function Map() {
           case "ArrowDown":
           case "s":
           case "S":
+            // UBAH DISINIIIII, ini ukuran custom, jadinya gak sesuai, ubah si 1745 nya, tp gak tau jd apa
             newY = Math.min(1745, prev.y + MOVE_SPEED); // Custom Y limit
             break;
           case "ArrowLeft":
@@ -54,6 +55,7 @@ function Map() {
           case "ArrowRight":
           case "d":
           case "D":
+            // UBAH DISINIIIII, ini ukuran custom, jadinya gak sesuai, ubah si 3575 nya, tp gak tau jd apa
             newX = Math.min(3575, prev.x + MOVE_SPEED); // Custom X limit
             break;
           default:
