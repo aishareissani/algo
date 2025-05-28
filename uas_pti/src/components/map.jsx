@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../styles.css";
 
 function Map() {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const { characterName = "claire", playerName = "Player" } = location.state || {};
 
   const [playerPos, setPlayerPos] = useState({ x: 2110, y: 730 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
+  const [showDialog, setShowDialog] = useState(false);
 
   const mapRef = useRef(null);
   const playerRef = useRef(null);
@@ -18,6 +21,18 @@ function Map() {
   const VIEWPORT_HEIGHT = 600;
   const PLAYER_SIZE = 40;
   const MOVE_SPEED = 8;
+
+  const isNearHouseDoor = (x, y) => {
+    return x >= 2075 && x <= 2115 && y >= 625 && y <= 660;
+  };
+
+  useEffect(() => {
+    if (isNearHouseDoor(playerPos.x, playerPos.y)) {
+      setShowDialog(true);
+    } else {
+      setShowDialog(false);
+    }
+  }, [playerPos]);
 
   useEffect(() => {
     const cameraCenterX = playerPos.x - VIEWPORT_WIDTH / 2;
@@ -44,8 +59,7 @@ function Map() {
           case "ArrowDown":
           case "s":
           case "S":
-            // UBAH DISINIIIII, ini ukuran custom, jadinya gak sesuai, ubah si 1745 nya, tp gak tau jd apa
-            newY = Math.min(1745, prev.y + MOVE_SPEED); // Custom Y limit
+            newY = Math.min(1745, prev.y + MOVE_SPEED);
             break;
           case "ArrowLeft":
           case "a":
@@ -55,8 +69,7 @@ function Map() {
           case "ArrowRight":
           case "d":
           case "D":
-            // UBAH DISINIIIII, ini ukuran custom, jadinya gak sesuai, ubah si 3575 nya, tp gak tau jd apa
-            newX = Math.min(3575, prev.x + MOVE_SPEED); // Custom X limit
+            newX = Math.min(3575, prev.x + MOVE_SPEED);
             break;
           default:
             return prev;
@@ -70,8 +83,38 @@ function Map() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    if (playerPos.x >= 1910 && playerPos.x <= 2262 && playerPos.y >= 410 && playerPos.y <= 642) {
+      setShowDialog(true);
+    } else {
+      setShowDialog(false);
+    }
+  }, [playerPos]);
+
+  const handleEnterHome = () => {
+    navigate("/home", { state: { characterName, playerName } });
+  };
+
   return (
     <div className="game-container">
+      {showDialog && (
+        <div className="dialog">
+          <p>
+            Apakah anda
+            <br />
+            ingin masuk ke
+            <br />
+            rumah?
+          </p>
+          <button className="yes-btn" onClick={handleEnterHome}>
+            Yes
+          </button>
+          <button className="no-btn" onClick={() => setShowDialog(false)}>
+            No
+          </button>
+        </div>
+      )}
+
       <div className="game-viewport" ref={mapRef}>
         <div className="game-world map-background" style={{ transform: "translate(-" + cameraPos.x + "px, -" + cameraPos.y + "px)" }}>
           <div className="player" ref={playerRef} style={{ left: playerPos.x, top: playerPos.y }}>

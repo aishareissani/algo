@@ -352,3 +352,79 @@ body {
     height: 53px;
   }
 }
+
+/* pilih yes or no */
+.dialog {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 30px 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 100;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.dialog p {
+  font-size: 20px;
+  margin-bottom: 25px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: #1a1a1a;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.dialog .yes-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.dialog .no-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.dialog button {
+  margin: 0 12px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dialog button:hover {
+  transform: scale(1.05);
+}
+
+.dialog button:nth-child(2) {
+  background-color: #3498db;
+  color: white;
+}
+
+.dialog button:nth-child(3) {
+  background-color: #e74c3c;
+  color: white;
+}
