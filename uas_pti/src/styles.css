@@ -23,14 +23,14 @@ body {
 }
 
 .judul_load {
-  color: #fff;
+  color: #f8f8ff;
   text-shadow: 3px 3px 5px #3b5a30;
 }
 
 .nextButton,
 .button_start {
   background: linear-gradient(45deg, #8cb369, #5a8c3b);
-  color: #fff;
+  color: #f8f8ff;
   font-family: "Press Start 2P", system-ui;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -112,7 +112,7 @@ body {
 }
 
 .judul_chara {
-  color: #fff;
+  color: #f8f8ff;
   text-shadow: 3px 3px 5px #3b5a30;
 }
 
@@ -175,7 +175,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #1a1a1a;
+  background: #80664f; /* Light green background matching farm theme */
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -185,14 +185,13 @@ body {
 .game-viewport {
   width: 800px;
   height: 600px;
-  border: 4px solid #2d5016;
+  border: 4px solid #78d658; /* Bright green from palette */
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.1);
-  background: #87ceeb;
+  box-shadow: 0 0 30px rgba(121, 216, 88, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2);
+  background: #f0f9e6;
 }
-
 .game-world {
   position: absolute;
   width: 3700px;
@@ -234,6 +233,7 @@ body {
   height: 100%;
   pointer-events: none;
   z-index: 20;
+  font-family: "Press Start 2P", system-ui;
 }
 
 .mini-map {
@@ -242,18 +242,27 @@ body {
   right: 20px;
   width: 190px;
   height: 100px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid #fff;
-  border-radius: 10px;
+  background: #f8f8ff;
+  border: 3px solid #79d959;
+  border-radius: 12px;
   overflow: hidden;
-  aspect-ratio: 1.895 /1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mini-map::after {
+  content: "MAP";
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  font-size: 8px;
+  color: #79d959;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .mini-map-world {
   position: relative;
   width: 100%;
   height: 100%;
-  background: #90ee90;
   background-image: url("/assets/locations/map_screen.png");
   background-size: cover;
   background-repeat: no-repeat;
@@ -262,18 +271,32 @@ body {
 
 .mini-map-player {
   position: absolute;
-  width: 4px;
-  height: 4px;
-  background: #ff0000;
+  width: 6px;
+  height: 6px;
+  background: #e9d669; /* Yellow from palette */
+  border: 1px solid #f8f8ff;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 4px #ff0000;
+  box-shadow: 0 0 8px #e9d669;
+  animation: pulse-map-marker 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-map-marker {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 4px #e9d669;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.3);
+    box-shadow: 0 0 10px #e9d669;
+  }
 }
 
 .mini-map-viewport {
   position: absolute;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #f8f8ff;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .player-info {
@@ -282,154 +305,296 @@ body {
   left: 20px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 10px;
-  border-radius: 8px;
-  border: 2px solid #fff;
+  gap: 12px;
+  background: #f8f8ff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 3px solid #79d959;
   font-family: "Press Start 2P", monospace;
-  color: white;
+  color: #4d4d4d;
   font-size: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .hud-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  border: 1px solid #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #79d959;
+  background: #f8f8ff;
+  padding: 2px;
+  box-shadow: 0 0 0 2px rgba(121, 216, 88, 0.3);
 }
 
 .controls-hint {
   position: absolute;
   bottom: 20px;
   left: 20px;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 10px;
-  border-radius: 8px;
-  border: 2px solid #fff;
+  background: #f8f8ff;
+  padding: 12px 15px;
+  border-radius: 12px;
+  border: 3px solid #51b3f0;
   font-family: "Press Start 2P", monospace;
-  color: white;
+  color: #4d4d4d;
   font-size: 8px;
   line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-@media (max-width: 900px) {
-  .game-viewport {
-    width: 90vw;
-    height: 60vh;
-    max-width: 800px;
-    max-height: 600px;
-  }
-
-  .mini-map {
-    width: 190px;
-    height: 100px;
-  }
-
-  .controls-hint {
-    font-size: 6px;
-  }
+.controls-hint div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
 }
 
-@media (max-width: 640px) {
-  .game-viewport {
-    width: 95vw;
-    height: 55vh;
-  }
-
-  .player-info {
-    font-size: 8px;
-    padding: 8px;
-  }
-
-  .hud-avatar {
-    width: 24px;
-    height: 24px;
-  }
-
-  .mini-map {
-    width: 100px;
-    height: 53px;
-  }
+.controls-hint div:last-child {
+  margin-bottom: 0;
 }
 
-/* pilih yes or no */
+/* stats player */
+.stats-container {
+  pointer-events: auto;
+}
+
+.stats-player {
+  position: absolute;
+  left: 20px;
+  top: 100px;
+  width: 220px;
+  background: #f8f8ff;
+  border: 3px solid #79d959;
+  border-radius: 12px;
+  padding: 15px;
+  color: #4d4d4d;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  font-family: "Press Start 2P", system-ui;
+  z-index: 30;
+}
+
+.stats-player:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.stats-player h3 {
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 15px;
+  color: #79d959;
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+  letter-spacing: 1px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.stats-player h3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 30%;
+  width: 40%;
+  height: 2px;
+  background: #79d959;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #92a676;
+}
+
+.stat-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.stat-item span:first-child {
+  flex: 0.8;
+  font-size: 9px;
+  font-weight: bold;
+  color: #4d4d4d;
+  display: flex;
+  align-items: center;
+}
+
+.stat-item.meal span:first-child::before {
+  content: "🍎";
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.stat-item.sleep span:first-child::before {
+  content: "💤";
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.stat-item.happiness span:first-child::before {
+  content: "😊";
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.stat-item.cleanliness span:first-child::before {
+  content: "✨";
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.stat-item.money span:first-child::before {
+  content: "💰";
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.stat-item.items span:first-child::before {
+  content: "🎒";
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.stat-item progress {
+  flex: 1.5;
+  height: 10px;
+  margin: 0 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #e0e0e0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item progress::-webkit-progress-bar {
+  background-color: #e0e0e0;
+  border-radius: 10px;
+}
+
+.stat-item.meal progress::-webkit-progress-value {
+  background: #79d959;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.stat-item.sleep progress::-webkit-progress-value {
+  background: #51b3f0;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.stat-item.happiness progress::-webkit-progress-value {
+  background: #e9d669;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.stat-item.cleanliness progress::-webkit-progress-value {
+  background: #92a676;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.stat-item.meal progress::-moz-progress-bar {
+  background: #79d959;
+}
+
+.stat-item.sleep progress::-moz-progress-bar {
+  background: #51b3f0;
+}
+
+.stat-item.happiness progress::-moz-progress-bar {
+  background: #e9d669;
+}
+
+.stat-item.cleanliness progress::-moz-progress-bar {
+  background: #92a676;
+}
+
+.stat-item span:last-child {
+  width: 36px;
+  text-align: right;
+  font-size: 9px;
+  font-weight: bold;
+  color: #4d4d4d;
+}
+
+.money-value {
+  color: #bc8044 !important;
+  font-weight: bold;
+}
+
+/* Items list */
+.items-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.items-list li {
+  background: #f5f0d8;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 8px;
+  color: #bc8044;
+  border: 1px solid #e9d669;
+}
+
 .dialog {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(10px);
+  background: #f8f8ff;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   border-radius: 16px;
-  padding: 30px 40px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  padding: 25px 35px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   text-align: center;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 3px solid #79d959;
   z-index: 100;
   animation: fadeIn 0.3s ease-out;
 }
 
-.fade-in-center {
-  opacity: 0;
-  animation: fadeInCenter 0.8s ease-out forwards;
-}
-
-@keyframes fadeInCenter {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -60%);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
-}
-
 .dialog p {
-  font-size: 20px;
+  font-size: 18px;
   margin-bottom: 25px;
   font-weight: bold;
   letter-spacing: 0.5px;
-  color: #1a1a1a;
+  color: #4d4d4d;
   line-height: 1.6;
   text-align: center;
 }
 
-.dialog .yes-btn {
-  background-color: #3498db;
-  color: white;
-}
-
-.dialog .no-btn {
-  background-color: #e74c3c;
-  color: white;
-}
-
 .dialog button {
-  margin: 0 12px;
-  padding: 12px 24px;
-  font-size: 16px;
+  margin: 0 8px;
+  padding: 10px 20px;
+  font-size: 14px;
   font-weight: bold;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  font-family: "Press Start 2P", system-ui;
 }
 
-.dialog button:hover {
-  transform: scale(1.05);
+.dialog .yes-btn {
+  background: #79d959;
+  color: #f8f8ff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 }
 
-.dialog button:nth-child(2) {
-  background-color: #3498db;
-  color: white;
-}
-
-.dialog button:nth-child(3) {
-  background-color: #e74c3c;
-  color: white;
+.dialog .no-btn {
+  background: #bc8044;
+  color: #f8f8ff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 }
