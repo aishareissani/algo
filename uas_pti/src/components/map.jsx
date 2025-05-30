@@ -11,6 +11,8 @@ function Map() {
   const [playerPos, setPlayerPos] = useState({ x: 2110, y: 730 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const [showDialog, setShowDialog] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
   const mapRef = useRef(null);
   const playerRef = useRef(null);
@@ -23,13 +25,39 @@ function Map() {
   const MOVE_SPEED = 8;
 
   const isNearHouseDoor = (x, y) => {
-    return x >= 2075 && x <= 2115 && y >= 625 && y <= 660;
+    return x >= 1918 && x <= 2262 && y >= 430 && y <= 660;
+  };
+  const isNearField = (x, y) => {
+    return x >= 2894 && x <= 3160 && y >= 762 && y <= 1026;
+  };
+  const isNearBeach = (x, y) => {
+    return x >= 3238 && x <= 3575 && y >= 626 && y <= 1186;
+  };
+  const isNearResto = (x, y) => {
+    return x >= 1526 && x <= 1718 && y >= 898 && y <= 1058;
+  };
+  const isNearGunung = (x, y) => {
+    return x >= 176 && x <= 848 && y >= 40 && y <= 1034;
   };
 
   useEffect(() => {
     if (isNearHouseDoor(playerPos.x, playerPos.y)) {
+      setCurrentLocation("rumah");
+      setShowDialog(true);
+    } else if (isNearField(playerPos.x, playerPos.y)) {
+      setCurrentLocation("lapangan");
+      setShowDialog(true);
+    } else if (isNearBeach(playerPos.x, playerPos.y)) {
+      setCurrentLocation("pantai");
+      setShowDialog(true);
+    } else if (isNearResto(playerPos.x, playerPos.y)) {
+      setCurrentLocation("restoran");
+      setShowDialog(true);
+    } else if (isNearGunung(playerPos.x, playerPos.y)) {
+      setCurrentLocation("gunung");
       setShowDialog(true);
     } else {
+      setCurrentLocation(null);
       setShowDialog(false);
     }
   }, [playerPos]);
@@ -84,7 +112,18 @@ function Map() {
   }, []);
 
   useEffect(() => {
-    if (playerPos.x >= 1910 && playerPos.x <= 2262 && playerPos.y >= 410 && playerPos.y <= 642) {
+    if (
+      // rumah
+      (playerPos.x >= 1918 && playerPos.x <= 2262 && playerPos.y >= 430 && playerPos.y <= 660) ||
+      // field
+      (playerPos.x >= 2894 && playerPos.x <= 3160 && playerPos.y >= 762 && playerPos.y <= 1026) ||
+      // beach
+      (playerPos.x >= 3238 && playerPos.x <= 3575 && playerPos.y >= 626 && playerPos.y <= 1186) ||
+      // resto
+      (playerPos.x >= 1526 && playerPos.x <= 1718 && playerPos.y >= 898 && playerPos.y <= 1058) ||
+      // gunung
+      (playerPos.x >= 176 && playerPos.x <= 848 && playerPos.y >= 40 && playerPos.y <= 1034)
+    ) {
       setShowDialog(true);
     } else {
       setShowDialog(false);
@@ -97,14 +136,14 @@ function Map() {
 
   return (
     <div className="game-container">
-      {showDialog && (
-        <div className="dialog">
+      {showDialog && currentLocation && (
+        <div className="dialog fade-in-center">
           <p>
             Apakah anda
             <br />
             ingin masuk ke
             <br />
-            rumah?
+            {capitalize(currentLocation)}?
           </p>
           <button className="yes-btn" onClick={handleEnterHome}>
             Yes
