@@ -10,38 +10,11 @@ function House() {
 
   const { characterName = "claire", playerName = "Player" } = location.state || {};
   const [showDialog, setShowDialog] = useState(false);
-  const [currentLocationHouse, setCurrentLocationHouse] = useState(null); // Added state to store the current nearby location
-
-  const capitalize = (s) => {
-    if (typeof s !== "string") return "";
-    return s.charAt(0).toUpperCase() + s.slice(1);
-  };
-
-  const handleEnterLocation = () => {
-    console.log(`Entering ${currentLocationHouse}`);
-    setShowDialog(false); // Close dialog after action
-
-    // Example: Navigate to a different route based on the location
-    // You would define your routes (e.g., /bed, /bath) in your App.js or router setup
-    if (currentLocationHouse === "Bed") {
-      navigate("/bed", { state: { characterName, playerName, playerStats } });
-    } else if (currentLocationHouse === "Bath") {
-      navigate("/bath", { state: { characterName, playerName, playerStats } });
-    } else if (currentLocationHouse === "Kitchen") {
-      navigate("/kitchen", { state: { characterName, playerName, playerStats } });
-    } else if (currentLocationHouse === "Cat") {
-      navigate("/cat", { state: { characterName, playerName, playerStats } });
-    } else if (currentLocationHouse === "Shelf") {
-      navigate("/shelf", { state: { characterName, playerName, playerStats } });
-    } else if (currentLocationHouse === "Music") {
-      navigate("/music", { state: { characterName, playerName, playerStats } });
-    }
-    // You'll want to add more conditions here for "Cat", "Shelf", and "Music"
-  };
+  const [currentLocationHouse, setCurrentLocationHouse] = useState(null);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
-  const [zoomLevel, setZoomLevel] = useState(0.299); // Initial zoom
+  const [zoomLevel, setZoomLevel] = useState(0.299);
   const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
 
   const houseRef = useRef(null);
@@ -56,32 +29,84 @@ function House() {
   const [playerStats, setPlayerStats] = useState({
     meal: 50,
     sleep: 50,
+    health: 100,
+    energy: 100,
     happiness: 50,
     cleanliness: 50,
     money: 100,
+    experience: 0,
+    level: 1,
+    skillPoints: 0,
     items: [],
   });
+
+  const capitalize = (s) => {
+    if (typeof s !== "string") return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+
+  const handleEnterLocation = () => {
+    console.log(`Performing activity at ${currentLocationHouse}`);
+
+    if (currentLocationHouse === "Bed") {
+      // Tidur: +Sleep, +Energy, +Health, +Mood
+      setPlayerStats((prev) => ({
+        ...prev,
+        sleep: Math.min(100, prev.sleep + 30),
+        energy: Math.min(100, prev.energy + 25),
+        health: Math.min(100, prev.health + 20),
+        happiness: Math.min(100, prev.happiness + 15),
+      }));
+    } else if (currentLocationHouse === "Bath") {
+      // Mandi: Cleanliness = 100, +Mood
+      setPlayerStats((prev) => ({
+        ...prev,
+        cleanliness: 100,
+        happiness: Math.min(100, prev.happiness + 20),
+      }));
+    } else if (currentLocationHouse === "Kitchen") {
+      // Makan: +Meal, +Mood
+      setPlayerStats((prev) => ({
+        ...prev,
+        meal: Math.min(100, prev.meal + 40),
+        happiness: Math.min(100, prev.happiness + 15),
+      }));
+    } else if (currentLocationHouse === "Cat") {
+      // Main kucing: +Mood
+      setPlayerStats((prev) => ({
+        ...prev,
+        happiness: Math.min(100, prev.happiness + 25),
+      }));
+    } else if (currentLocationHouse === "Shelf") {
+      // Naro barang ke lemari: No stat changes
+    } else if (currentLocationHouse === "Music") {
+      // Main musik: +Mood
+      setPlayerStats((prev) => ({
+        ...prev,
+        happiness: Math.min(100, prev.happiness + 20),
+      }));
+    }
+
+    setShowDialog(false);
+  };
 
   const handleZoom = useCallback(
     (delta) => {
       setZoomLevel((prevZoom) => {
-        let minZoomCalculated = 0.1; // Absolute minimum fallback
+        let minZoomCalculated = 0.1;
 
         if (actualViewportSize.width > 0 && WORLD_WIDTH > 0 && actualViewportSize.height > 0 && WORLD_HEIGHT > 0) {
           const minZoomX = actualViewportSize.width / WORLD_WIDTH;
           const minZoomY = actualViewportSize.height / WORLD_HEIGHT;
-          // This minZoom ensures the scaled world at least covers the viewport dimension-wise
           minZoomCalculated = Math.max(minZoomX, minZoomY);
         }
 
-        // Combine with an absolute floor, ensuring it's at least 0.1 AND covers viewport
         const minZoom = Math.max(0.1, minZoomCalculated);
-
         return Math.max(minZoom, Math.min(2, prevZoom + delta));
       });
     },
     [actualViewportSize.width, actualViewportSize.height, WORLD_WIDTH, WORLD_HEIGHT]
-  ); // Dependencies for useCallback
+  );
 
   const isNearBed = (x, y) => {
     return x >= 450 && x <= 700 && y >= 142 && y <= 450;
@@ -103,12 +128,12 @@ function House() {
   };
 
   const dialogMessages = {
-    Bed: "Do you want to sleep?",
-    Bath: "Do you want to take a bath?",
-    Kitchen: "Do you want to eat?",
-    Cat: "Do you want to play with the cat?",
-    Shelf: "Do you want to check the shelf?",
-    Music: "Do you want to play music?",
+    Bed: "Do you want to sleep?\n+Sleep +Energy +Health +Mood",
+    Bath: "Do you want to take a bath?\nCleanliness = 100% +Mood",
+    Kitchen: "Do you want to eat?\n+Meal +Mood",
+    Cat: "Do you want to play with the cat?\n+Mood",
+    Shelf: "Do you want to organize items?",
+    Music: "Do you want to play music?\n+Mood",
   };
 
   const renderDialogMessage = (message) => {
@@ -145,18 +170,14 @@ function House() {
     let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
 
     if (scaledWorldWidth < actualViewportSize.width) {
-      // Center the world horizontally if it's visually smaller than viewport
       targetCameraX = (WORLD_WIDTH - viewportWidthInWorld) / 2;
     } else {
-      // Clamp camera to keep it within world bounds when scrolling
       targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
     }
 
     if (scaledWorldHeight < actualViewportSize.height) {
-      // Center the world vertically if it's visually smaller than viewport
       targetCameraY = (WORLD_HEIGHT - viewportHeightInWorld) / 2;
     } else {
-      // Clamp camera to keep it within world bounds when scrolling
       targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
     }
 
@@ -222,7 +243,7 @@ function House() {
       setCurrentLocationHouse(null);
       setShowDialog(false);
     }
-  }, [playerPos]); // This effect runs whenever playerPos changes
+  }, [playerPos]);
 
   return (
     <div className="house-game-container">
@@ -273,7 +294,7 @@ function House() {
           </div>
         </div>
         <div className="house-stats-container">
-          <StatsPlayer stats={playerStats} />
+          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
         </div>
         <div className="house-controls-hint">
           <div>🎮 Arrow Keys / WASD to move</div>

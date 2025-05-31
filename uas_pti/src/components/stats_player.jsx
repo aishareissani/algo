@@ -1,10 +1,31 @@
-import React, { useState } from "react";
+// stats_player.jsx
+import React, { useState, useEffect } from "react";
 import "../stats.css";
 
-function StatsPlayer({ stats = {} }) {
+function StatsPlayer({ stats = {}, onStatsUpdate }) {
   const { meal = 50, sleep = 50, health = 100, energy = 100, happiness = 50, cleanliness = 50, money = 100, experience = 0, level = 1, skillPoints = 0, items = [] } = stats;
 
   const [showInventory, setShowInventory] = useState(false);
+
+  // Stat decay effect - decrease stats by 5 every 10 seconds
+  useEffect(() => {
+    if (!onStatsUpdate) return; // Only run if callback is provided
+
+    const interval = setInterval(() => {
+      onStatsUpdate((prevStats) => ({
+        ...prevStats,
+        meal: Math.max(0, prevStats.meal - 5),
+        sleep: Math.max(0, prevStats.sleep - 5),
+        energy: Math.max(0, prevStats.energy - 5),
+        cleanliness: Math.max(0, prevStats.cleanliness - 5),
+        // Health decays faster if meal or sleep is low
+        health: Math.max(0, prevStats.health - (prevStats.meal <= 20 || prevStats.sleep <= 20 ? 10 : 5)),
+        happiness: Math.max(0, prevStats.happiness - 5),
+      }));
+    }, 2500); // 2.5 seconds
+
+    return () => clearInterval(interval);
+  }, [onStatsUpdate]);
 
   const getStatusColor = (value) => {
     if (value <= 25) return "critical";
@@ -72,15 +93,15 @@ function StatsPlayer({ stats = {} }) {
           </div>
         </div>
 
-        <div className={`stat-container ${getStatusColor(happiness)}`}>
-          <div className="stat-icon mood-icon"></div>
+        <div className={`stat-container mood ${getStatusColor(happiness)}`}>
+          <div className={`stat-icon mood-icon mood-${getStatusColor(happiness)}`}></div>
           <div className="stat-bar-container">
             <div className="stat-label">
               <span>Mood</span>
               <span className="stat-value">{happiness}%</span>
             </div>
             <div className="stat-bar">
-              <div className="stat-bar-fill" style={{ width: `${happiness}%` }} role="progressbar" aria-valuenow={happiness} aria-valuemin="0" aria-valuemax="100"></div>
+              <div className="stat-bar-fill mood-bar" style={{ width: `${happiness}%` }} role="progressbar" aria-valuenow={happiness} aria-valuemin="0" aria-valuemax="100"></div>
             </div>
           </div>
         </div>
