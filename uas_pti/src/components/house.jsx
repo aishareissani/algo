@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react"; // Added useCallback
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import "../house.css";
@@ -8,6 +8,35 @@ function House() {
   const navigate = useNavigate();
 
   const { characterName = "claire", playerName = "Player" } = location.state || {};
+  const [showDialog, setShowDialog] = useState(false);
+  const [currentLocationHouse, setCurrentLocationHouse] = useState(null); // Added state to store the current nearby location
+
+  const capitalize = (s) => {
+    if (typeof s !== "string") return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+
+  const handleEnterLocation = () => {
+    console.log(`Entering ${currentLocationHouse}`);
+    setShowDialog(false); // Close dialog after action
+
+    // Example: Navigate to a different route based on the location
+    // You would define your routes (e.g., /bed, /bath) in your App.js or router setup
+    if (currentLocationHouse === "Bed") {
+      navigate("/bed", { state: { characterName, playerName, playerStats } });
+    } else if (currentLocationHouse === "Bath") {
+      navigate("/bath", { state: { characterName, playerName, playerStats } });
+    } else if (currentLocationHouse === "Kitchen") {
+      navigate("/kitchen", { state: { characterName, playerName, playerStats } });
+    } else if (currentLocationHouse === "Cat") {
+      navigate("/cat", { state: { characterName, playerName, playerStats } });
+    } else if (currentLocationHouse === "Shelf") {
+      navigate("/shelf", { state: { characterName, playerName, playerStats } });
+    } else if (currentLocationHouse === "Music") {
+      navigate("/music", { state: { characterName, playerName, playerStats } });
+    }
+    // You'll want to add more conditions here for "Cat", "Shelf", and "Music"
+  };
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -32,22 +61,6 @@ function House() {
     items: [],
   });
 
-  // Get actual viewport size
-  useEffect(() => {
-    const updateViewportSize = () => {
-      if (houseRef.current) {
-        setActualViewportSize({
-          width: houseRef.current.clientWidth,
-          height: houseRef.current.clientHeight,
-        });
-      }
-    };
-
-    updateViewportSize();
-    window.addEventListener("resize", updateViewportSize);
-    return () => window.removeEventListener("resize", updateViewportSize);
-  }, []);
-
   const handleZoom = useCallback(
     (delta) => {
       setZoomLevel((prevZoom) => {
@@ -68,6 +81,54 @@ function House() {
     },
     [actualViewportSize.width, actualViewportSize.height, WORLD_WIDTH, WORLD_HEIGHT]
   ); // Dependencies for useCallback
+
+  const isNearBed = (x, y) => {
+    return x >= 450 && x <= 700 && y >= 142 && y <= 450;
+  };
+  const isNearBath = (x, y) => {
+    return x >= 142 && x <= 1092 && y >= 1015 && y <= 1617;
+  };
+  const isNearKitchen = (x, y) => {
+    return x >= 2932 && x <= 3682 && y >= 142 && y <= 1417;
+  };
+  const isNearCat = (x, y) => {
+    return x >= 1992 && x <= 2242 && y >= 1342 && y <= 1642;
+  };
+  const isNearShelf = (x, y) => {
+    return x >= 1157 && x <= 1382 && y >= 142 && y <= 467;
+  };
+  const isNearMusic = (x, y) => {
+    return x >= 2632 && x <= 2782 && y >= 267 && y <= 492;
+  };
+
+  const dialogMessages = {
+    Bed: "Do you want to sleep?",
+    Bath: "Do you want to take a bath?",
+    Kitchen: "Do you want grab a bite?",
+    Cat: "Do you want to play with the cat?",
+    Shelf: "Do you want to check the shelf?",
+    Music: "Do you want to play music?",
+  };
+
+  const renderDialogMessage = (message) => {
+    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
+  };
+
+  // Get actual viewport size
+  useEffect(() => {
+    const updateViewportSize = () => {
+      if (houseRef.current) {
+        setActualViewportSize({
+          width: houseRef.current.clientWidth,
+          height: houseRef.current.clientHeight,
+        });
+      }
+    };
+
+    updateViewportSize();
+    window.addEventListener("resize", updateViewportSize);
+    return () => window.removeEventListener("resize", updateViewportSize);
+  }, []);
 
   // Handle camera movement
   useEffect(() => {
@@ -99,7 +160,7 @@ function House() {
     }
 
     setCameraPos({ x: targetCameraX, y: targetCameraY });
-  }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]); // Added WORLD_WIDTH, WORLD_HEIGHT
+  }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
   // Handle player movement
   useEffect(() => {
@@ -134,14 +195,12 @@ function House() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [MOVE_SPEED, PLAYER_SCALE, PLAYER_SIZE, WORLD_HEIGHT, WORLD_WIDTH]); // Added dependencies
+  }, [MOVE_SPEED, PLAYER_SCALE, PLAYER_SIZE, WORLD_HEIGHT, WORLD_WIDTH]);
 
   // Handle zoom with mouse wheel
   useEffect(() => {
     const wheelHandler = (e) => {
-      // Renamed to avoid conflicts if any
       if (e.ctrlKey) {
-        // Check if the event target is within the houseRef viewport or houseRef itself
         if (houseRef.current && houseRef.current.contains(e.target)) {
           e.preventDefault();
           handleZoom(e.deltaY > 0 ? -0.1 : 0.1);
@@ -150,17 +209,54 @@ function House() {
     };
     window.addEventListener("wheel", wheelHandler, { passive: false });
     return () => window.removeEventListener("wheel", wheelHandler);
-  }, [handleZoom]); // handleZoom is now memoized with useCallback
+  }, [handleZoom]);
+
+  // Effect to show dialog when player is near a specific location
+  useEffect(() => {
+    if (isNearBed(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Bed");
+      setShowDialog(true);
+    } else if (isNearBath(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Bath");
+      setShowDialog(true);
+    } else if (isNearKitchen(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Kitchen");
+      setShowDialog(true);
+    } else if (isNearCat(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Cat");
+      setShowDialog(true);
+    } else if (isNearShelf(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Shelf");
+      setShowDialog(true);
+    } else if (isNearMusic(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Music");
+      setShowDialog(true);
+    } else {
+      setCurrentLocationHouse(null);
+      setShowDialog(false);
+    }
+  }, [playerPos]); // This effect runs whenever playerPos changes
 
   return (
     <div className="house-game-container">
       <div className="house-game-viewport" ref={houseRef}>
+        {showDialog && currentLocationHouse && (
+          <div className="dialog fade-in-center">
+            {renderDialogMessage(dialogMessages[currentLocationHouse] || `Do you want to enter the ${currentLocationHouse}?`)}
+            <button className="yes-btn" onClick={handleEnterLocation}>
+              Yes
+            </button>
+            <button className="no-btn" onClick={() => setShowDialog(false)}>
+              No
+            </button>
+          </div>
+        )}
+
         <div
           className="house-game-world house-background"
           style={{
             width: `${WORLD_WIDTH}px`,
             height: `${WORLD_HEIGHT}px`,
-            // CRITICAL FIX HERE: Multiply cameraPos (world units) by zoomLevel for visual translation
             transform: `translate(-${cameraPos.x * zoomLevel}px, -${cameraPos.y * zoomLevel}px) scale(${zoomLevel})`,
             transformOrigin: "0 0",
           }}
@@ -186,7 +282,7 @@ function House() {
         <div className="house-player-info">
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="house-hud-avatar" />
           <div className="house-player-coords">
-            {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)} • Z: {zoomLevel.toFixed(2)}
+            {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
           </div>
         </div>
         <div className="house-stats-container">

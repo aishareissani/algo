@@ -42,14 +42,13 @@ function Map() {
   };
 
   const [playerStats, setPlayerStats] = useState({
-  meal: 50,
-  sleep: 50,
-  happiness: 50,
-  cleanliness: 50,
-  money: 100,
-  items: [],
-});
-
+    meal: 50,
+    sleep: 50,
+    happiness: 50,
+    cleanliness: 50,
+    money: 100,
+    items: [],
+  });
 
   useEffect(() => {
     if (isNearHouseDoor(playerPos.x, playerPos.y)) {

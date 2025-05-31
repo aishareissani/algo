@@ -387,13 +387,13 @@ body {
 }
 
 .dialog .yes-btn {
-  background: #79d959;
+  background: #51b3f0;
   color: #f8f8ff;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .dialog .no-btn {
-  background: #bc8044;
+  background: #e74c3c;
   color: #f8f8ff;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 }
