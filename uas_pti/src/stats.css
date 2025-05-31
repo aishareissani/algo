@@ -442,3 +442,38 @@ body {
     grid-column: span 1;
   }
 }
+
+.stat-increase-indicator {
+  color: #34d399; /* Green color for increase */
+  font-weight: bold;
+  margin-right: 3px; /* Space between + and the value */
+  display: inline-block; /* Ensures proper spacing and potential animation */
+  animation: popIn 0.3s ease-out forwards;
+}
+
+/* Optional: A subtle animation for the "+" appearing */
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Adjust stat-value if needed to better align with the indicator */
+.stat-value,
+.resource-value {
+  display: flex; /* Helps align indicator and text */
+  align-items: center; /* Vertically aligns them if they have different heights */
+}
+.level-badge {
+  display: flex;
+  align-items: center;
+}
+.level-badge .stat-increase-indicator {
+  margin-left: 4px; /* specific spacing for level badge */
+  margin-right: 0;
+}

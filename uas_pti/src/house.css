@@ -120,3 +120,50 @@
 .house-controls-hint div:last-child {
   margin-bottom: 0;
 }
+
+/* Activity overlay and progress bar */
+.activity-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.95);
+  border: 3px solid #79d959;
+  border-radius: 12px;
+  padding: 20px 40px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  text-align: center;
+  min-width: 300px;
+}
+
+.activity-info h3 {
+  margin: 0 0 15px 0;
+  color: #4d4d4d;
+  font-size: 14px;
+}
+
+.activity-progress-bar {
+  width: 100%;
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.activity-progress-fill {
+  height: 100%;
+  background: #79d959;
+  border-radius: 10px;
+  transition: width 0.1s linear;
+  box-shadow: 0 2px 4px rgba(121, 217, 89, 0.3);
+}
+
+.activity-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #4d4d4d;
+  font-weight: bold;
+}

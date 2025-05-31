@@ -44,9 +44,14 @@ function Map() {
   const [playerStats, setPlayerStats] = useState({
     meal: 50,
     sleep: 50,
+    health: 80,
+    energy: 80,
     happiness: 50,
     cleanliness: 50,
     money: 100,
+    experience: 0,
+    level: 1,
+    skillPoints: 0,
     items: [],
   });
 

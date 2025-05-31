@@ -11,6 +11,9 @@ function House() {
   const { characterName = "claire", playerName = "Player" } = location.state || {};
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationHouse, setCurrentLocationHouse] = useState(null);
+  const [isPerformingActivity, setIsPerformingActivity] = useState(false);
+  const [activityProgress, setActivityProgress] = useState(0);
+  const [currentActivity, setCurrentActivity] = useState("");
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -19,18 +22,21 @@ function House() {
 
   const houseRef = useRef(null);
   const playerRef = useRef(null);
+  const activityIntervalRef = useRef(null);
 
   const WORLD_WIDTH = 3825;
   const WORLD_HEIGHT = 2008;
   const PLAYER_SIZE = 190;
   const PLAYER_SCALE = 1.5;
   const MOVE_SPEED = 25;
+  const ACTIVITY_DURATION = 10000;
+  const ACTIVITY_UPDATE_INTERVAL = 1000;
 
   const [playerStats, setPlayerStats] = useState({
     meal: 50,
     sleep: 50,
-    health: 100,
-    energy: 100,
+    health: 80,
+    energy: 80,
     happiness: 50,
     cleanliness: 50,
     money: 100,
@@ -45,50 +51,101 @@ function House() {
     return s.charAt(0).toUpperCase() + s.slice(1);
   };
 
+  const performActivity = (activityName, statChanges) => {
+    if (isPerformingActivity) return;
+
+    setIsPerformingActivity(true);
+    setCurrentActivity(activityName);
+    setActivityProgress(0);
+    setShowDialog(false);
+
+    const totalSteps = ACTIVITY_DURATION / ACTIVITY_UPDATE_INTERVAL;
+    let currentStep = 0;
+
+    // Calculate incremental changes per step
+    const incrementalChanges = {};
+    Object.keys(statChanges).forEach((stat) => {
+      incrementalChanges[stat] = statChanges[stat] / totalSteps;
+    });
+
+    activityIntervalRef.current = setInterval(() => {
+      currentStep++;
+      const progress = (currentStep / totalSteps) * 100;
+      setActivityProgress(progress);
+
+      // Update stats gradually
+      setPlayerStats((prev) => {
+        const newStats = { ...prev };
+
+        Object.keys(incrementalChanges).forEach((stat) => {
+          if (stat === "cleanliness" && statChanges[stat] === 100) {
+            // Special case for cleanliness - set to 100 immediately
+            newStats[stat] = 100;
+          } else {
+            newStats[stat] = Math.min(100, Math.max(0, prev[stat] + incrementalChanges[stat]));
+          }
+        });
+
+        return newStats;
+      });
+
+      if (currentStep >= totalSteps) {
+        // Activity completed
+        clearInterval(activityIntervalRef.current);
+        setIsPerformingActivity(false);
+        setActivityProgress(0);
+        setCurrentActivity("");
+      }
+    }, ACTIVITY_UPDATE_INTERVAL);
+  };
+
   const handleEnterLocation = () => {
     console.log(`Performing activity at ${currentLocationHouse}`);
 
     if (currentLocationHouse === "Bed") {
       // Tidur: +Sleep, +Energy, +Health, +Mood
-      setPlayerStats((prev) => ({
-        ...prev,
-        sleep: Math.min(100, prev.sleep + 30),
-        energy: Math.min(100, prev.energy + 25),
-        health: Math.min(100, prev.health + 20),
-        happiness: Math.min(100, prev.happiness + 15),
-      }));
+      performActivity("Sleeping", {
+        sleep: 30,
+        energy: 25,
+        health: 20,
+        happiness: 15,
+      });
     } else if (currentLocationHouse === "Bath") {
       // Mandi: Cleanliness = 100, +Mood
-      setPlayerStats((prev) => ({
-        ...prev,
+      performActivity("Taking a bath", {
         cleanliness: 100,
-        happiness: Math.min(100, prev.happiness + 20),
-      }));
+        happiness: 20,
+      });
     } else if (currentLocationHouse === "Kitchen") {
       // Makan: +Meal, +Mood
-      setPlayerStats((prev) => ({
-        ...prev,
-        meal: Math.min(100, prev.meal + 40),
-        happiness: Math.min(100, prev.happiness + 15),
-      }));
+      performActivity("Eating", {
+        meal: 40,
+        happiness: 15,
+      });
     } else if (currentLocationHouse === "Cat") {
       // Main kucing: +Mood
-      setPlayerStats((prev) => ({
-        ...prev,
-        happiness: Math.min(100, prev.happiness + 25),
-      }));
+      performActivity("Playing with cat", {
+        happiness: 25,
+      });
     } else if (currentLocationHouse === "Shelf") {
-      // Naro barang ke lemari: No stat changes
+      // Naro barang ke lemari: No stat changes but still takes time
+      performActivity("Organizing items", {});
     } else if (currentLocationHouse === "Music") {
       // Main musik: +Mood
-      setPlayerStats((prev) => ({
-        ...prev,
-        happiness: Math.min(100, prev.happiness + 20),
-      }));
+      performActivity("Playing music", {
+        happiness: 20,
+      });
     }
-
-    setShowDialog(false);
   };
+
+  // Clean up activity interval on unmount
+  useEffect(() => {
+    return () => {
+      if (activityIntervalRef.current) {
+        clearInterval(activityIntervalRef.current);
+      }
+    };
+  }, []);
 
   const handleZoom = useCallback(
     (delta) => {
@@ -128,12 +185,12 @@ function House() {
   };
 
   const dialogMessages = {
-    Bed: "Do you want to sleep?\n+Sleep +Energy +Health +Mood",
-    Bath: "Do you want to take a bath?\nCleanliness = 100% +Mood",
-    Kitchen: "Do you want to eat?\n+Meal +Mood",
-    Cat: "Do you want to play with the cat?\n+Mood",
+    Bed: "Do you want to sleep?",
+    Bath: "Do you want to take a bath?",
+    Kitchen: "Do you want to eat?",
+    Cat: "Do you want to play with the cat?",
     Shelf: "Do you want to organize items?",
-    Music: "Do you want to play music?\n+Mood",
+    Music: "Do you want to play music?",
   };
 
   const renderDialogMessage = (message) => {
@@ -187,6 +244,9 @@ function House() {
   // Handle player movement
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Prevent movement during activities
+      if (isPerformingActivity) return;
+
       setPlayerPos((prev) => {
         let newX = prev.x;
         let newY = prev.y;
@@ -217,10 +277,12 @@ function House() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [MOVE_SPEED, PLAYER_SCALE, PLAYER_SIZE, WORLD_HEIGHT, WORLD_WIDTH]);
+  }, [MOVE_SPEED, PLAYER_SCALE, PLAYER_SIZE, WORLD_HEIGHT, WORLD_WIDTH, isPerformingActivity]);
 
   // Effect to show dialog when player is near a specific location
   useEffect(() => {
+    if (isPerformingActivity) return; // Don't show dialogs during activities
+
     if (isNearBed(playerPos.x, playerPos.y)) {
       setCurrentLocationHouse("Bed");
       setShowDialog(true);
@@ -243,12 +305,12 @@ function House() {
       setCurrentLocationHouse(null);
       setShowDialog(false);
     }
-  }, [playerPos]);
+  }, [playerPos, isPerformingActivity]);
 
   return (
     <div className="house-game-container">
       <div className="house-game-viewport" ref={houseRef}>
-        {showDialog && currentLocationHouse && (
+        {showDialog && currentLocationHouse && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationHouse] || `Do you want to enter the ${currentLocationHouse}?`)}
             <button className="yes-btn" onClick={handleEnterLocation}>
@@ -257,6 +319,18 @@ function House() {
             <button className="no-btn" onClick={() => setShowDialog(false)}>
               No
             </button>
+          </div>
+        )}
+
+        {isPerformingActivity && (
+          <div className="activity-overlay">
+            <div className="activity-info">
+              <h3>{currentActivity}...</h3>
+              <div className="activity-progress-bar">
+                <div className="activity-progress-fill" style={{ width: `${activityProgress}%` }} />
+              </div>
+              <p>{Math.round(activityProgress)}%</p>
+            </div>
           </div>
         )}
 
