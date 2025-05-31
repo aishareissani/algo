@@ -17,7 +17,7 @@ function App() {
         <Route path="/" element={<LoadingScreen />} />
         <Route path="/choose_character" element={<ChooseCharacter />} />
         <Route path="/map" element={<Map />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/house" element={<House />} />
       </Routes>
     </Router>
   );

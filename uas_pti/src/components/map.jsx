@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "../styles.css";
 import StatsPlayer from "./stats_player";
 
 function Map() {
@@ -43,19 +42,19 @@ function Map() {
 
   useEffect(() => {
     if (isNearHouseDoor(playerPos.x, playerPos.y)) {
-      setCurrentLocation("rumah");
+      setCurrentLocation("house");
       setShowDialog(true);
     } else if (isNearField(playerPos.x, playerPos.y)) {
-      setCurrentLocation("lapangan");
+      setCurrentLocation("field");
       setShowDialog(true);
     } else if (isNearBeach(playerPos.x, playerPos.y)) {
-      setCurrentLocation("pantai");
+      setCurrentLocation("beach");
       setShowDialog(true);
     } else if (isNearResto(playerPos.x, playerPos.y)) {
-      setCurrentLocation("restoran");
+      setCurrentLocation("restaurant");
       setShowDialog(true);
     } else if (isNearGunung(playerPos.x, playerPos.y)) {
-      setCurrentLocation("gunung");
+      setCurrentLocation("mountain");
       setShowDialog(true);
     } else {
       setCurrentLocation(null);
@@ -114,7 +113,7 @@ function Map() {
 
   useEffect(() => {
     if (
-      // rumah
+      // house
       (playerPos.x >= 1918 && playerPos.x <= 2262 && playerPos.y >= 430 && playerPos.y <= 660) ||
       // field
       (playerPos.x >= 2894 && playerPos.x <= 3160 && playerPos.y >= 762 && playerPos.y <= 1026) ||
@@ -132,9 +131,12 @@ function Map() {
   }, [playerPos]);
 
   // NANTI GANTI INI IA BOS, JADI GAK KE house DOANG TP MASING2 LOKASI
-  const handleEnterhouse = () => {
-    navigate("/home", { state: { characterName, playerName } });
->>>>>>> parent of 1dd1769 (stats player)
+  const handleEnterLocation = () => {
+    if (!currentLocation) return;
+
+    navigate(`/${currentLocation}`, {
+      state: { characterName, playerName },
+    });
   };
 
   return (
@@ -142,13 +144,13 @@ function Map() {
       {showDialog && currentLocation && (
         <div className="dialog fade-in-center">
           <p>
-            Apakah anda
+            Do you want
             <br />
-            ingin masuk ke
+            to enter
             <br />
-            {capitalize(currentLocation)}?
+            the {capitalize(currentLocation)}?
           </p>
-          <button className="yes-btn" onClick={handleEnterhouse}>
+          <button className="yes-btn" onClick={handleEnterLocation}>
             Yes
           </button>
           <button className="no-btn" onClick={() => setShowDialog(false)}>
@@ -194,6 +196,10 @@ function Map() {
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
           </div>
+        </div>
+
+        <div className="stats-container">
+          <StatsPlayer playerName={playerName} characterName={characterName} />
         </div>
 
         <div className="controls-hint">
