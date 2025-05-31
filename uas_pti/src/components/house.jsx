@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 
-function Home() {
+function House() {
   const location = useLocation();
   const { characterName, playerName, fromMap } = location.state || {};
 
@@ -16,4 +16,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default House;

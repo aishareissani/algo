@@ -1,7 +1,7 @@
 import React from "react";
 
 function StatsPlayer({ stats }) {
-  const { meal = 50, sleep = 50, happiness = 50, cleanliness = 50, money = 100, items = ["Seeds", "Water", "Fertilizer"] } = stats || {};
+  const { meal = 50, sleep = 50, happiness = 50, cleanliness = 50, money = 0, items = [""] } = stats || {};
 
   return (
     <div className="stats-player">
