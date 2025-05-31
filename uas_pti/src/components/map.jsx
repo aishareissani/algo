@@ -1,3 +1,4 @@
+// map.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
@@ -39,6 +40,15 @@ function Map() {
   const isNearGunung = (x, y) => {
     return x >= 176 && x <= 848 && y >= 40 && y <= 1034;
   };
+
+  const [playerStats, setPlayerStats] = useState({
+    meal: 50,
+    sleep: 50,
+    happiness: 50,
+    cleanliness: 50,
+    money: 100,
+    items: [],
+  });
 
   useEffect(() => {
     if (isNearHouseDoor(playerPos.x, playerPos.y)) {
@@ -130,12 +140,15 @@ function Map() {
     }
   }, [playerPos]);
 
-  // NANTI GANTI INI IA BOS, JADI GAK KE house DOANG TP MASING2 LOKASI
   const handleEnterLocation = () => {
     if (!currentLocation) return;
 
     navigate(`/${currentLocation}`, {
-      state: { characterName, playerName },
+      state: {
+        characterName,
+        playerName,
+        stats: playerStats,
+      },
     });
   };
 
@@ -199,7 +212,7 @@ function Map() {
         </div>
 
         <div className="stats-container">
-          <StatsPlayer playerName={playerName} characterName={characterName} />
+          <StatsPlayer stats={playerStats} />
         </div>
 
         <div className="controls-hint">

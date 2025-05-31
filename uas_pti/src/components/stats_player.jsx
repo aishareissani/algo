@@ -1,12 +1,12 @@
 import React from "react";
+import "../stats.css";
 
 function StatsPlayer({ stats }) {
-  // Destructure stats object or provide default values
-  const { meal = 50, sleep = 50, happiness = 50, cleanliness = 50, money = 100, items = ["Seeds", "Water", "Fertilizer"] } = stats || {};
+  const { meal = 50, sleep = 50, happiness = 50, cleanliness = 50, money = 100, items = [""] } = stats || {};
 
   return (
     <div className="stats-player">
-      <h3>FARM STATUS</h3>
+      <h3>PLAYER STATUS</h3>
 
       <div className="stat-item meal">
         <span>Meal</span>
