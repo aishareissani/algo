@@ -1,46 +1,152 @@
-import React from "react";
+import React, { useState } from "react";
 import "../stats.css";
 
-function StatsPlayer({ stats }) {
-  const { meal = 50, sleep = 50, happiness = 50, cleanliness = 50, money = 100, items = [""] } = stats || {};
+function StatsPlayer({ stats = {} }) {
+  const { meal = 50, sleep = 50, health = 100, energy = 100, happiness = 50, cleanliness = 50, money = 100, experience = 0, level = 1, skillPoints = 0, items = [] } = stats;
+
+  const [showInventory, setShowInventory] = useState(false);
+
+  const getStatusColor = (value) => {
+    if (value <= 25) return "critical";
+    if (value <= 50) return "warning";
+    return "good";
+  };
 
   return (
-    <div className="stats-player">
-      <h3>PLAYER STATUS</h3>
-
-      <div className="stat-item meal">
-        <span>Meal</span>
-        <progress value={meal} max="100" />
-        <span>{meal}%</span>
+    <div className="stats-card" role="region" aria-label="Player status">
+      <div className="stats-header">
+        <h3>PLAYER STATUS</h3>
+        <div className="level-badge">LVL {level}</div>
       </div>
 
-      <div className="stat-item sleep">
-        <span>Sleep</span>
-        <progress value={sleep} max="100" />
-        <span>{sleep}%</span>
+      <div className="stats-grid">
+        <div className={`stat-container ${getStatusColor(health)}`}>
+          <div className="stat-icon health-icon"></div>
+          <div className="stat-bar-container">
+            <div className="stat-label">
+              <span>Health</span>
+              <span className="stat-value">{health}%</span>
+            </div>
+            <div className="stat-bar">
+              <div className="stat-bar-fill" style={{ width: `${health}%` }} role="progressbar" aria-valuenow={health} aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className={`stat-container ${getStatusColor(energy)}`}>
+          <div className="stat-icon energy-icon"></div>
+          <div className="stat-bar-container">
+            <div className="stat-label">
+              <span>Energy</span>
+              <span className="stat-value">{energy}%</span>
+            </div>
+            <div className="stat-bar">
+              <div className="stat-bar-fill" style={{ width: `${energy}%` }} role="progressbar" aria-valuenow={energy} aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className={`stat-container ${getStatusColor(meal)}`}>
+          <div className="stat-icon meal-icon"></div>
+          <div className="stat-bar-container">
+            <div className="stat-label">
+              <span>Hunger</span>
+              <span className="stat-value">{meal}%</span>
+            </div>
+            <div className="stat-bar">
+              <div className="stat-bar-fill" style={{ width: `${meal}%` }} role="progressbar" aria-valuenow={meal} aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className={`stat-container ${getStatusColor(sleep)}`}>
+          <div className="stat-icon sleep-icon"></div>
+          <div className="stat-bar-container">
+            <div className="stat-label">
+              <span>Sleep</span>
+              <span className="stat-value">{sleep}%</span>
+            </div>
+            <div className="stat-bar">
+              <div className="stat-bar-fill" style={{ width: `${sleep}%` }} role="progressbar" aria-valuenow={sleep} aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className={`stat-container ${getStatusColor(happiness)}`}>
+          <div className="stat-icon mood-icon"></div>
+          <div className="stat-bar-container">
+            <div className="stat-label">
+              <span>Mood</span>
+              <span className="stat-value">{happiness}%</span>
+            </div>
+            <div className="stat-bar">
+              <div className="stat-bar-fill" style={{ width: `${happiness}%` }} role="progressbar" aria-valuenow={happiness} aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className={`stat-container ${getStatusColor(cleanliness)}`}>
+          <div className="stat-icon clean-icon"></div>
+          <div className="stat-bar-container">
+            <div className="stat-label">
+              <span>Clean</span>
+              <span className="stat-value">{cleanliness}%</span>
+            </div>
+            <div className="stat-bar">
+              <div className="stat-bar-fill" style={{ width: `${cleanliness}%` }} role="progressbar" aria-valuenow={cleanliness} aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="stat-item happiness">
-        <span>Mood</span>
-        <progress value={happiness} max="100" />
-        <span>{happiness}%</span>
+      <div className="stats-footer">
+        <div className="resources">
+          <div className="resource-item">
+            <div className="resource-icon money-icon"></div>
+            <span className="resource-value">${money}</span>
+          </div>
+
+          <div className="resource-item">
+            <div className="resource-icon xp-icon"></div>
+            <span className="resource-value">{experience} XP</span>
+          </div>
+
+          <div className="resource-item">
+            <div className="resource-icon skill-icon"></div>
+            <span className="resource-value">{skillPoints} SP</span>
+          </div>
+        </div>
+
+        <button onClick={() => setShowInventory((prev) => !prev)} aria-expanded={showInventory} aria-controls="inventory-panel" className="inventory-button">
+          <div className="inventory-icon"></div>
+          <span>{showInventory ? "CLOSE" : "ITEMS"}</span>
+        </button>
       </div>
 
-      <div className="stat-item cleanliness">
-        <span>Clean</span>
-        <progress value={cleanliness} max="100" />
-        <span>{cleanliness}%</span>
-      </div>
-
-      <div className="stat-item money">
-        <span>Money</span>
-        <span className="money-value">${money}</span>
-      </div>
-
-      <div className="stat-item items">
-        <span>Items</span>
-        <ul className="items-list">{Array.isArray(items) && items.length > 0 ? items.map((item, index) => <li key={index}>{item}</li>) : <li>No items</li>}</ul>
-      </div>
+      {showInventory && (
+        <div id="inventory-panel" className="inventory-panel">
+          <h4>INVENTORY</h4>
+          <div className="inventory-grid">
+            {Array.isArray(items) && items.length > 0 ? (
+              items.map(({ id, name, quantity = 1, type, equipped }, index) => (
+                <div key={id || index} className={`inventory-item ${equipped ? "equipped" : ""}`}>
+                  <div className="item-icon" title={type}></div>
+                  <div className="item-details">
+                    <span className="item-name">{name}</span>
+                    <div className="item-meta">
+                      {quantity > 1 && <span className="item-quantity">x{quantity}</span>}
+                      {equipped && <span className="item-equipped">equipped</span>}
+                      <span className="item-type">{type}</span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="empty-inventory">No items in inventory</div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

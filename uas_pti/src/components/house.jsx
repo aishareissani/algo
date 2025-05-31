@@ -1,3 +1,4 @@
+// house.jsx
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
@@ -104,7 +105,7 @@ function House() {
   const dialogMessages = {
     Bed: "Do you want to sleep?",
     Bath: "Do you want to take a bath?",
-    Kitchen: "Do you want grab a bite?",
+    Kitchen: "Do you want to eat?",
     Cat: "Do you want to play with the cat?",
     Shelf: "Do you want to check the shelf?",
     Music: "Do you want to play music?",
@@ -197,20 +198,6 @@ function House() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [MOVE_SPEED, PLAYER_SCALE, PLAYER_SIZE, WORLD_HEIGHT, WORLD_WIDTH]);
 
-  // Handle zoom with mouse wheel
-  useEffect(() => {
-    const wheelHandler = (e) => {
-      if (e.ctrlKey) {
-        if (houseRef.current && houseRef.current.contains(e.target)) {
-          e.preventDefault();
-          handleZoom(e.deltaY > 0 ? -0.1 : 0.1);
-        }
-      }
-    };
-    window.addEventListener("wheel", wheelHandler, { passive: false });
-    return () => window.removeEventListener("wheel", wheelHandler);
-  }, [handleZoom]);
-
   // Effect to show dialog when player is near a specific location
   useEffect(() => {
     if (isNearBed(playerPos.x, playerPos.y)) {
@@ -290,7 +277,7 @@ function House() {
         </div>
         <div className="house-controls-hint">
           <div>🎮 Arrow Keys / WASD to move</div>
-          <div>🖱️ Ctrl+Scroll on House to zoom</div>
+          <div>🗺️ Explore the house!</div>
         </div>
       </div>
     </div>
