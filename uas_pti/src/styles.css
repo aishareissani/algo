@@ -311,27 +311,16 @@ body {
   color: white;
   font-size: 8px;
   line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-@media (max-width: 900px) {
-  .game-viewport {
-    width: 90vw;
-    height: 60vh;
-    max-width: 800px;
-    max-height: 600px;
-  }
-
-  .mini-map {
-    width: 190px;
-    height: 100px;
-  }
-
-  .controls-hint {
-    font-size: 6px;
-  }
+.controls-hint div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
 }
 
-<<<<<<< HEAD
 .controls-hint div:last-child {
   margin-bottom: 0;
 }
@@ -510,31 +499,27 @@ body {
 .money-value {
   color: #bc8044 !important;
   font-weight: bold;
-=======
-@media (max-width: 640px) {
-  .game-viewport {
-    width: 95vw;
-    height: 55vh;
-  }
-
-  .player-info {
-    font-size: 8px;
-    padding: 8px;
-  }
-
-  .hud-avatar {
-    width: 24px;
-    height: 24px;
-  }
-
-  .mini-map {
-    width: 100px;
-    height: 53px;
-  }
->>>>>>> parent of 1dd1769 (stats player)
 }
 
-/* pilih yes or no */
+/* Items list */
+.items-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.items-list li {
+  background: #f5f0d8;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 8px;
+  color: #bc8044;
+  border: 1px solid #e9d669;
+}
+
 .dialog {
   position: absolute;
   top: 50%;

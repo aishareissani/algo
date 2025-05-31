@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-import StatsPlayer from "./stats_player";
-=======
 import "../styles.css";
->>>>>>> parent of 1dd1769 (stats player)
+import StatsPlayer from "./stats_player";
 
 function Map() {
   const location = useLocation();
@@ -134,16 +131,8 @@ function Map() {
     }
   }, [playerPos]);
 
-<<<<<<< HEAD
   // NANTI GANTI INI IA BOS, JADI GAK KE house DOANG TP MASING2 LOKASI
-  const handleEnterLocation = () => {
-    if (!currentLocation) return;
-
-    navigate(`/${currentLocation}`, {
-      state: { characterName, playerName },
-    });
-=======
-  const handleEnterHome = () => {
+  const handleEnterhouse = () => {
     navigate("/home", { state: { characterName, playerName } });
 >>>>>>> parent of 1dd1769 (stats player)
   };
@@ -159,11 +148,7 @@ function Map() {
             <br />
             {capitalize(currentLocation)}?
           </p>
-<<<<<<< HEAD
-          <button className="yes-btn" onClick={handleEnterLocation}>
-=======
-          <button className="yes-btn" onClick={handleEnterHome}>
->>>>>>> parent of 1dd1769 (stats player)
+          <button className="yes-btn" onClick={handleEnterhouse}>
             Yes
           </button>
           <button className="no-btn" onClick={() => setShowDialog(false)}>
