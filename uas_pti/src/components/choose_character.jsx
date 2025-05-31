@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles.css";
 
 const characters = [
   { id: 1, name: "claire" },

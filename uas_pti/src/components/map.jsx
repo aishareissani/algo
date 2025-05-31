@@ -1,13 +1,19 @@
+// map.jsx
 import React, { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
-import "../styles.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import StatsPlayer from "./stats_player";
 
 function Map() {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const { characterName = "claire", playerName = "Player" } = location.state || {};
 
   const [playerPos, setPlayerPos] = useState({ x: 2110, y: 730 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
+  const [showDialog, setShowDialog] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
   const mapRef = useRef(null);
   const playerRef = useRef(null);
@@ -18,6 +24,58 @@ function Map() {
   const VIEWPORT_HEIGHT = 600;
   const PLAYER_SIZE = 40;
   const MOVE_SPEED = 8;
+
+  const isNearHouseDoor = (x, y) => {
+    return x >= 1918 && x <= 2262 && y >= 430 && y <= 660;
+  };
+  const isNearField = (x, y) => {
+    return x >= 2894 && x <= 3160 && y >= 762 && y <= 1026;
+  };
+  const isNearBeach = (x, y) => {
+    return x >= 3238 && x <= 3575 && y >= 626 && y <= 1186;
+  };
+  const isNearResto = (x, y) => {
+    return x >= 1526 && x <= 1718 && y >= 898 && y <= 1058;
+  };
+  const isNearGunung = (x, y) => {
+    return x >= 176 && x <= 848 && y >= 40 && y <= 1034;
+  };
+
+  const [playerStats, setPlayerStats] = useState({
+    meal: 50,
+    sleep: 50,
+    health: 80,
+    energy: 80,
+    happiness: 50,
+    cleanliness: 50,
+    money: 100,
+    experience: 0,
+    level: 1,
+    skillPoints: 0,
+    items: [],
+  });
+
+  useEffect(() => {
+    if (isNearHouseDoor(playerPos.x, playerPos.y)) {
+      setCurrentLocation("house");
+      setShowDialog(true);
+    } else if (isNearField(playerPos.x, playerPos.y)) {
+      setCurrentLocation("field");
+      setShowDialog(true);
+    } else if (isNearBeach(playerPos.x, playerPos.y)) {
+      setCurrentLocation("beach");
+      setShowDialog(true);
+    } else if (isNearResto(playerPos.x, playerPos.y)) {
+      setCurrentLocation("restaurant");
+      setShowDialog(true);
+    } else if (isNearGunung(playerPos.x, playerPos.y)) {
+      setCurrentLocation("mountain");
+      setShowDialog(true);
+    } else {
+      setCurrentLocation(null);
+      setShowDialog(false);
+    }
+  }, [playerPos]);
 
   useEffect(() => {
     const cameraCenterX = playerPos.x - VIEWPORT_WIDTH / 2;
@@ -44,8 +102,7 @@ function Map() {
           case "ArrowDown":
           case "s":
           case "S":
-            // UBAH DISINIIIII, ini ukuran custom, jadinya gak sesuai, ubah si 1745 nya, tp gak tau jd apa
-            newY = Math.min(1745, prev.y + MOVE_SPEED); // Custom Y limit
+            newY = Math.min(1745, prev.y + MOVE_SPEED);
             break;
           case "ArrowLeft":
           case "a":
@@ -55,8 +112,7 @@ function Map() {
           case "ArrowRight":
           case "d":
           case "D":
-            // UBAH DISINIIIII, ini ukuran custom, jadinya gak sesuai, ubah si 3575 nya, tp gak tau jd apa
-            newX = Math.min(3575, prev.x + MOVE_SPEED); // Custom X limit
+            newX = Math.min(3575, prev.x + MOVE_SPEED);
             break;
           default:
             return prev;
@@ -70,8 +126,57 @@ function Map() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    if (
+      // house
+      (playerPos.x >= 1918 && playerPos.x <= 2262 && playerPos.y >= 430 && playerPos.y <= 660) ||
+      // field
+      (playerPos.x >= 2894 && playerPos.x <= 3160 && playerPos.y >= 762 && playerPos.y <= 1026) ||
+      // beach
+      (playerPos.x >= 3238 && playerPos.x <= 3575 && playerPos.y >= 626 && playerPos.y <= 1186) ||
+      // resto
+      (playerPos.x >= 1526 && playerPos.x <= 1718 && playerPos.y >= 898 && playerPos.y <= 1058) ||
+      // gunung
+      (playerPos.x >= 176 && playerPos.x <= 848 && playerPos.y >= 40 && playerPos.y <= 1034)
+    ) {
+      setShowDialog(true);
+    } else {
+      setShowDialog(false);
+    }
+  }, [playerPos]);
+
+  const handleEnterLocation = () => {
+    if (!currentLocation) return;
+
+    navigate(`/${currentLocation}`, {
+      state: {
+        characterName,
+        playerName,
+        stats: playerStats,
+      },
+    });
+  };
+
   return (
     <div className="game-container">
+      {showDialog && currentLocation && (
+        <div className="dialog fade-in-center">
+          <p>
+            Do you want
+            <br />
+            to enter
+            <br />
+            the {capitalize(currentLocation)}?
+          </p>
+          <button className="yes-btn" onClick={handleEnterLocation}>
+            Yes
+          </button>
+          <button className="no-btn" onClick={() => setShowDialog(false)}>
+            No
+          </button>
+        </div>
+      )}
+
       <div className="game-viewport" ref={mapRef}>
         <div className="game-world map-background" style={{ transform: "translate(-" + cameraPos.x + "px, -" + cameraPos.y + "px)" }}>
           <div className="player" ref={playerRef} style={{ left: playerPos.x, top: playerPos.y }}>
@@ -109,6 +214,10 @@ function Map() {
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
           </div>
+        </div>
+
+        <div className="stats-container">
+          <StatsPlayer playerName={playerName} characterName={characterName} />
         </div>
 
         <div className="controls-hint">
