@@ -42,13 +42,14 @@ function Map() {
   };
 
   const [playerStats, setPlayerStats] = useState({
-    meal: 50,
-    sleep: 50,
-    happiness: 50,
-    cleanliness: 50,
-    money: 100,
-    items: [],
-  });
+  meal: 50,
+  sleep: 50,
+  happiness: 50,
+  cleanliness: 50,
+  money: 100,
+  items: [],
+});
+
 
   useEffect(() => {
     if (isNearHouseDoor(playerPos.x, playerPos.y)) {
@@ -212,7 +213,7 @@ function Map() {
         </div>
 
         <div className="stats-container">
-          <StatsPlayer stats={playerStats} />
+          <StatsPlayer playerName={playerName} characterName={characterName} />
         </div>
 
         <div className="controls-hint">
