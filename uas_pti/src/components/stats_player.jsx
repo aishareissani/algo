@@ -1,5 +1,7 @@
-import "../stats.css";
-import React, { useState, useEffect, useRef } from "react";
+// stats_player.jsx
+import React, { useState, useEffect, 
+  useRef } from "react";
+  import "../stats.css";
 import { useSpeedMode } from "./speed";
 
 function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {

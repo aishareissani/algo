@@ -30,9 +30,10 @@ body {
 
 .stats-card {
   position: absolute;
-  left: 20px;
-  top: 100px;
+  left: 35px;
+  top: 160px;
   width: 280px;
+  height: 486px;
   background: #ffffff;
   border: var(--pixel-size) solid #79d959;
   border-radius: var(--border-radius);
@@ -43,6 +44,8 @@ body {
   z-index: 30;
   font-size: 14px;
   image-rendering: pixelated;
+  display: flex;
+  flex-direction: column;
 }
 
 .stats-card:hover {
@@ -83,7 +86,7 @@ body {
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 16px;
   margin-bottom: 18px;
 }
 
@@ -251,9 +254,9 @@ body {
 .stats-footer {
   display: flex;
   flex-direction: column;
-  padding-top: 12px;
+  padding-top: 20px;
   border-top: 2px solid #d8e1c5;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .resources {
