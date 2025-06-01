@@ -197,6 +197,7 @@ function Field() {
     } else if (currentLocationfield === "Fountain") {
       performActivity("Making a wish", {
         happiness: 40,
+        money: -5,
       });
     }
   };

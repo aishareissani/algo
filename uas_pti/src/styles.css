@@ -234,9 +234,9 @@ body {
 .mini-map {
   position: absolute;
   top: 76px;
-  right: 37px;
-  width: 320px;
-  height: 170px;
+  right: 75px;
+  width: 270px;
+  height: 140px;
   background: #f8f8ff;
   border: 3px solid #79d959;
   border-radius: 12px;
@@ -323,8 +323,8 @@ body {
 .controls-hint {
   position: absolute;
   bottom: 76px;
-  right: 37px;
-  width: 295px; /* Match mini-map */
+  right: 75px;
+  width: 246px;
   background: #f8f8ff;
   padding: 12px;
   border-radius: 12px;

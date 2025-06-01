@@ -226,26 +226,8 @@ function House() {
     };
   }, []);
 
-  const handleZoom = useCallback(
-    (delta) => {
-      setZoomLevel((prevZoom) => {
-        let minZoomCalculated = 0.1;
-
-        if (actualViewportSize.width > 0 && WORLD_WIDTH > 0 && actualViewportSize.height > 0 && WORLD_HEIGHT > 0) {
-          const minZoomX = actualViewportSize.width / WORLD_WIDTH;
-          const minZoomY = actualViewportSize.height / WORLD_HEIGHT;
-          minZoomCalculated = Math.max(minZoomX, minZoomY);
-        }
-
-        const minZoom = Math.max(0.1, minZoomCalculated);
-        return Math.max(minZoom, Math.min(2, prevZoom + delta));
-      });
-    },
-    [actualViewportSize.width, actualViewportSize.height, WORLD_WIDTH, WORLD_HEIGHT]
-  );
-
   const isNearBed = (x, y) => {
-    return x >= 450 && x <= 700 && y >= 142 && y <= 450;
+    return x >= 450 && x <= 700 && y >= 142 && y <= 617;
   };
   const isNearBath = (x, y) => {
     return x >= 142 && x <= 1092 && y >= 1015 && y <= 1617;
