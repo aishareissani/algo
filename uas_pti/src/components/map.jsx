@@ -172,8 +172,7 @@ function Map() {
 
   return (
     <div className="game-container">
-      {/* Stats Player positioned on the left side of the game container */}
-      <div className="map-stats-sidebar">
+      <div>
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
       </div>
 

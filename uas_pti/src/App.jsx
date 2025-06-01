@@ -1,6 +1,6 @@
-// App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { SpeedModeProvider } from "./components/speed";
 import LoadingScreen from "./components/loading_screen";
 import ChooseCharacter from "./components/choose_character";
 import Map from "./components/map";
@@ -13,14 +13,16 @@ import Beach from "./components/beach";
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<LoadingScreen />} />
-        <Route path="/choose_character" element={<ChooseCharacter />} />
-        <Route path="/map" element={<Map />} />
-        <Route path="/house" element={<House />} />
-        <Route path="/field" element={<Field />} />
-        <Route path="/beach" element={<Beach />} />
-      </Routes>
+      <SpeedModeProvider>
+        <Routes>
+          <Route path="/" element={<LoadingScreen />} />
+          <Route path="/choose_character" element={<ChooseCharacter />} />
+          <Route path="/map" element={<Map />} />
+          <Route path="/house" element={<House />} />
+          <Route path="/field" element={<Field />} />
+          <Route path="/beach" element={<Beach />} />
+        </Routes>
+      </SpeedModeProvider>
     </Router>
   );
 }

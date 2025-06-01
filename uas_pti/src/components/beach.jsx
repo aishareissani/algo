@@ -2,13 +2,15 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
+import { useSpeedMode, SpeedToggleButton } from "./speed";
 import "../beach.css";
 
-function beach() {
+function Beach() {
+  const { isFastForward } = useSpeedMode();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { characterName = "claire", playerName = "Player", stats: initialStats } = location.state || {};
+  const { characterName = "claire", playerName = "Player", stats: initialStats = {} } = location.state || {};
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationbeach, setCurrentLocationbeach] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
@@ -33,21 +35,46 @@ function beach() {
   const ACTIVITY_UPDATE_INTERVAL = 1000;
 
   // Initialize with stats from map or default values
-  const [playerStats, setPlayerStats] = useState(
-    initialStats || {
-      meal: 50,
-      sleep: 50,
-      health: 80,
-      energy: 80,
-      happiness: 50,
-      cleanliness: 50,
-      money: 100,
-      experience: 0,
-      level: 1,
-      skillPoints: 0,
-      items: [],
+  // Initialize with stats from map or default values
+  const defaultStats = {
+    meal: 50,
+    sleep: 50,
+    energy: 80,
+    happiness: 50,
+    cleanliness: 50,
+    health: 80,
+    money: 100,
+    experience: 0,
+    level: 1,
+    skillPoints: 0,
+    items: [],
+  };
+
+  // Initialize with stats from map or default values
+  // Using proper type checking to avoid NaN values
+  const [playerStats, setPlayerStats] = useState(() => {
+    // Handle potentially corrupt stats data
+    const stats = { ...defaultStats };
+
+    if (initialStats) {
+      // Ensure all numeric values are actually numbers
+      Object.keys(stats).forEach((key) => {
+        if (key !== "items") {
+          // Make sure the value exists and is a valid number
+          if (initialStats[key] !== undefined && !isNaN(Number(initialStats[key]))) {
+            stats[key] = Number(initialStats[key]);
+          }
+        }
+      });
+
+      // Handle items array separately
+      if (Array.isArray(initialStats.items)) {
+        stats.items = [...initialStats.items];
+      }
     }
-  );
+
+    return stats;
+  });
 
   const handleBackToMap = () => {
     navigate("/map", {
@@ -67,47 +94,90 @@ function beach() {
     setActivityProgress(0);
     setShowDialog(false);
 
-    const totalSteps = ACTIVITY_DURATION / ACTIVITY_UPDATE_INTERVAL;
-    let currentStep = 0;
-
-    // Calculate incremental changes per step
-    const incrementalChanges = {};
-    Object.keys(statChanges).forEach((stat) => {
-      incrementalChanges[stat] = statChanges[stat] / totalSteps;
-    });
-
-    activityIntervalRef.current = setInterval(() => {
-      currentStep++;
-      const progress = (currentStep / totalSteps) * 100;
-      setActivityProgress(progress);
-
-      // Update stats gradually
+    if (isFastForward) {
+      // Fast Forward mode: apply all changes instantly
       setPlayerStats((prev) => {
         const newStats = { ...prev };
+        Object.keys(statChanges).forEach((stat) => {
+          // Ensure changes are numeric
+          const change = Number(statChanges[stat]);
+          if (isNaN(change)) return; // Skip if not a valid number
 
-        Object.keys(incrementalChanges).forEach((stat) => {
-          if (stat === "money") {
-            // Special case for money - add the full amount at the end
-            if (currentStep >= totalSteps) {
-              newStats[stat] = prev[stat] + statChanges[stat];
-            }
+          if (stat === "money" || stat === "experience" || stat === "skillPoints") {
+            // Ensure the previous value is a number
+            const prevValue = Number(prev[stat]) || 0;
+            newStats[stat] = Math.max(0, prevValue + change);
           } else {
-            newStats[stat] = Math.min(100, Math.max(0, prev[stat] + incrementalChanges[stat]));
+            // Ensure the previous value is a number
+            const prevValue = Number(prev[stat]) || 0;
+            newStats[stat] = Math.min(100, Math.max(0, prevValue + change));
           }
         });
-
         return newStats;
       });
 
-      if (currentStep >= totalSteps) {
-        // Activity completed
-        clearInterval(activityIntervalRef.current);
-        setIsPerformingActivity(false);
-        setActivityProgress(0);
-        setCurrentActivity("");
-      }
-    }, ACTIVITY_UPDATE_INTERVAL);
-  };
+      // Show a brief flash of activity
+      setTimeout(() => {
+        setActivityProgress(100);
+
+        // End activity after a brief moment
+        setTimeout(() => {
+          setIsPerformingActivity(false);
+          setCurrentActivity("");
+          setActivityProgress(0);
+        }, 500);
+      }, 300);
+    } else {
+      const totalSteps = ACTIVITY_DURATION / ACTIVITY_UPDATE_INTERVAL;
+      let currentStep = 0;
+
+      // Calculate incremental changes per step
+      const incrementalChanges = {};
+      Object.keys(statChanges).forEach((stat) => {
+        // Ensure changes are numeric
+        const change = Number(statChanges[stat]);
+        if (isNaN(change)) return; // Skip if not a valid number
+
+        incrementalChanges[stat] = change / totalSteps;
+      });
+      activityIntervalRef.current = setInterval(() => {
+        currentStep++;
+        const progress = (currentStep / totalSteps) * 100;
+        setActivityProgress(progress);
+
+        // Update stats gradually
+        setPlayerStats((prev) => {
+          const newStats = { ...prev };
+
+          Object.keys(incrementalChanges).forEach((stat) => {
+            // Ensure the increment is numeric
+            const increment = Number(incrementalChanges[stat]);
+            if (isNaN(increment)) return; // Skip if not a valid number
+
+            if (stat === "money" || stat === "experience" || stat === "skillPoints") {
+              // Ensure the previous value is a number
+              const prevValue = Number(prev[stat]) || 0;
+              newStats[stat] = Math.max(0, prevValue + increment);
+            } else {
+              // Ensure the previous value is a number
+              const prevValue = Number(prev[stat]) || 0;
+              newStats[stat] = Math.min(100, Math.max(0, prevValue + increment));
+            }
+          });
+
+          return newStats;
+        });
+
+        if (currentStep >= totalSteps) {
+          // Activity completed
+          clearInterval(activityIntervalRef.current);
+          setIsPerformingActivity(false);
+          setActivityProgress(0);
+          setCurrentActivity("");
+        }
+      }, ACTIVITY_UPDATE_INTERVAL);
+    }
+  }; // <-- This closing curly brace was missing
 
   const handleEnterLocation = () => {
     console.log(`Performing activity at ${currentLocationbeach}`);
@@ -306,6 +376,7 @@ function beach() {
   return (
     <div className="beach-game-container">
       <div className="beach-game-viewport" ref={beachRef}>
+        <SpeedToggleButton /> {/* Add the SpeedToggleButton here */}
         {showDialog && currentLocationbeach && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationbeach] || `Do you want to enter the ${currentLocationbeach}?`)}
@@ -317,7 +388,6 @@ function beach() {
             </button>
           </div>
         )}
-
         {isPerformingActivity && (
           <div className="activity-overlay">
             <div className="activity-info">
@@ -329,7 +399,6 @@ function beach() {
             </div>
           </div>
         )}
-
         <div
           className="beach-game-world beach-background"
           style={{
@@ -379,4 +448,4 @@ function beach() {
   );
 }
 
-export default beach;
+export default Beach;

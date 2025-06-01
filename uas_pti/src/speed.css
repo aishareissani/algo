@@ -1,0 +1,144 @@
+/* speed.css */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap");
+
+.speed-toggle-button {
+  position: fixed;
+  top: 80px;
+  right: 80px;
+  padding: 12px 20px;
+  border-radius: 30px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  outline: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 160px;
+  justify-content: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.speed-toggle-button.normal {
+  background: linear-gradient(145deg, #3bab40, #4caf50);
+  color: white;
+}
+
+.speed-toggle-button.fast-forward {
+  background: linear-gradient(145deg, #f05123, #ff5722);
+  color: white;
+}
+
+.speed-toggle-button svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+.speed-toggle-button:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 30px;
+  background: linear-gradient(rgba(255, 255, 255, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.speed-toggle-button:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.speed-toggle-button:hover:before {
+  opacity: 1;
+}
+
+.speed-toggle-button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.speed-toggle-button:after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(0);
+  transition: transform 0.5s ease-out;
+}
+
+.speed-toggle-button:active:after {
+  transform: scale(3);
+  opacity: 0;
+  transition: 0s;
+}
+
+/* Animation for speed change */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.speed-toggle-button.fast-forward {
+  animation: pulse 1.5s infinite;
+}
+
+/* Smooth icon rotation for transition */
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.speed-toggle-button svg {
+  transition: transform 0.3s ease;
+}
+
+.speed-toggle-button:hover svg {
+  transform: scale(1.2);
+}
+
+.speed-toggle-button.fast-forward:hover svg {
+  animation: rotate 1s linear infinite;
+}
+
+/* Make button responsive */
+@media (max-width: 768px) {
+  .speed-toggle-button {
+    top: 10px;
+    right: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+    min-width: 130px;
+  }
+
+  .speed-toggle-button svg {
+    width: 16px;
+    height: 16px;
+  }
+}

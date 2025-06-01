@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
 import "../stats.css";
+import React, { useState, useEffect, useRef } from "react";
+import { useSpeedMode } from "./speed";
 
 function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
   const { meal = 50, sleep = 50, health = 80, energy = 80, happiness = 50, cleanliness = 50, money = 100, experience = 0, level = 1, skillPoints = 0, items = [] } = stats;
@@ -8,6 +9,15 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
   const [increasedIndicators, setIncreasedIndicators] = useState({});
   const [decreasedIndicators, setDecreasedIndicators] = useState({});
   const prevStatsRef = useRef();
+  const { isFastForward } = useSpeedMode();
+
+  const getStatusColor = (v) => (v <= 25 ? "critical" : v <= 50 ? "warning" : "good");
+  const Indicator = ({ statKey }) => (
+    <>
+      {increasedIndicators[statKey] && <span className="stat-increase-indicator">+</span>}
+      {decreasedIndicators[statKey] && <span className="stat-decrease-indicator">-</span>}
+    </>
+  );
 
   useEffect(() => {
     const prev = prevStatsRef.current;
@@ -50,13 +60,24 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
     prevStatsRef.current = { ...stats };
   }, [stats]);
 
-  const getStatusColor = (v) => (v <= 25 ? "critical" : v <= 50 ? "warning" : "good");
-  const Indicator = ({ statKey }) => (
-    <>
-      {increasedIndicators[statKey] && <span className="stat-increase-indicator">+</span>}
-      {decreasedIndicators[statKey] && <span className="stat-decrease-indicator">-</span>}
-    </>
-  );
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newStats = {
+        health: Math.max(0, health - 2),
+        meal: Math.max(0, meal - 2),
+        sleep: Math.max(0, sleep - 1),
+        energy: Math.max(0, energy - 1),
+        happiness: Math.max(0, happiness - 1),
+        cleanliness: Math.max(0, cleanliness - 1),
+      };
+
+      if (onStatsUpdate) {
+        onStatsUpdate(newStats);
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [meal, sleep, energy, happiness, cleanliness, onStatsUpdate]);
 
   return (
     <div className="stats-card" role="region" aria-label="Player status">
@@ -182,10 +203,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
             </span>
           </div>
         </div>
-        <button
-          onClick={() => (window.location.href = "/items")} // direct ke halaman items
-          className={`inventory-button`}
-        >
+        <button onClick={() => (window.location.href = "/items")} className={`inventory-button stats-inventory-button`}>
           <div className="inventory-icon"></div>
           <span>ITEMS</span>
         </button>
