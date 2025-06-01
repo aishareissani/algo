@@ -449,29 +449,6 @@ body {
   background-position: center;
 }
 
-.item-details {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.item-name {
-  font-size: 9px;
-  font-weight: bold;
-  color: #4d4d4d;
-}
-
-.item-meta {
-  display: flex;
-  gap: 6px;
-  font-size: 8px;
-  color: #7a8a6f;
-}
-
-.item-equipped {
-  color: #79d959;
-}
-
 .empty-inventory {
   text-align: center;
   color: #7a8a6f;

@@ -350,7 +350,7 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #f8f8ff;
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   border-radius: 16px;
@@ -397,21 +397,95 @@ body {
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* house */
-.house-background {
-  background-image: url("/assets/locations/house_inside.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+/* back to start */
+.back-to-start-button-inline {
+  display: block;
+  margin-top: 8px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  border: 2px solid #ffffff;
+  border-radius: 6px;
+  color: white;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 8px;
+  font-weight: bold;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 3px 6px rgba(79, 172, 254, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+  width: fit-content;
 }
 
-.house-game-viewport {
-  width: 800px;
-  height: 600px;
-  border: 4px solid #78d658; /* Bright green from palette */
+.back-to-start-button-inline:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 5px 10px rgba(79, 172, 254, 0.4), 0 2px 5px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.back-to-start-button-inline:active {
+  transform: translateY(-1px) scale(1.02);
+  transition: all 0.1s ease;
+}
+
+/* Update player coords to allow for button */
+.player-coords {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Redesigned Activity Overlay and Progress Bar (dialog-style) */
+.activity-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 16px;
+  padding: 25px 35px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  border: 3px solid #79d959;
+  z-index: 100;
+  animation: fadeIn 0.3s ease-out; /* reused if you already have it */
+  min-width: 300px;
+}
+
+.activity-info h3 {
+  margin: 0 0 15px 0;
+  color: #4d4d4d;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.activity-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #4d4d4d;
+  font-weight: bold;
+}
+
+/* Progress Bar Styled to Match Dialog */
+.activity-progress-bar {
+  width: 100%;
+  height: 20px;
+  background: rgba(224, 224, 224, 0.8);
   border-radius: 12px;
   overflow: hidden;
-  position: relative;
-  box-shadow: 0 0 30px rgba(121, 216, 88, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2);
-  background: #f0f9e6;
+  margin-bottom: 10px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.activity-progress-fill {
+  height: 100%;
+  background: #79d959;
+  border-radius: 12px;
+  transition: width 0.1s linear;
+  box-shadow: 0 2px 4px rgba(121, 217, 89, 0.3);
 }

@@ -1,16 +1,16 @@
-// house.jsx
+// field.jsx
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
-import "../house.css";
+import "../field.css";
 
-function House() {
+function Field() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const { characterName = "claire", playerName = "Player", stats: initialStats } = location.state || {};
   const [showDialog, setShowDialog] = useState(false);
-  const [currentLocationHouse, setCurrentLocationHouse] = useState(null);
+  const [currentLocationfield, setCurrentLocationfield] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
@@ -20,7 +20,7 @@ function House() {
   const [zoomLevel, setZoomLevel] = useState(0.299);
   const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
 
-  const houseRef = useRef(null);
+  const fieldRef = useRef(null);
   const playerRef = useRef(null);
   const activityIntervalRef = useRef(null);
 
@@ -110,44 +110,28 @@ function House() {
   };
 
   const handleEnterLocation = () => {
-    console.log(`Performing activity at ${currentLocationHouse}`);
+    console.log(`Performing activity at ${currentLocationfield}`);
 
-    if (currentLocationHouse === "Bed") {
-      // Tidur: +Sleep, +Energy, +Health, +Mood
-      performActivity("Sleeping", {
-        sleep: 100,
-        energy: 25,
+    if (currentLocationfield === "Swing") {
+      performActivity("Swinging", {
+        sleep: -30,
+        energy: -25,
         health: 20,
-        happiness: 15,
+        happiness: 40,
       });
-    } else if (currentLocationHouse === "Bath") {
-      // Mandi: Cleanliness = 100, +Mood
-      performActivity("Taking a bath", {
-        cleanliness: 100,
+    } else if (currentLocationfield === "Picnic") {
+      performActivity("Taking a Picnic", {
+        happiness: 30,
+        meal: 50,
+      });
+    } else if (currentLocationfield === "Chair") {
+      performActivity("Sit", {
         happiness: 20,
+        energy: 20,
       });
-    } else if (currentLocationHouse === "Kitchen") {
-      // Makan: +Meal, +Mood
-      performActivity("Eating", {
-        meal: 40,
-        happiness: 20,
-      });
-    } else if (currentLocationHouse === "Cat") {
-      // Main kucing: +Mood
-      performActivity("Playing with cat", {
-        happiness: 50,
-      });
-    } else if (currentLocationHouse === "Shelf") {
-      // Naro barang ke lemari: No stat changes but still takes time
-      performActivity("Organizing items", {});
-    } else if (currentLocationHouse === "Table") {
-      // Work from home: +Money, +Experience, -Energy (working is tiring)
-      performActivity("Working from home", {
-        money: 100,
-        energy: -15,
-        sleep: -10,
-        meal: -10,
-        happiness: -10,
+    } else if (currentLocationfield === "Fountain") {
+      performActivity("Making a wish", {
+        happiness: 40,
       });
     }
   };
@@ -161,50 +145,27 @@ function House() {
     };
   }, []);
 
-  const handleZoom = useCallback(
-    (delta) => {
-      setZoomLevel((prevZoom) => {
-        let minZoomCalculated = 0.1;
+  const isNearSwing = (x, y) => {
+    return x >= 2450 && x <= 2825 && y >= 142 && y <= 475;
+  };
 
-        if (actualViewportSize.width > 0 && WORLD_WIDTH > 0 && actualViewportSize.height > 0 && WORLD_HEIGHT > 0) {
-          const minZoomX = actualViewportSize.width / WORLD_WIDTH;
-          const minZoomY = actualViewportSize.height / WORLD_HEIGHT;
-          minZoomCalculated = Math.max(minZoomX, minZoomY);
-        }
+  const isNearPicnic = (x, y) => {
+    return x >= 750 && x <= 1150 && y >= 975 && y <= 1575;
+  };
 
-        const minZoom = Math.max(0.1, minZoomCalculated);
-        return Math.max(minZoom, Math.min(2, prevZoom + delta));
-      });
-    },
-    [actualViewportSize.width, actualViewportSize.height, WORLD_WIDTH, WORLD_HEIGHT]
-  );
+  const isNearChair = (x, y) => {
+    return x >= 725 && x <= 1075 && y >= 200 && y <= 450;
+  };
 
-  const isNearBed = (x, y) => {
-    return x >= 450 && x <= 700 && y >= 142 && y <= 450;
-  };
-  const isNearBath = (x, y) => {
-    return x >= 142 && x <= 1092 && y >= 1015 && y <= 1617;
-  };
-  const isNearKitchen = (x, y) => {
-    return x >= 3250 && x <= 3550 && y >= 650 && y <= 1000;
-  };
-  const isNearCat = (x, y) => {
-    return x >= 1992 && x <= 2242 && y >= 1342 && y <= 1642;
-  };
-  const isNearShelf = (x, y) => {
-    return x >= 1157 && x <= 1382 && y >= 142 && y <= 467;
-  };
-  const isNearTable = (x, y) => {
-    return x >= 1875 && x <= 2125 && y >= 400 && y <= 750;
+  const isNearFountain = (x, y) => {
+    return x >= 1750 && x <= 2175 && y >= 700 && y <= 1175;
   };
 
   const dialogMessages = {
-    Bed: "Do you want to sleep?",
-    Bath: "Do you want to take a bath?",
-    Kitchen: "Do you want to eat?",
-    Cat: "Do you want to play with cat?",
-    Shelf: "Do you want to organize items?",
-    Table: "Do you want to work from home?",
+    Swing: "Do you want to use the swing?",
+    Picnic: "Do you want to have a picnic?",
+    Chair: "Do you want to sit on the chair?",
+    Fountain: "Do you want to throw a coin and make a wish?",
   };
 
   const renderDialogMessage = (message) => {
@@ -214,10 +175,10 @@ function House() {
   // Get actual viewport size
   useEffect(() => {
     const updateViewportSize = () => {
-      if (houseRef.current) {
+      if (fieldRef.current) {
         setActualViewportSize({
-          width: houseRef.current.clientWidth,
-          height: houseRef.current.clientHeight,
+          width: fieldRef.current.clientWidth,
+          height: fieldRef.current.clientHeight,
         });
       }
     };
@@ -293,40 +254,35 @@ function House() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [MOVE_SPEED, PLAYER_SCALE, PLAYER_SIZE, WORLD_HEIGHT, WORLD_WIDTH, isPerformingActivity]);
 
-  // Effect to show dialog when player is near a specific location
+  // FIXED: Effect to show dialog when player is near a specific location
   useEffect(() => {
     if (isPerformingActivity) return; // Don't show dialogs during activities
 
-    if (isNearBed(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Bed");
+    if (isNearSwing(playerPos.x, playerPos.y)) {
+      setCurrentLocationfield("Swing");
       setShowDialog(true);
-    } else if (isNearBath(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Bath");
+    } else if (isNearPicnic(playerPos.x, playerPos.y)) {
+      setCurrentLocationfield("Picnic");
       setShowDialog(true);
-    } else if (isNearKitchen(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Kitchen");
+    } else if (isNearChair(playerPos.x, playerPos.y)) {
+      setCurrentLocationfield("Chair");
       setShowDialog(true);
-    } else if (isNearCat(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Cat");
-      setShowDialog(true);
-    } else if (isNearShelf(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Shelf");
-      setShowDialog(true);
-    } else if (isNearTable(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Table");
+    } else if (isNearFountain(playerPos.x, playerPos.y)) {
+      setCurrentLocationfield("Fountain");
       setShowDialog(true);
     } else {
-      setCurrentLocationHouse(null);
+      // IMPORTANT: Clear dialog when not near any location
+      setCurrentLocationfield(null);
       setShowDialog(false);
     }
   }, [playerPos, isPerformingActivity]);
 
   return (
-    <div className="house-game-container">
-      <div className="house-game-viewport" ref={houseRef}>
-        {showDialog && currentLocationHouse && !isPerformingActivity && (
+    <div className="field-game-container">
+      <div className="field-game-viewport" ref={fieldRef}>
+        {showDialog && currentLocationfield && !isPerformingActivity && (
           <div className="dialog fade-in-center">
-            {renderDialogMessage(dialogMessages[currentLocationHouse] || `Do you want to enter the ${currentLocationHouse}?`)}
+            {renderDialogMessage(dialogMessages[currentLocationfield] || `Do you want to enter the ${currentLocationfield}?`)}
             <button className="yes-btn" onClick={handleEnterLocation}>
               Yes
             </button>
@@ -349,7 +305,7 @@ function House() {
         )}
 
         <div
-          className="house-game-world house-background"
+          className="field-game-world field-background"
           style={{
             width: `${WORLD_WIDTH}px`,
             height: `${WORLD_HEIGHT}px`,
@@ -358,7 +314,7 @@ function House() {
           }}
         >
           <div
-            className="house-player"
+            className="field-player"
             ref={playerRef}
             style={{
               left: `${playerPos.x}px`,
@@ -369,7 +325,7 @@ function House() {
               position: "absolute",
             }}
           >
-            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="house-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
+            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="field-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
           </div>
         </div>
       </div>
@@ -390,11 +346,11 @@ function House() {
         </div>
         <div className="controls-hint">
           <div>🎮 Arrow Keys / WASD to move</div>
-          <div>🗺️ Explore the house!</div>
+          <div>🗺️ Explore the field!</div>
         </div>
       </div>
     </div>
   );
 }
 
-export default House;
+export default Field;

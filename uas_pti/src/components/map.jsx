@@ -58,6 +58,16 @@ function Map() {
     }
   );
 
+  const handleBackToStart = () => {
+    navigate("/", {
+      state: {
+        characterName,
+        playerName,
+        stats: playerStats,
+      },
+    });
+  };
+
   useEffect(() => {
     if (isNearHouseDoor(playerPos.x, playerPos.y)) {
       setCurrentLocation("house");
@@ -221,6 +231,10 @@ function Map() {
           <img src={"/assets/avatar/" + characterName + ".png"} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
+            {/* Fixed: Use the correct CSS class name */}
+            <button className="back-to-start-button-inline" onClick={handleBackToStart}>
+              Back to Start
+            </button>
           </div>
         </div>
 
