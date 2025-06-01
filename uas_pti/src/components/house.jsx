@@ -8,7 +8,7 @@ function House() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { characterName = "claire", playerName = "Player" } = location.state || {};
+  const { characterName = "claire", playerName = "Player", stats: initialStats } = location.state || {};
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationHouse, setCurrentLocationHouse] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
@@ -32,23 +32,36 @@ function House() {
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
 
-  const [playerStats, setPlayerStats] = useState({
-    meal: 50,
-    sleep: 50,
-    health: 80,
-    energy: 80,
-    happiness: 50,
-    cleanliness: 50,
-    money: 100,
-    experience: 0,
-    level: 1,
-    skillPoints: 0,
-    items: [],
-  });
+  // Initialize with stats from map or default values
+  const [playerStats, setPlayerStats] = useState(
+    initialStats || {
+      meal: 50,
+      sleep: 50,
+      health: 80,
+      energy: 80,
+      happiness: 50,
+      cleanliness: 50,
+      money: 100,
+      experience: 0,
+      level: 1,
+      skillPoints: 0,
+      items: [],
+    }
+  );
 
   const capitalize = (s) => {
     if (typeof s !== "string") return "";
     return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+
+  const handleBackToMap = () => {
+    navigate("/map", {
+      state: {
+        characterName,
+        playerName,
+        stats: playerStats, // Pass current stats back to map
+      },
+    });
   };
 
   const performActivity = (activityName, statChanges) => {
@@ -81,6 +94,11 @@ function House() {
           if (stat === "cleanliness" && statChanges[stat] === 100) {
             // Special case for cleanliness - set to 100 immediately
             newStats[stat] = 100;
+          } else if (stat === "money") {
+            // Special case for money - add the full amount at the end
+            if (currentStep >= totalSteps) {
+              newStats[stat] = prev[stat] + statChanges[stat];
+            }
           } else {
             newStats[stat] = Math.min(100, Math.max(0, prev[stat] + incrementalChanges[stat]));
           }
@@ -120,20 +138,24 @@ function House() {
       // Makan: +Meal, +Mood
       performActivity("Eating", {
         meal: 40,
-        happiness: 15,
+        happiness: 20,
       });
     } else if (currentLocationHouse === "Cat") {
       // Main kucing: +Mood
       performActivity("Playing with cat", {
-        happiness: 25,
+        happiness: 50,
       });
     } else if (currentLocationHouse === "Shelf") {
       // Naro barang ke lemari: No stat changes but still takes time
       performActivity("Organizing items", {});
-    } else if (currentLocationHouse === "Music") {
-      // Main musik: +Mood
-      performActivity("Playing music", {
-        happiness: 20,
+    } else if (currentLocationHouse === "Table") {
+      // Work from home: +Money, +Experience, -Energy (working is tiring)
+      performActivity("Working from home", {
+        money: 100,
+        energy: -15,
+        sleep: -10,
+        meal: -10,
+        happiness: -10,
       });
     }
   };
@@ -172,7 +194,7 @@ function House() {
     return x >= 142 && x <= 1092 && y >= 1015 && y <= 1617;
   };
   const isNearKitchen = (x, y) => {
-    return x >= 2932 && x <= 3682 && y >= 142 && y <= 1417;
+    return x >= 3250 && x <= 3550 && y >= 650 && y <= 1000;
   };
   const isNearCat = (x, y) => {
     return x >= 1992 && x <= 2242 && y >= 1342 && y <= 1642;
@@ -180,17 +202,17 @@ function House() {
   const isNearShelf = (x, y) => {
     return x >= 1157 && x <= 1382 && y >= 142 && y <= 467;
   };
-  const isNearMusic = (x, y) => {
-    return x >= 2632 && x <= 2782 && y >= 267 && y <= 492;
+  const isNearTable = (x, y) => {
+    return x >= 1875 && x <= 2125 && y >= 400 && y <= 750;
   };
 
   const dialogMessages = {
     Bed: "Do you want to sleep?",
     Bath: "Do you want to take a bath?",
     Kitchen: "Do you want to eat?",
-    Cat: "Do you want to play with the cat?",
+    Cat: "Do you want to play with cat?",
     Shelf: "Do you want to organize items?",
-    Music: "Do you want to play music?",
+    Table: "Do you want to work from home?",
   };
 
   const renderDialogMessage = (message) => {
@@ -298,8 +320,8 @@ function House() {
     } else if (isNearShelf(playerPos.x, playerPos.y)) {
       setCurrentLocationHouse("Shelf");
       setShowDialog(true);
-    } else if (isNearMusic(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Music");
+    } else if (isNearTable(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Table");
       setShowDialog(true);
     } else {
       setCurrentLocationHouse(null);
@@ -365,6 +387,10 @@ function House() {
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="house-hud-avatar" />
           <div className="house-player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
+            {/* Back to Map Button positioned directly below coordinates */}
+            <button className="back-to-map-button-inline" onClick={handleBackToMap}>
+              Back to Map
+            </button>
           </div>
         </div>
         <div className="house-stats-container">

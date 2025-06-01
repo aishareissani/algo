@@ -7,6 +7,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
 
   const [showInventory, setShowInventory] = useState(false);
   const [increasedIndicators, setIncreasedIndicators] = useState({});
+  const [decreasedIndicators, setDecreasedIndicators] = useState({});
   const prevStatsRef = useRef();
 
   useEffect(() => {
@@ -14,36 +15,61 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
     const previousStats = prevStatsRef.current;
 
     if (previousStats) {
-      const updates = {};
-      let hasIncreases = false;
+      const increases = {};
+      const decreases = {};
+      let hasChanges = false;
 
-      // Define which stats we want to track for increases
+      // Define which stats we want to track for increases and decreases
       const trackableStats = ["meal", "sleep", "health", "energy", "happiness", "cleanliness", "money", "experience", "level", "skillPoints"];
 
       trackableStats.forEach((key) => {
         if (typeof currentStats[key] === "number" && typeof previousStats[key] === "number") {
           if (currentStats[key] > previousStats[key]) {
-            updates[key] = true;
-            hasIncreases = true;
+            increases[key] = true;
+            hasChanges = true;
+          } else if (currentStats[key] < previousStats[key]) {
+            decreases[key] = true;
+            hasChanges = true;
           }
         }
       });
 
-      if (hasIncreases) {
-        setIncreasedIndicators((prevIndicators) => ({
-          ...prevIndicators,
-          ...updates,
-        }));
+      if (hasChanges) {
+        // Update increase indicators
+        if (Object.keys(increases).length > 0) {
+          setIncreasedIndicators((prevIndicators) => ({
+            ...prevIndicators,
+            ...increases,
+          }));
 
-        Object.keys(updates).forEach((keyToClear) => {
-          setTimeout(() => {
-            setIncreasedIndicators((prev) => {
-              const newIndicatorsState = { ...prev };
-              delete newIndicatorsState[keyToClear];
-              return newIndicatorsState;
-            });
-          }, 1500); // Display "+" for 1.5 seconds
-        });
+          Object.keys(increases).forEach((keyToClear) => {
+            setTimeout(() => {
+              setIncreasedIndicators((prev) => {
+                const newIndicatorsState = { ...prev };
+                delete newIndicatorsState[keyToClear];
+                return newIndicatorsState;
+              });
+            }, 1500); // Display "+" for 1.5 seconds
+          });
+        }
+
+        // Update decrease indicators
+        if (Object.keys(decreases).length > 0) {
+          setDecreasedIndicators((prevIndicators) => ({
+            ...prevIndicators,
+            ...decreases,
+          }));
+
+          Object.keys(decreases).forEach((keyToClear) => {
+            setTimeout(() => {
+              setDecreasedIndicators((prev) => {
+                const newIndicatorsState = { ...prev };
+                delete newIndicatorsState[keyToClear];
+                return newIndicatorsState;
+              });
+            }, 1500); // Display "-" for 1.5 seconds
+          });
+        }
       }
     }
 
@@ -64,12 +90,21 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
     return null;
   };
 
+  const DecreaseIndicator = ({ statKey }) => {
+    if (decreasedIndicators[statKey]) {
+      return <span className="stat-decrease-indicator">-</span>;
+    }
+    return null;
+  };
+
   return (
     <div className="stats-card" role="region" aria-label="Player status">
       <div className="stats-header">
         <h3>PLAYER STATUS</h3>
         <div className="level-badge">
-          LVL {level} <IncreaseIndicator statKey="level" />
+          LVL {level}
+          <IncreaseIndicator statKey="level" />
+          <DecreaseIndicator statKey="level" />
         </div>
       </div>
 
@@ -82,6 +117,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
               <span>Health</span>
               <span className="stat-value">
                 <IncreaseIndicator statKey="health" />
+                <DecreaseIndicator statKey="health" />
                 {health}%
               </span>
             </div>
@@ -99,6 +135,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
               <span>Energy</span>
               <span className="stat-value">
                 <IncreaseIndicator statKey="energy" />
+                <DecreaseIndicator statKey="energy" />
                 {energy}%
               </span>
             </div>
@@ -116,6 +153,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
               <span>Hunger</span>
               <span className="stat-value">
                 <IncreaseIndicator statKey="meal" />
+                <DecreaseIndicator statKey="meal" />
                 {meal}%
               </span>
             </div>
@@ -133,6 +171,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
               <span>Sleep</span>
               <span className="stat-value">
                 <IncreaseIndicator statKey="sleep" />
+                <DecreaseIndicator statKey="sleep" />
                 {sleep}%
               </span>
             </div>
@@ -150,6 +189,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
               <span>Mood</span>
               <span className="stat-value">
                 <IncreaseIndicator statKey="happiness" />
+                <DecreaseIndicator statKey="happiness" />
                 {happiness}%
               </span>
             </div>
@@ -167,6 +207,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
               <span>Clean</span>
               <span className="stat-value">
                 <IncreaseIndicator statKey="cleanliness" />
+                <DecreaseIndicator statKey="cleanliness" />
                 {cleanliness}%
               </span>
             </div>
@@ -179,32 +220,33 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
 
       <div className="stats-footer">
         <div className="resources">
-          {/* Resource Money */}
           <div className="resource-item">
             <div className="resource-icon money-icon"></div>
             <span className="resource-value">
-              <IncreaseIndicator statKey="money" /> ${money}
+              <IncreaseIndicator statKey="money" />
+              <DecreaseIndicator statKey="money" />${money}
             </span>
           </div>
 
-          {/* Resource XP */}
           <div className="resource-item">
             <div className="resource-icon xp-icon"></div>
             <span className="resource-value">
-              <IncreaseIndicator statKey="experience" /> {experience} XP
+              <IncreaseIndicator statKey="experience" />
+              <DecreaseIndicator statKey="experience" />
+              {experience} XP
             </span>
           </div>
 
-          {/* Resource SP */}
           <div className="resource-item">
             <div className="resource-icon skill-icon"></div>
             <span className="resource-value">
-              <IncreaseIndicator statKey="skillPoints" /> {skillPoints} SP
+              <IncreaseIndicator statKey="skillPoints" />
+              <DecreaseIndicator statKey="skillPoints" />
+              {skillPoints} SP
             </span>
           </div>
         </div>
 
-        {/* Inventory Button */}
         <button onClick={() => setShowInventory((prev) => !prev)} aria-expanded={showInventory} aria-controls="inventory-panel" className={`inventory-button ${showInventory ? "active" : ""}`}>
           <div className="inventory-icon"></div>
           <span>{showInventory ? "CLOSE" : "ITEMS"}</span>

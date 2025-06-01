@@ -7,7 +7,7 @@ function Map() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { characterName = "claire", playerName = "Player" } = location.state || {};
+  const { characterName = "claire", playerName = "Player", stats: passedStats } = location.state || {};
 
   const [playerPos, setPlayerPos] = useState({ x: 2110, y: 730 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -41,19 +41,22 @@ function Map() {
     return x >= 176 && x <= 848 && y >= 40 && y <= 1034;
   };
 
-  const [playerStats, setPlayerStats] = useState({
-    meal: 50,
-    sleep: 50,
-    health: 80,
-    energy: 80,
-    happiness: 50,
-    cleanliness: 50,
-    money: 100,
-    experience: 0,
-    level: 1,
-    skillPoints: 0,
-    items: [],
-  });
+  // Initialize with passed stats or default values
+  const [playerStats, setPlayerStats] = useState(
+    passedStats || {
+      meal: 50,
+      sleep: 50,
+      health: 80,
+      energy: 80,
+      happiness: 50,
+      cleanliness: 50,
+      money: 100,
+      experience: 0,
+      level: 1,
+      skillPoints: 0,
+      items: [],
+    }
+  );
 
   useEffect(() => {
     if (isNearHouseDoor(playerPos.x, playerPos.y)) {
@@ -152,13 +155,18 @@ function Map() {
       state: {
         characterName,
         playerName,
-        stats: playerStats,
+        stats: playerStats, // Pass current stats to the location
       },
     });
   };
 
   return (
     <div className="game-container">
+      {/* Stats Player positioned on the left side of the game container */}
+      <div className="map-stats-sidebar">
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
+      </div>
+
       {showDialog && currentLocation && (
         <div className="dialog fade-in-center">
           <p>
@@ -214,10 +222,6 @@ function Map() {
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
           </div>
-        </div>
-
-        <div className="stats-container">
-          <StatsPlayer playerName={playerName} characterName={characterName} />
         </div>
 
         <div className="controls-hint">
