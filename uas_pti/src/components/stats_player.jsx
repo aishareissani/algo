@@ -179,31 +179,33 @@ function StatsPlayer({ stats = {}, onStatsUpdate }) {
 
       <div className="stats-footer">
         <div className="resources">
+          {/* Resource Money */}
           <div className="resource-item">
             <div className="resource-icon money-icon"></div>
             <span className="resource-value">
-              <IncreaseIndicator statKey="money" />${money}
+              <IncreaseIndicator statKey="money" /> ${money}
             </span>
           </div>
 
+          {/* Resource XP */}
           <div className="resource-item">
             <div className="resource-icon xp-icon"></div>
             <span className="resource-value">
-              <IncreaseIndicator statKey="experience" />
-              {experience} XP
+              <IncreaseIndicator statKey="experience" /> {experience} XP
             </span>
           </div>
 
+          {/* Resource SP */}
           <div className="resource-item">
             <div className="resource-icon skill-icon"></div>
             <span className="resource-value">
-              <IncreaseIndicator statKey="skillPoints" />
-              {skillPoints} SP
+              <IncreaseIndicator statKey="skillPoints" /> {skillPoints} SP
             </span>
           </div>
         </div>
 
-        <button onClick={() => setShowInventory((prev) => !prev)} aria-expanded={showInventory} aria-controls="inventory-panel" className="inventory-button">
+        {/* Inventory Button */}
+        <button onClick={() => setShowInventory((prev) => !prev)} aria-expanded={showInventory} aria-controls="inventory-panel" className={`inventory-button ${showInventory ? "active" : ""}`}>
           <div className="inventory-icon"></div>
           <span>{showInventory ? "CLOSE" : "ITEMS"}</span>
         </button>

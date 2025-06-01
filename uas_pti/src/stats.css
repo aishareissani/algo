@@ -134,11 +134,11 @@ body {
 
 /* Update mood icon based on status */
 .mood-icon.mood-good {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2366f880'%3E%3Cpath d='M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2366f880'%3E%3Cpath d='M256,16C123.452,16,16,123.452,16,256S123.452,496,256,496,496,388.548,496,256,388.548,16,256,16ZM403.078,403.078a207.253,207.253,0,1,1,44.589-66.125A207.332,207.332,0,0,1,403.078,403.078Z'/%3E%3Cpath d='M256,384A104,104,0,0,0,360,280H152A104,104,0,0,0,256,384Z'/%3E%3Cpolygon points='205.757 228.292 226.243 203.708 168 155.173 109.757 203.708 130.243 228.292 168 196.827 205.757 228.292'/%3E%3Cpolygon points='285.757 203.708 306.243 228.292 344 196.827 381.757 228.292 402.243 203.708 344 155.173 285.757 203.708'/%3E%3C/svg%3E");
 }
 
 .mood-icon.mood-warning {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffce5a'%3E%3Cpath d='M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 3.5h-7v1h2c0 1 .5 2 2.5 2s2.5-1 2.5-2h2v-1z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='20px' height='20px' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23ffce5a' d='M10 20a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM6.5 9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM7 13h6a1 1 0 0 1 0 2H7a1 1 0 0 1 0-2z'/%3E%3C/svg%3E");
 }
 
 .mood-icon.mood-critical {
@@ -157,20 +157,21 @@ body {
 .health-icon {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff5a5a'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
 }
+
 .energy-icon {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2351b3f0'%3E%3Cpath d='M7 2v11h3v9l7-12h-4l4-8z'/%3E%3C/svg%3E");
 }
+
 .meal-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffce5a'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='%23ffce5a' d='M239 367q1 25 11.5 42t38.5 37q22 15 33 31t10 35l-23 295v2q0 17 8 31t22 22 30 8 30-8 22-22 8-31q0-4-1-9l-23-288q-1-19 10.5-35t32.5-31q29-20 39.5-38t10.5-45l1-5V157q0-12-9-20t-19.5-6.5-17 9T447 157v107q0 10-6.5 17.5t-17.5 9-19.5-6.5-8.5-19V157q0-10-6.5-17.5t-17.5-9-20 6.5-9 20v107q1 10-6 17.5t-17.5 9T299 284t-9-19V157q0-10-6.5-17.5t-17-9T247 137t-9 20v201zm363 230l54 18q7 2 11 8t3 13l-13 173q-1 7 0 13 2 15 11 26 2 3 6 6 9 8 21 12 16 6 32.5 2.5T757 854q6-6 6-15V184q0-22-12-37.5T724 131q-18 0-38 22-25 27-46 80-17 43-27 87-17 72-23 155-4 54-3 102 0 7 4 12.5t11 7.5z'/%3E%3C/svg%3E");
 }
+
 .sleep-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a37ef0'%3E%3Cpath d='M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm-3-9h6v2H9z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23a37ef0' d='M28.62 17.482c.508-.452 1.324-.028 1.215.675C28.797 24.865 22.998 30 16 30 8.268 30 2 23.732 2 16 2 8.985 7.16 3.175 13.891 2.158c.688-.104 1.096.698.651 1.195C12.963 5.119 12 7.445 12 10c0 5.523 4.477 10 10 10 2.542 0 4.858-.953 6.62-2.518z'/%3E%3C/svg%3E");
 }
-.mood-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2366f880'%3E%3Cpath d='M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z'/%3E%3C/svg%3E");
-}
+
 .clean-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f8e866'%3E%3Cpath d='M12 3L2 12h3v8h14v-8h3L12 3zm0 13c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15' fill='%23f8e866'%3E%3Cpath d='M2 3.5C2 2.11929 3.11929 1 4.5 1H6V2H7V0H4.5C2.567 0 1 1.567 1 3.5V7H0V8H1V9.5C1 11.2632 2.30385 12.7219 4 12.9646V15H5V13H10V15H11V12.9646C12.6961 12.7219 14 11.2632 14 9.5V8H15V7H2V3.5Z'/%3E%3Cpath d='M8 4H5V3H8V4Z'/%3E%3C/svg%3E");
 }
 
 .stat-bar-container {
@@ -247,15 +248,17 @@ body {
 /* Footer with resources and inventory button */
 .stats-footer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   padding-top: 12px;
   border-top: 2px solid #d8e1c5;
+  margin-top: 20px;
 }
 
 .resources {
   display: flex;
+  justify-content: space-around;
   gap: 12px;
+  margin-bottom: 10px;
 }
 
 .resource-item {
@@ -275,11 +278,23 @@ body {
 .money-icon {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23bc8044'%3E%3Cpath d='M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z'/%3E%3C/svg%3E");
 }
+
 .xp-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2352d1a8'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
+  width: 25px;
+  height: 25px;
+  background-image: url("./assets/icons/xp_icon.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
 }
+
 .skill-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e67ad6'%3E%3Cpath d='M12 3L1 9l11 6 9-4.91V17h2V9L12 3z M3.27 12.9L12 17.3l8.73-4.4M12 5.1v2.9'/%3E%3C/svg%3E");
+  width: 25px;
+  height: 25px;
+  background-image: url("./assets/icons/skill_icon.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
 }
 
 .resource-value {
@@ -289,96 +304,137 @@ body {
 }
 
 .inventory-button {
-  display: flex;
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: #79d959;
-  border: none;
-  border-radius: 4px;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #79d959 0%, #6bc951 50%, #5bb849 100%);
+  border: 2px solid #9be686;
+  border-radius: 8px;
   color: white;
   font-family: inherit;
   font-size: 10px;
   font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 8px rgba(121, 217, 89, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Efek shimmer/glow pada background */
+.inventory-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.inventory-button:hover::before {
+  left: 100%;
 }
 
 .inventory-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  background: #8ae566;
+  transform: translateY(-3px) scale(1.02);
+  background: linear-gradient(135deg, #8ae566 0%, #7dd65e 50%, #6bc951 100%);
+  border-color: #b8f29a;
+  box-shadow: 0 8px 16px rgba(121, 217, 89, 0.4), 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 20px rgba(121, 217, 89, 0.3);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .inventory-button:active {
-  transform: translateY(0);
+  transform: translateY(-1px) scale(0.98);
+  transition: all 0.1s ease;
+  box-shadow: 0 2px 4px rgba(121, 217, 89, 0.3), 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
+/* Animasi untuk ikon */
 .inventory-icon {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-2 .89-2 2v11c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zM10 4h4v2h-4V4zm10 15H4V8h16v11z'/%3E%3C/svg%3E");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
-/* Inventory Panel */
-.inventory-panel {
-  margin-top: 16px;
-  padding: 12px;
-  background: #f0f8f0;
-  border-radius: 8px;
-  border: 1px solid #d8e1c5;
-  max-height: 200px;
-  overflow-y: auto;
-  animation: slideDown 0.3s ease;
+.inventory-button:hover .inventory-icon {
+  transform: scale(1.1) rotate(5deg);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
 
-@keyframes slideDown {
+/* Efek pulse saat button dalam keadaan aktif (inventory terbuka) */
+.inventory-button.active {
+  background: linear-gradient(135deg, #ff6b6b 0%, #e55a5a 50%, #d44848 100%);
+  border-color: #ff9999;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 0 rgba(255, 107, 107, 0.4);
+  }
+  70% {
+    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 8px rgba(255, 107, 107, 0);
+  }
+  100% {
+    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 0 rgba(255, 107, 107, 0);
+  }
+}
+
+/* Loading state untuk button */
+.inventory-button.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.inventory-button.loading .inventory-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
   from {
-    opacity: 0;
-    transform: translateY(-10px);
+    transform: rotate(0deg);
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: rotate(360deg);
   }
 }
 
-.inventory-panel h4 {
-  margin: 0 0 12px 0;
-  font-size: 12px;
-  color: #7a8a6f;
-  text-align: center;
+/* Responsive design untuk button */
+@media (max-width: 768px) {
+  .inventory-button {
+    padding: 8px 14px;
+    font-size: 9px;
+    gap: 6px;
+  }
+
+  .inventory-icon {
+    width: 16px;
+    height: 16px;
+  }
 }
 
-.inventory-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+/* Tambahan untuk accessibility */
+.inventory-button:focus {
+  outline: none;
+  border-color: #b8f29a;
+  box-shadow: 0 4px 8px rgba(121, 217, 89, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 3px rgba(121, 217, 89, 0.4);
 }
 
-.inventory-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  background: #ffffff;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  border: 1px solid #e6e6e6;
-}
-
-.inventory-item:hover {
-  background: #f5ffe5;
-  transform: translateY(-2px);
-}
-
-.inventory-item.equipped {
-  border: 1px solid #79d959;
-  background: rgba(121, 217, 89, 0.1);
+.inventory-button:focus:not(:focus-visible) {
+  box-shadow: 0 4px 8px rgba(121, 217, 89, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .item-icon {
