@@ -6,7 +6,7 @@ function Inventory({ items = [], onClose }) {
 
   const categories = ["All", "Rocks", "Flowers", "Marine", "Everyday"];
 
-  // Get icon class based on item name - this is the key function for showing SVG icons
+  // Get icon class based on item name
   const getIconClass = (item) => {
     switch (item.name) {
       case "Rose":
@@ -42,8 +42,6 @@ function Inventory({ items = [], onClose }) {
   filteredItems.forEach((item, index) => {
     if (index < 25) gridSlots[index] = item;
   });
-
-  console.log("Rendering inventory with items:", items);
 
   return (
     <div className="inventory-overlay">

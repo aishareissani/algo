@@ -10,6 +10,8 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
   const [showInventory, setShowInventory] = useState(false);
   const [increasedIndicators, setIncreasedIndicators] = useState({});
   const [decreasedIndicators, setDecreasedIndicators] = useState({});
+  const [levelUpAnimation, setLevelUpAnimation] = useState(false);
+  const [xpGainAnimation, setXpGainAnimation] = useState(false);
   const prevStatsRef = useRef();
   const { isFastForward } = useSpeedMode(); // Assuming this adjusts the interval speed
 
@@ -64,10 +66,33 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
 
       setIncreasedIndicators(increase);
       setDecreasedIndicators(decrease);
+
+      // Check for XP gain animation
+      if (stats.experience > prev.experience) {
+        setXpGainAnimation(true);
+        setTimeout(() => setXpGainAnimation(false), 1000);
+      }
+
+      // Updated level calculation - every 5 XP = 1 level
+      // Level 1: 0-4 XP
+      // Level 2: 5-9 XP
+      // Level 3: 10-14 XP, etc.
+      const calculatedLevel = Math.floor(stats.experience / 5) + 1;
+
+      if (calculatedLevel > stats.level) {
+        // Trigger level up animation
+        setLevelUpAnimation(true);
+        setTimeout(() => setLevelUpAnimation(false), 2000);
+
+        onStatsUpdate({
+          ...stats,
+          level: calculatedLevel,
+        });
+      }
     }
 
     prevStatsRef.current = { ...stats };
-  }, [stats]);
+  }, [stats, onStatsUpdate]);
 
   // Simulate degradation for specific stats every 15 seconds
   useEffect(() => {
@@ -103,13 +128,17 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
     setShowInventory(false);
   };
 
+  // Calculate XP progress to next level
+  const xpForNextLevel = 5;
+  const currentLevelXP = (level - 1) * 5;
+
   return (
     <>
       <div className="stats-card" role="region" aria-label="Player status">
         <div className="stats-header">
           <h3>PLAYER STATUS</h3>
-          <div className="level-badge">
-            LVL {level}
+          <div className={`level-badge ${levelUpAnimation ? "level-up-animation" : ""}`}>
+            LVL&nbsp;<span className={increasedIndicators.level ? "level-number-animated" : ""}>{level}</span>
             <Indicator statKey="level" />
           </div>
         </div>
@@ -122,7 +151,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
                 <span>Health</span>
                 <span className="stat-value">
                   <Indicator statKey="health" />
-                  {health}%
+                  {Math.round(health)}%
                 </span>
               </div>
               <div className="stat-bar">
@@ -139,7 +168,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
                 <span>Energy</span>
                 <span className="stat-value">
                   <Indicator statKey="energy" />
-                  {energy}%
+                  {Math.round(energy)}%
                 </span>
               </div>
               <div className="stat-bar">
@@ -155,7 +184,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
               <div className="stat-label">
                 <span>Hunger</span>
                 <span className="stat-value">
-                  <Indicator statKey="meal" /> {meal}%
+                  <Indicator statKey="meal" /> {Math.round(meal)}%
                 </span>
               </div>
               <div className="stat-bar">
@@ -172,7 +201,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
                 <span>Sleep</span>
                 <span className="stat-value">
                   <Indicator statKey="sleep" />
-                  {sleep}%
+                  {Math.round(sleep)}%
                 </span>
               </div>
               <div className="stat-bar">
@@ -189,7 +218,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
                 <span>Mood</span>
                 <span className="stat-value">
                   <Indicator statKey="happiness" />
-                  {happiness}%
+                  {Math.round(happiness)}%
                 </span>
               </div>
               <div className="stat-bar">
@@ -206,7 +235,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
                 <span>Clean</span>
                 <span className="stat-value">
                   <Indicator statKey="cleanliness" />
-                  {cleanliness}%
+                  {Math.round(cleanliness)}%
                 </span>
               </div>
               <div className="stat-bar">
@@ -225,18 +254,18 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
                 <Indicator statKey="money" />${money}
               </span>
             </div>
-            <div className="resource-item">
-              <div className="resource-icon xp-icon" />
+            <div className={`resource-item ${xpGainAnimation ? "xp-gain-glow" : ""}`}>
+              <div className={`resource-icon xp-icon ${xpGainAnimation ? "xp-icon-spin" : ""}`} />
               <span className="resource-value">
                 <Indicator statKey="experience" />
-                {experience} XP
+                {`${experience} XP`}
               </span>
             </div>
             <div className="resource-item">
               <div className="resource-icon skill-icon" />
               <span className="resource-value">
                 <Indicator statKey="skillPoints" />
-                {skillPoints} SP
+                {`${skillPoints} SP`}
               </span>
             </div>
           </div>
@@ -246,6 +275,14 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
           </button>
         </div>
       </div>
+
+      {/* Level Up Notification */}
+      {levelUpAnimation && (
+        <div className="level-up-notification">
+          <div className="level-up-text">LEVEL UP!</div>
+          <div className="level-up-details">You reached Level {level}!</div>
+        </div>
+      )}
 
       {/* Inventory Overlay */}
       {showInventory && <Inventory items={items} onClose={handleCloseInventory} />}

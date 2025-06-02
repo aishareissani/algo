@@ -1,4 +1,3 @@
-// beach.jsx
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
@@ -20,7 +19,10 @@ function Beach() {
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(0.299);
-  const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
+  const [actualViewportSize, setActualViewportSize] = useState({
+    width: 0,
+    height: 0,
+  });
 
   const beachRef = useRef(null);
   const playerRef = useRef(null);
@@ -84,6 +86,40 @@ function Beach() {
     });
   };
 
+  const addItemToInventory = (itemName, category, icon, onStatsUpdate) => {
+    onStatsUpdate((prev) => {
+      const existingItemIndex = prev.items.findIndex((item) => item.name === itemName);
+      const updatedItems = [...prev.items];
+
+      // Add XP for collecting an item (1 item = 1 XP)
+      const newExperience = prev.experience + 1;
+
+      if (existingItemIndex !== -1) {
+        // Item already exists, increase quantity
+        updatedItems[existingItemIndex] = {
+          ...updatedItems[existingItemIndex],
+          quantity: updatedItems[existingItemIndex].quantity + 1,
+        };
+      } else {
+        // New item, add to inventory
+        const newItem = {
+          id: Date.now(), // Simple ID generation
+          name: itemName,
+          category: category,
+          icon: icon,
+          quantity: 1,
+        };
+        updatedItems.push(newItem);
+      }
+
+      return {
+        ...prev,
+        items: updatedItems,
+        experience: newExperience, // Update experience
+      };
+    });
+  };
+
   const performActivity = (activityName, statChanges, collectItem = null) => {
     if (isPerformingActivity) return;
 
@@ -113,7 +149,7 @@ function Beach() {
 
       // Add item to inventory if applicable
       if (collectItem) {
-        addItemToInventory(collectItem.name, collectItem.category, collectItem.icon);
+        addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
       }
 
       // Show a brief flash of activity
@@ -161,9 +197,8 @@ function Beach() {
         if (currentStep >= totalSteps) {
           // Add item to inventory when activity completes
           if (collectItem) {
-            addItemToInventory(collectItem.name, collectItem.category, collectItem.icon);
+            addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
           }
-
           clearInterval(activityIntervalRef.current);
           setIsPerformingActivity(false);
           setActivityProgress(0);
@@ -195,8 +230,7 @@ function Beach() {
         meal: -5,
         cleanliness: -10,
       });
-    } // In beach.jsx, update the handleEnterLocation function to use CSS classes instead of emoji
-    else if (currentLocationbeach === "Seashell") {
+    } else if (currentLocationbeach === "Seashell") {
       performActivity(
         "Picking seashell",
         {
@@ -207,16 +241,16 @@ function Beach() {
         {
           name: "Conch Shell",
           category: "Marine",
-          icon: "conch-shell", // Changed from emoji to CSS class name
+          icon: "conch-shell",
         }
       );
     } else if (currentLocationbeach === "Flower") {
       // You can vary the flower type randomly if you want
       const flowers = [
-        { name: "Rose", icon: "rose" }, // Changed from emoji to CSS class name
-        { name: "Daisy", icon: "daisy" }, // Changed from emoji to CSS class name
-        { name: "Sunflower", icon: "sunflower" }, // Changed from emoji to CSS class name
-        { name: "Tulip", icon: "tulip" }, // Changed from emoji to CSS class name
+        { name: "Rose", icon: "rose" },
+        { name: "Daisy", icon: "daisy" },
+        { name: "Sunflower", icon: "sunflower" },
+        { name: "Tulip", icon: "tulip" },
       ];
       const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
 
@@ -244,7 +278,7 @@ function Beach() {
         {
           name: "Starfish",
           category: "Marine",
-          icon: "starfish", // Changed from emoji to CSS class name
+          icon: "starfish",
         }
       );
     }
@@ -303,32 +337,6 @@ function Beach() {
 
   const renderDialogMessage = (message) => {
     return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
-  };
-
-  const addItemToInventory = (itemName, category, icon) => {
-    setPlayerStats((prev) => {
-      const existingItemIndex = prev.items.findIndex((item) => item.name === itemName);
-
-      if (existingItemIndex !== -1) {
-        // Item already exists, increase quantity
-        const updatedItems = [...prev.items];
-        updatedItems[existingItemIndex] = {
-          ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + 1,
-        };
-        return { ...prev, items: updatedItems };
-      } else {
-        // New item, add to inventory
-        const newItem = {
-          id: Date.now(), // Simple ID generation
-          name: itemName,
-          category: category,
-          icon: icon,
-          quantity: 1,
-        };
-        return { ...prev, items: [...prev.items, newItem] };
-      }
-    });
   };
 
   // Clean up activity interval on unmount
