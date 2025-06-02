@@ -204,8 +204,6 @@ function House() {
       performActivity("Playing with cat", {
         happiness: 50,
       });
-    } else if (currentLocationHouse === "Shelf") {
-      performActivity("Organizing items", {});
     } else if (currentLocationHouse === "Table") {
       performActivity("Working from home", {
         money: 100,
@@ -238,9 +236,6 @@ function House() {
   const isNearCat = (x, y) => {
     return x >= 1992 && x <= 2242 && y >= 1342 && y <= 1642;
   };
-  const isNearShelf = (x, y) => {
-    return x >= 1157 && x <= 1382 && y >= 142 && y <= 467;
-  };
   const isNearTable = (x, y) => {
     return x >= 1875 && x <= 2125 && y >= 400 && y <= 750;
   };
@@ -250,7 +245,6 @@ function House() {
     Bath: "Do you want to take a bath?",
     Kitchen: "Do you want to eat?",
     Cat: "Do you want to play with cat?",
-    Shelf: "Do you want to organize items?",
     Table: "Do you want to work from home?",
   };
 
@@ -355,9 +349,6 @@ function House() {
       setShowDialog(true);
     } else if (isNearCat(playerPos.x, playerPos.y)) {
       setCurrentLocationHouse("Cat");
-      setShowDialog(true);
-    } else if (isNearShelf(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Shelf");
       setShowDialog(true);
     } else if (isNearTable(playerPos.x, playerPos.y)) {
       setCurrentLocationHouse("Table");
