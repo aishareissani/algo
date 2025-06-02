@@ -3,14 +3,13 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10000;
-  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
@@ -55,6 +54,7 @@
   padding: 16px 20px;
   border-bottom: 2px solid #d8e1c5;
   background: linear-gradient(to bottom, #f8f8ff, #f0f8f0);
+  border-radius: 15px 15px 0 0;
 }
 
 .inventory-title {
@@ -152,6 +152,7 @@
   flex: 1;
   overflow: hidden;
   background: #fafafa;
+  border-radius: 15px 15px 0 0;
 }
 
 /* Inventory Slots */
@@ -195,7 +196,8 @@
 
 /* Item Display */
 .item-icon {
-  font-size: 36px;
+  width: 40px;
+  height: 40px;
   margin-bottom: 8px;
   filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
   transition: all 0.2s ease;
@@ -246,6 +248,64 @@
 .inventory-slot:hover .item-tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(-5px);
+}
+
+/* SVG ICONS FOR ITEMS */
+.item-icon-rose {
+  background: url("/assets/icons/rose.png") center/contain no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-daisy {
+  background: url("/assets/icons/daisy.png") center/contain no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-sunflower {
+  background: url("/assets/icons/sunflower.png") center/contain no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-tulip {
+  background: url("/assets/icons/tulip.png") center/contain no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-conch-shell {
+  background: url("/assets/icons/conchShell.png") center/contain no-repeat;
+  width: 50px;
+  height: 50px;
+}
+
+.item-icon-starfish {
+  background: url("/assets/icons/starfish.png") center/contain no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-shiny-rock {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='40' height='40'%3E%3Cpath d='M16,9H19L14,16M10,9H14L12,17M5,9H8L10,16M15,4H17L19,7H16M11,4H13L14,7H10M7,4H9L8,7H5M6,2L2,8L12,22L22,8L18,2H6Z' fill='%23607d8b'/%3E%3C/svg%3E")
+    center/contain no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-granite {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='40' height='40'%3E%3Cpath d='M4,22V9.5L2.5,11L1,9.5L4,6.5L7,9.5L5.5,11L4,9.5V22H4M20.5,4L22,5.5L20.5,7L22,8.5L20.5,10L22,11.5L20.5,13L15,7.5V11L18,14L15,17V14L10,19V22H8V17L13,12L8,7V4L11,7L15,3L18,6L20.5,4Z' fill='%23795548'/%3E%3C/svg%3E")
+    center/contain no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-pencil {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='40' height='40'%3E%3Cpath d='M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z' fill='%23ffc107'/%3E%3C/svg%3E")
+    center/contain no-repeat;
+  width: 40px;
+  height: 40px;
 }
 
 /* Animation for new items */

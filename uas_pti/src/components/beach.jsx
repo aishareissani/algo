@@ -34,8 +34,6 @@ function Beach() {
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
 
-  // Initialize with stats from map or default values
-  // Initialize with stats from map or default values
   const defaultStats = {
     meal: 50,
     sleep: 50,
@@ -47,7 +45,7 @@ function Beach() {
     experience: 0,
     level: 1,
     skillPoints: 0,
-    items: [],
+    items: [], // Make sure this is included
   };
 
   // Initialize with stats from map or default values
@@ -86,7 +84,7 @@ function Beach() {
     });
   };
 
-  const performActivity = (activityName, statChanges) => {
+  const performActivity = (activityName, statChanges, collectItem = null) => {
     if (isPerformingActivity) return;
 
     setIsPerformingActivity(true);
@@ -99,16 +97,13 @@ function Beach() {
       setPlayerStats((prev) => {
         const newStats = { ...prev };
         Object.keys(statChanges).forEach((stat) => {
-          // Ensure changes are numeric
           const change = Number(statChanges[stat]);
-          if (isNaN(change)) return; // Skip if not a valid number
+          if (isNaN(change)) return;
 
           if (stat === "money" || stat === "experience" || stat === "skillPoints") {
-            // Ensure the previous value is a number
             const prevValue = Number(prev[stat]) || 0;
             newStats[stat] = Math.max(0, prevValue + change);
           } else {
-            // Ensure the previous value is a number
             const prevValue = Number(prev[stat]) || 0;
             newStats[stat] = Math.min(100, Math.max(0, prevValue + change));
           }
@@ -116,11 +111,14 @@ function Beach() {
         return newStats;
       });
 
+      // Add item to inventory if applicable
+      if (collectItem) {
+        addItemToInventory(collectItem.name, collectItem.category, collectItem.icon);
+      }
+
       // Show a brief flash of activity
       setTimeout(() => {
         setActivityProgress(100);
-
-        // End activity after a brief moment
         setTimeout(() => {
           setIsPerformingActivity(false);
           setCurrentActivity("");
@@ -131,45 +129,41 @@ function Beach() {
       const totalSteps = ACTIVITY_DURATION / ACTIVITY_UPDATE_INTERVAL;
       let currentStep = 0;
 
-      // Calculate incremental changes per step
       const incrementalChanges = {};
       Object.keys(statChanges).forEach((stat) => {
-        // Ensure changes are numeric
         const change = Number(statChanges[stat]);
-        if (isNaN(change)) return; // Skip if not a valid number
-
+        if (isNaN(change)) return;
         incrementalChanges[stat] = change / totalSteps;
       });
+
       activityIntervalRef.current = setInterval(() => {
         currentStep++;
         const progress = (currentStep / totalSteps) * 100;
         setActivityProgress(progress);
 
-        // Update stats gradually
         setPlayerStats((prev) => {
           const newStats = { ...prev };
-
           Object.keys(incrementalChanges).forEach((stat) => {
-            // Ensure the increment is numeric
             const increment = Number(incrementalChanges[stat]);
-            if (isNaN(increment)) return; // Skip if not a valid number
+            if (isNaN(increment)) return;
 
             if (stat === "money" || stat === "experience" || stat === "skillPoints") {
-              // Ensure the previous value is a number
               const prevValue = Number(prev[stat]) || 0;
               newStats[stat] = Math.max(0, prevValue + increment);
             } else {
-              // Ensure the previous value is a number
               const prevValue = Number(prev[stat]) || 0;
               newStats[stat] = Math.min(100, Math.max(0, prevValue + increment));
             }
           });
-
           return newStats;
         });
 
         if (currentStep >= totalSteps) {
-          // Activity completed
+          // Add item to inventory when activity completes
+          if (collectItem) {
+            addItemToInventory(collectItem.name, collectItem.category, collectItem.icon);
+          }
+
           clearInterval(activityIntervalRef.current);
           setIsPerformingActivity(false);
           setActivityProgress(0);
@@ -177,13 +171,13 @@ function Beach() {
         }
       }, ACTIVITY_UPDATE_INTERVAL);
     }
-  }; // <-- This closing curly brace was missing
+  };
 
   const handleEnterLocation = () => {
     console.log(`Performing activity at ${currentLocationbeach}`);
 
     if (currentLocationbeach === "Swim") {
-      performActivity("Swiming", {
+      performActivity("Swimming", {
         energy: -25,
         happiness: 40,
         health: 10,
@@ -201,29 +195,60 @@ function Beach() {
         meal: -5,
         cleanliness: -10,
       });
-    } else if (currentLocationbeach === "Seashell") {
-      performActivity("Picking seashell", {
-        happiness: 40,
-        energy: -20,
-        meal: -20,
-      });
+    } // In beach.jsx, update the handleEnterLocation function to use CSS classes instead of emoji
+    else if (currentLocationbeach === "Seashell") {
+      performActivity(
+        "Picking seashell",
+        {
+          happiness: 40,
+          energy: -20,
+          meal: -20,
+        },
+        {
+          name: "Conch Shell",
+          category: "Marine",
+          icon: "conch-shell", // Changed from emoji to CSS class name
+        }
+      );
     } else if (currentLocationbeach === "Flower") {
-      performActivity("Picking flower", {
-        happiness: 40,
-        energy: -20,
-        meal: -20,
-      });
+      // You can vary the flower type randomly if you want
+      const flowers = [
+        { name: "Rose", icon: "rose" }, // Changed from emoji to CSS class name
+        { name: "Daisy", icon: "daisy" }, // Changed from emoji to CSS class name
+        { name: "Sunflower", icon: "sunflower" }, // Changed from emoji to CSS class name
+        { name: "Tulip", icon: "tulip" }, // Changed from emoji to CSS class name
+      ];
+      const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
+
+      performActivity(
+        "Picking flower",
+        {
+          happiness: 40,
+          energy: -20,
+          meal: -20,
+        },
+        {
+          name: randomFlower.name,
+          category: "Flowers",
+          icon: randomFlower.icon,
+        }
+      );
+    } else if (currentLocationbeach === "StarFish") {
+      performActivity(
+        "Picking star fish",
+        {
+          happiness: 40,
+          energy: -20,
+          meal: -20,
+        },
+        {
+          name: "Starfish",
+          category: "Marine",
+          icon: "starfish", // Changed from emoji to CSS class name
+        }
+      );
     }
   };
-
-  // Clean up activity interval on unmount
-  useEffect(() => {
-    return () => {
-      if (activityIntervalRef.current) {
-        clearInterval(activityIntervalRef.current);
-      }
-    };
-  }, []);
 
   const isNearSwim = (x, y) => {
     return x >= 2275 && x <= 3682 && y >= 142 && y <= 1865;
@@ -246,11 +271,25 @@ function Beach() {
   };
 
   const isNearSeashell = (x, y) => {
-    return x >= 1750 && x <= 2175 && y >= 700 && y <= 1175;
+    return (
+      (x >= 2100 && x <= 2200 && y >= 275 && y <= 500) || // Spot 1
+      (x >= 1250 && x <= 1350 && y >= 750 && y <= 950)
+    );
   };
 
   const isNearFlower = (x, y) => {
-    return x >= 1750 && x <= 2175 && y >= 700 && y <= 1175;
+    return (
+      (x >= 625 && x <= 925 && y >= 1740 && y <= 1865) || // Spot 1
+      (x >= 825 && x <= 1275 && y >= 290 && y <= 465) // Spot 2
+    );
+  };
+
+  const isNearStarFish = (x, y) => {
+    return (
+      (x >= 2000 && x <= 2125 && y >= 1625 && y <= 1825) || // Spot 1
+      (x >= 1150 && x <= 1275 && y >= 1225 && y <= 1450) || // Spot 2
+      (x >= 375 && x <= 475 && y >= 300 && y <= 475)
+    );
   };
 
   const dialogMessages = {
@@ -259,11 +298,47 @@ function Beach() {
     Sandcastle: "Do you want to build a sandcastle?",
     Seashell: "Do you want to pick up the seashell?",
     Flower: "Do you want to pick up the flower?",
+    StarFish: "Do you want to pick up the star fish?",
   };
 
   const renderDialogMessage = (message) => {
     return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
+
+  const addItemToInventory = (itemName, category, icon) => {
+    setPlayerStats((prev) => {
+      const existingItemIndex = prev.items.findIndex((item) => item.name === itemName);
+
+      if (existingItemIndex !== -1) {
+        // Item already exists, increase quantity
+        const updatedItems = [...prev.items];
+        updatedItems[existingItemIndex] = {
+          ...updatedItems[existingItemIndex],
+          quantity: updatedItems[existingItemIndex].quantity + 1,
+        };
+        return { ...prev, items: updatedItems };
+      } else {
+        // New item, add to inventory
+        const newItem = {
+          id: Date.now(), // Simple ID generation
+          name: itemName,
+          category: category,
+          icon: icon,
+          quantity: 1,
+        };
+        return { ...prev, items: [...prev.items, newItem] };
+      }
+    });
+  };
+
+  // Clean up activity interval on unmount
+  useEffect(() => {
+    return () => {
+      if (activityIntervalRef.current) {
+        clearInterval(activityIntervalRef.current);
+      }
+    };
+  }, []);
 
   // Get actual viewport size
   useEffect(() => {
@@ -366,6 +441,9 @@ function Beach() {
     } else if (isNearFlower(playerPos.x, playerPos.y)) {
       setCurrentLocationbeach("Flower");
       setShowDialog(true);
+    } else if (isNearStarFish(playerPos.x, playerPos.y)) {
+      setCurrentLocationbeach("StarFish");
+      setShowDialog(true);
     } else {
       // IMPORTANT: Clear dialog when not near any location
       setCurrentLocationbeach(null);
@@ -375,6 +453,10 @@ function Beach() {
 
   return (
     <div className="beach-game-container">
+      <div>
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
+        <SpeedToggleButton />
+      </div>
       <div className="beach-game-viewport" ref={beachRef}>
         <SpeedToggleButton /> {/* Add the SpeedToggleButton here */}
         {showDialog && currentLocationbeach && !isPerformingActivity && (
@@ -435,9 +517,6 @@ function Beach() {
               Back to Map
             </button>
           </div>
-        </div>
-        <div className="stats-container">
-          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
         </div>
         <div className="controls-hint">
           <div>🎮 Arrow Keys / WASD to move</div>

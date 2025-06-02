@@ -4,28 +4,46 @@ import "../inventory.css";
 function Inventory({ items = [], onClose }) {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const categories = ["All", "Rocks", "Flowers", "Seashells", "Everyday"];
+  const categories = ["All", "Rocks", "Flowers", "Marine", "Everyday"];
 
-  // Sample items for demonstration - you can replace with actual items
-  const sampleItems =
-    items.length > 0
-      ? items
-      : [
-          { id: 1, name: "Shiny Rock", category: "Rocks", icon: "🪨", quantity: 3 },
-          { id: 2, name: "Rose", category: "Flowers", icon: "🌹", quantity: 5 },
-          { id: 3, name: "Daisy", category: "Flowers", icon: "🌼", quantity: 2 },
-          { id: 4, name: "Conch Shell", category: "Seashells", icon: "🐚", quantity: 1 },
-          { id: 5, name: "Pencil", category: "Everyday", icon: "✏️", quantity: 10 },
-          { id: 6, name: "Granite", category: "Rocks", icon: "🪨", quantity: 7 },
-        ];
+  // Get icon class based on item name - this is the key function for showing SVG icons
+  const getIconClass = (item) => {
+    switch (item.name) {
+      case "Rose":
+        return "item-icon-rose";
+      case "Daisy":
+        return "item-icon-daisy";
+      case "Sunflower":
+        return "item-icon-sunflower";
+      case "Tulip":
+        return "item-icon-tulip";
+      case "Conch Shell":
+        return "item-icon-conch-shell";
+      case "Starfish":
+        return "item-icon-starfish";
+      case "Shiny Rock":
+        return "item-icon-shiny-rock";
+      case "Granite":
+        return "item-icon-granite";
+      case "Pencil":
+        return "item-icon-pencil";
+      default:
+        return "item-icon-pencil"; // Default icon
+    }
+  };
 
-  const filteredItems = selectedCategory === "All" ? sampleItems : sampleItems.filter((item) => item.category === selectedCategory);
+  // Use actual items if provided, otherwise show empty inventory
+  const displayItems = items.length > 0 ? items : [];
+
+  const filteredItems = selectedCategory === "All" ? displayItems : displayItems.filter((item) => item.category === selectedCategory);
 
   // Create empty slots for the 5x5 grid
   const gridSlots = Array(25).fill(null);
   filteredItems.forEach((item, index) => {
     if (index < 25) gridSlots[index] = item;
   });
+
+  console.log("Rendering inventory with items:", items);
 
   return (
     <div className="inventory-overlay">
@@ -50,7 +68,7 @@ function Inventory({ items = [], onClose }) {
             <div key={index} className={`inventory-slot ${item ? "filled" : "empty"}`}>
               {item && (
                 <>
-                  <div className="item-icon">{item.icon}</div>
+                  <div className={`item-icon ${getIconClass(item)}`}></div>
                   <div className="item-quantity">{item.quantity}</div>
                   <div className="item-tooltip">{item.name}</div>
                 </>
