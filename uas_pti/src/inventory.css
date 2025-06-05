@@ -12,13 +12,15 @@
   align-items: center;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* Inventory Portal Container for popups */
+#inventory-portal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
 }
 
 /* Inventory Window */
@@ -26,13 +28,14 @@
   background: #ffffff;
   border: 3px solid #79d959;
   border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(121, 217, 89, 0.3), 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 0 20px rgba(121, 217, 89, 0.05);
+  box-shadow: 0 8px 32px rgba(121, 217, 89, 0.3);
   width: 600px;
-  height: 500px;
+  height: 400px;
   display: flex;
   flex-direction: column;
   animation: slideIn 0.3s ease-out;
   font-family: "Press Start 2P", system-ui;
+  position: relative;
 }
 
 @keyframes slideIn {
@@ -88,11 +91,6 @@
 .inventory-close:hover {
   background: #ff6b6b;
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(255, 90, 90, 0.4);
-}
-
-.inventory-close:active {
-  transform: scale(0.95);
 }
 
 /* Category Buttons */
@@ -114,11 +112,10 @@
   cursor: pointer;
   font-size: 10px;
   font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.3s;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-family: inherit;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .category-btn:hover {
@@ -126,33 +123,35 @@
   color: #79d959;
   border-color: #79d959;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(121, 217, 89, 0.2);
 }
 
 .category-btn.active {
   background: linear-gradient(135deg, #79d959 0%, #6bc951 100%);
   border-color: #79d959;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(121, 217, 89, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(121, 217, 89, 0.3);
 }
 
-.category-btn.active:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 16px rgba(121, 217, 89, 0.4);
+/* Inventory Grid Container */
+.inventory-grid-container {
+  flex: 1;
+  position: relative;
+  background: #fafafa;
+  border-radius: 0 0 15px 15px;
+  overflow: visible !important;
 }
 
-/* Inventory Grid */
+/* Inventory Grid with Scrolling */
 .inventory-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
+  grid-auto-rows: 1fr;
   gap: 12px;
   padding: 20px;
-  flex: 1;
-  overflow: hidden;
-  background: #fafafa;
-  border-radius: 15px 15px 0 0;
+  overflow-y: auto;
+  max-height: 232px;
+  position: relative;
+  z-index: 1;
 }
 
 /* Inventory Slots */
@@ -167,8 +166,9 @@
   justify-content: center;
   position: relative;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.2s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: visible !important;
 }
 
 .inventory-slot.empty {
@@ -186,12 +186,8 @@
 .inventory-slot:hover {
   transform: scale(1.08);
   border-color: #79d959;
-  box-shadow: 0 8px 16px rgba(121, 217, 89, 0.2), 0 0 0 3px rgba(121, 217, 89, 0.1);
+  box-shadow: 0 8px 16px rgba(121, 217, 89, 0.2);
   z-index: 10;
-}
-
-.inventory-slot.filled:hover {
-  background: #f0f8f0;
 }
 
 /* Item Display */
@@ -205,7 +201,6 @@
 
 .inventory-slot:hover .item-icon {
   transform: scale(1.1) rotate(5deg);
-  filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.15));
 }
 
 .item-quantity {
@@ -219,7 +214,6 @@
   font-size: 10px;
   font-weight: bold;
   border: 2px solid #9be686;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   min-width: 20px;
   text-align: center;
 }
@@ -237,12 +231,16 @@
   font-size: 10px;
   white-space: nowrap;
   opacity: 0;
-  pointer-events: none;
   transition: all 0.2s ease;
-  z-index: 100;
+  z-index: 9000;
   border: 2px solid #79d959;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+  overflow: visible !important;
+  text-overflow: clip !important;
+  max-width: none !important;
+  width: auto !important;
+  pointer-events: none;
 }
 
 .inventory-slot:hover .item-tooltip {
@@ -250,7 +248,16 @@
   transform: translateX(-50%) translateY(-5px);
 }
 
-/* SVG ICONS FOR ITEMS */
+/* Empty slot styling */
+.inventory-slot.empty::after {
+  content: "+";
+  font-size: 24px;
+  color: #e0e0e0;
+  font-weight: bold;
+  opacity: 0.5;
+}
+
+/* Item icons */
 .item-icon-rose {
   background: url("/assets/icons/rose.png") center/contain no-repeat;
   width: 40px;
@@ -287,6 +294,12 @@
   height: 40px;
 }
 
+.item-icon-takeaway {
+  background: url("/assets/icons/takeaway.png") center/contain no-repeat;
+  width: 40px;
+  height: 40px;
+}
+
 .item-icon-shiny-rock {
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='40' height='40'%3E%3Cpath d='M16,9H19L14,16M10,9H14L12,17M5,9H8L10,16M15,4H17L19,7H16M11,4H13L14,7H10M7,4H9L8,7H5M6,2L2,8L12,22L22,8L18,2H6Z' fill='%23607d8b'/%3E%3C/svg%3E")
     center/contain no-repeat;
@@ -308,109 +321,94 @@
   height: 40px;
 }
 
-/* Animation for new items */
-@keyframes itemAdded {
-  0% {
-    transform: scale(0) rotate(180deg);
+/* Animations */
+@keyframes popIn {
+  from {
     opacity: 0;
+    transform: scale(0.8);
   }
-  50% {
-    transform: scale(1.2) rotate(90deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
+  to {
     opacity: 1;
+    transform: scale(1);
   }
 }
 
-.inventory-slot.new-item {
-  animation: itemAdded 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+/* Eat Prompt Container & Styling - ONLY FOR TAKEAWAY MEAL */
+.eat-prompt-container {
+  position: fixed;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
 }
 
-/* Sparkle effect for rare items */
-@keyframes sparkle {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
+.eat-prompt {
+  background: #ffffff;
+  border: 3px solid #ff9800;
+  border-radius: 12px;
+  padding: 12px 16px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  min-width: 160px;
+  animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  bottom: 10px;
 }
 
-.inventory-slot.rare::before {
+.eat-prompt::after {
   content: "";
   position: absolute;
-  top: -5px;
-  right: -5px;
-  width: 10px;
-  height: 10px;
-  background: radial-gradient(circle, #ffe74c 0%, transparent 70%);
-  border-radius: 50%;
-  animation: sparkle 2s infinite;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .inventory-window {
-    width: 90%;
-    height: 80vh;
-    max-width: 400px;
-  }
-
-  .inventory-grid {
-    gap: 8px;
-    padding: 15px;
-  }
-
-  .inventory-title {
-    font-size: 14px;
-  }
-
-  .category-btn {
-    font-size: 9px;
-    padding: 6px 12px;
-  }
-
-  .item-icon {
-    font-size: 28px;
-  }
-}
-
-/* Empty slot placeholder */
-.inventory-slot.empty::after {
-  content: "+";
-  font-size: 24px;
-  color: #e0e0e0;
-  font-weight: bold;
-  opacity: 0.5;
-}
-
-/* Loading state */
-.inventory-window.loading {
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-.inventory-window.loading::after {
-  content: "";
-  position: absolute;
-  top: 50%;
+  bottom: -12px;
   left: 50%;
-  width: 40px;
-  height: 40px;
-  margin: -20px 0 0 -20px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #79d959;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #ff9800;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.eat-prompt p {
+  margin: 0 0 10px 0;
+  font-weight: bold;
+  color: #333;
+  font-size: 12px;
+}
+
+.eat-prompt-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.eat-prompt .yes-btn,
+.eat-prompt .no-btn {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+  border: 2px solid;
+  font-family: "Press Start 2P", system-ui;
+}
+
+.eat-prompt .yes-btn {
+  background: #79d959;
+  color: white;
+  border-color: #6bc951;
+}
+
+.eat-prompt .no-btn {
+  background: #ff5a5a;
+  color: white;
+  border-color: #ff8080;
+}
+
+.eat-prompt .yes-btn:hover {
+  background: #6bc951;
+  transform: translateY(-2px);
+}
+
+.eat-prompt .no-btn:hover {
+  background: #ff6b6b;
+  transform: translateY(-2px);
 }

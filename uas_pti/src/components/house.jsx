@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
+import Inventory from "./inventory";
+import { handleUseItem } from "../utils/itemHandlers";
 import "../house.css";
 
 function House() {
@@ -15,6 +17,7 @@ function House() {
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
+  const [showInventory, setShowInventory] = useState(false);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -33,7 +36,6 @@ function House() {
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
 
-  // Make sure initialStats has valid numerical values for money and other stats
   const defaultStats = {
     meal: 50,
     sleep: 50,
@@ -48,24 +50,18 @@ function House() {
     items: [],
   };
 
-  // Initialize with stats from map or default values
-  // Using proper type checking to avoid NaN values
   const [playerStats, setPlayerStats] = useState(() => {
-    // Handle potentially corrupt stats data
     const stats = { ...defaultStats };
 
     if (initialStats) {
-      // Ensure all numeric values are actually numbers
       Object.keys(stats).forEach((key) => {
         if (key !== "items") {
-          // Make sure the value exists and is a valid number
           if (initialStats[key] !== undefined && !isNaN(Number(initialStats[key]))) {
             stats[key] = Number(initialStats[key]);
           }
         }
       });
 
-      // Handle items array separately
       if (Array.isArray(initialStats.items)) {
         stats.items = [...initialStats.items];
       }
@@ -79,9 +75,13 @@ function House() {
       state: {
         characterName,
         playerName,
-        stats: playerStats, // Pass current stats back to map
+        stats: playerStats,
       },
     });
+  };
+
+  const handleItemUse = (item) => {
+    handleUseItem(item, setPlayerStats);
   };
 
   const performActivity = (activityName, statChanges) => {
@@ -93,20 +93,16 @@ function House() {
     setShowDialog(false);
 
     if (isFastForward) {
-      // Fast Forward mode: apply all changes instantly
       setPlayerStats((prev) => {
         const newStats = { ...prev };
         Object.keys(statChanges).forEach((stat) => {
-          // Ensure changes are numeric
           const change = Number(statChanges[stat]);
-          if (isNaN(change)) return; // Skip if not a valid number
+          if (isNaN(change)) return;
 
           if (stat === "money" || stat === "experience" || stat === "skillPoints") {
-            // Ensure the previous value is a number
             const prevValue = Number(prev[stat]) || 0;
             newStats[stat] = Math.max(0, prevValue + change);
           } else {
-            // Ensure the previous value is a number
             const prevValue = Number(prev[stat]) || 0;
             newStats[stat] = Math.min(100, Math.max(0, prevValue + change));
           }
@@ -114,11 +110,9 @@ function House() {
         return newStats;
       });
 
-      // Show a brief flash of activity
       setTimeout(() => {
         setActivityProgress(100);
 
-        // End activity after a brief moment
         setTimeout(() => {
           setIsPerformingActivity(false);
           setCurrentActivity("");
@@ -126,17 +120,13 @@ function House() {
         }, 500);
       }, 300);
     } else {
-      // Normal mode: apply changes gradually
       const totalSteps = ACTIVITY_DURATION / ACTIVITY_UPDATE_INTERVAL;
       let currentStep = 0;
 
-      // Calculate incremental changes per step
       const incrementalChanges = {};
       Object.keys(statChanges).forEach((stat) => {
-        // Ensure changes are numeric
         const change = Number(statChanges[stat]);
-        if (isNaN(change)) return; // Skip if not a valid number
-
+        if (isNaN(change)) return;
         incrementalChanges[stat] = change / totalSteps;
       });
 
@@ -145,21 +135,17 @@ function House() {
         const progress = (currentStep / totalSteps) * 100;
         setActivityProgress(progress);
 
-        // Update stats gradually
         setPlayerStats((prev) => {
           const newStats = { ...prev };
 
           Object.keys(incrementalChanges).forEach((stat) => {
-            // Ensure the increment is numeric
             const increment = Number(incrementalChanges[stat]);
-            if (isNaN(increment)) return; // Skip if not a valid number
+            if (isNaN(increment)) return;
 
             if (stat === "money" || stat === "experience" || stat === "skillPoints") {
-              // Ensure the previous value is a number
               const prevValue = Number(prev[stat]) || 0;
               newStats[stat] = Math.max(0, prevValue + increment);
             } else {
-              // Ensure the previous value is a number
               const prevValue = Number(prev[stat]) || 0;
               newStats[stat] = Math.min(100, Math.max(0, prevValue + increment));
             }
@@ -169,7 +155,6 @@ function House() {
         });
 
         if (currentStep >= totalSteps) {
-          // Activity completed
           clearInterval(activityIntervalRef.current);
           setIsPerformingActivity(false);
           setActivityProgress(0);
@@ -179,7 +164,6 @@ function House() {
     }
   };
 
-  // Rest of the code remains the same
   const handleEnterLocation = () => {
     console.log(`Performing activity at ${currentLocationHouse}`);
 
@@ -215,7 +199,6 @@ function House() {
     }
   };
 
-  // Clean up activity interval on unmount
   useEffect(() => {
     return () => {
       if (activityIntervalRef.current) {
@@ -252,7 +235,6 @@ function House() {
     return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
 
-  // Get actual viewport size
   useEffect(() => {
     const updateViewportSize = () => {
       if (houseRef.current) {
@@ -268,7 +250,6 @@ function House() {
     return () => window.removeEventListener("resize", updateViewportSize);
   }, []);
 
-  // Handle camera movement
   useEffect(() => {
     if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
 
@@ -296,10 +277,8 @@ function House() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
-  // Handle player movement
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Prevent movement during activities
       if (isPerformingActivity) return;
 
       setPlayerPos((prev) => {
@@ -334,9 +313,8 @@ function House() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [MOVE_SPEED, PLAYER_SCALE, PLAYER_SIZE, WORLD_HEIGHT, WORLD_WIDTH, isPerformingActivity]);
 
-  // Effect to show dialog when player is near a specific location
   useEffect(() => {
-    if (isPerformingActivity) return; // Don't show dialogs during activities
+    if (isPerformingActivity) return;
 
     if (isNearBed(playerPos.x, playerPos.y)) {
       setCurrentLocationHouse("Bed");
@@ -359,7 +337,6 @@ function House() {
     }
   }, [playerPos, isPerformingActivity]);
 
-  // Add debugging for development
   useEffect(() => {
     console.log("Current player stats:", playerStats);
   }, [playerStats]);
@@ -367,7 +344,7 @@ function House() {
   return (
     <div className="house-game-container">
       <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
         <SpeedToggleButton />
       </div>
       <div className="house-game-viewport" ref={houseRef}>
@@ -436,6 +413,8 @@ function House() {
           <div>🗺️ Explore the house!</div>
         </div>
       </div>
+
+      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
     </div>
   );
 }

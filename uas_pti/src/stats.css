@@ -1,10 +1,10 @@
 /* stats.css */
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Silkscreen&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Silkscreen&display=swap");
 
 :root {
   --money-color: #bc8044;
@@ -500,7 +500,6 @@ body {
   }
 }
 
-/* Adjust stat-value if needed to better align with the indicator */
 .stat-value,
 .resource-value {
   display: flex; /* Helps align indicator and text */

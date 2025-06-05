@@ -7,7 +7,7 @@ import Map from "./components/map";
 import House from "./components/house";
 import Field from "./components/field";
 import Beach from "./components/beach";
-// import Restaurant from "./components/restaurant";
+import Restaurant from "./components/restaurant";
 // import Mountain from "./components/mountain";
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
           <Route path="/house" element={<House />} />
           <Route path="/field" element={<Field />} />
           <Route path="/beach" element={<Beach />} />
+          <Route path="/restaurant" element={<Restaurant />} />
         </Routes>
       </SpeedModeProvider>
     </Router>

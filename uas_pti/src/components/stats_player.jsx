@@ -3,7 +3,7 @@ import "../stats.css";
 import { useSpeedMode } from "./speed";
 import Inventory from "./inventory";
 
-function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
+function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
   // Destructure stats object
   const { meal = 50, sleep = 50, health = 80, energy = 80, happiness = 50, cleanliness = 50, money = 100, experience = 0, level = 1, skillPoints = 0, items = [] } = stats;
 
@@ -284,8 +284,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats }) {
         </div>
       )}
 
-      {/* Inventory Overlay */}
-      {showInventory && <Inventory items={items} onClose={handleCloseInventory} />}
+      {showInventory && <Inventory items={items} onClose={handleCloseInventory} onUseItem={onUseItem} /* ← add */ />}
     </>
   );
 }

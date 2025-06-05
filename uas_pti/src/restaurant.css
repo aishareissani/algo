@@ -1,3 +1,4 @@
+/* restaurant.css */
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Dongle&display=swap");
 
@@ -6,7 +7,7 @@
 @tailwind utilities;
 
 /* Main container */
-.beach-game-container {
+.resto-game-container {
   position: fixed;
   top: 0;
   left: 0;
@@ -20,7 +21,7 @@
 }
 
 /* Game viewport - SINGLE DEFINITION ONLY */
-.beach-game-viewport {
+.resto-game-viewport {
   width: 800px;
   height: 600px;
   border: 4px solid #78d658;
@@ -32,7 +33,7 @@
 }
 
 /* Game world */
-.beach-game-world {
+.resto-game-world {
   position: absolute;
   width: 3825px;
   height: 2008px;
@@ -42,16 +43,16 @@
   transform-origin: top left;
 }
 
-/* beach background applied to the game world */
-.beach-background {
-  background-image: url("/assets/locations/beach_inside.png");
+/* resto background applied to the game world */
+.resto-background {
+  background-image: url("/assets/locations/restaurant_inside.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
 }
 
 /* Player */
-.beach-player {
+.resto-player {
   position: absolute;
   width: 40px;
   height: 60px;
@@ -59,7 +60,7 @@
   transition: none;
 }
 
-.beach-player-sprite {
+.resto-player-sprite {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -99,7 +100,7 @@
 }
 
 /* Update player coords to allow for button */
-.beach-player-coords {
+.resto-player-coords {
   display: flex;
   flex-direction: column;
   align-items: flex-start;

@@ -1,7 +1,8 @@
-// map.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
+import Inventory from "./inventory";
+import { handleUseItem } from "../utils/itemHandlers";
 
 function Map() {
   const location = useLocation();
@@ -13,6 +14,7 @@ function Map() {
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [showInventory, setShowInventory] = useState(false);
   const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
   const mapRef = useRef(null);
@@ -25,7 +27,7 @@ function Map() {
   const PLAYER_SIZE = 40;
   const MOVE_SPEED = 8;
 
-  const isNearHouseDoor = (x, y) => {
+  const isNearHouse = (x, y) => {
     return x >= 1918 && x <= 2262 && y >= 430 && y <= 660;
   };
   const isNearField = (x, y) => {
@@ -41,7 +43,6 @@ function Map() {
     return x >= 176 && x <= 848 && y >= 40 && y <= 1034;
   };
 
-  // Initialize with passed stats or default values
   const [playerStats, setPlayerStats] = useState(
     passedStats || {
       meal: 50,
@@ -68,8 +69,12 @@ function Map() {
     });
   };
 
+  const handleItemUse = (item) => {
+    handleUseItem(item, setPlayerStats);
+  };
+
   useEffect(() => {
-    if (isNearHouseDoor(playerPos.x, playerPos.y)) {
+    if (isNearHouse(playerPos.x, playerPos.y)) {
       setCurrentLocation("house");
       setShowDialog(true);
     } else if (isNearField(playerPos.x, playerPos.y)) {
@@ -141,15 +146,10 @@ function Map() {
 
   useEffect(() => {
     if (
-      // house
       (playerPos.x >= 1918 && playerPos.x <= 2262 && playerPos.y >= 430 && playerPos.y <= 660) ||
-      // field
       (playerPos.x >= 2894 && playerPos.x <= 3160 && playerPos.y >= 762 && playerPos.y <= 1026) ||
-      // beach
       (playerPos.x >= 3238 && playerPos.x <= 3575 && playerPos.y >= 626 && playerPos.y <= 1186) ||
-      // resto
       (playerPos.x >= 1526 && playerPos.x <= 1718 && playerPos.y >= 898 && playerPos.y <= 1058) ||
-      // gunung
       (playerPos.x >= 176 && playerPos.x <= 848 && playerPos.y >= 40 && playerPos.y <= 1034)
     ) {
       setShowDialog(true);
@@ -165,7 +165,7 @@ function Map() {
       state: {
         characterName,
         playerName,
-        stats: playerStats, // Pass current stats to the location
+        stats: playerStats,
       },
     });
   };
@@ -173,7 +173,7 @@ function Map() {
   return (
     <div className="game-container">
       <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
       </div>
 
       {showDialog && currentLocation && (
@@ -230,7 +230,6 @@ function Map() {
           <img src={"/assets/avatar/" + characterName + ".png"} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            {/* Fixed: Use the correct CSS class name */}
             <button className="back-to-start-button-inline" onClick={handleBackToStart}>
               Back to Start
             </button>
@@ -242,6 +241,8 @@ function Map() {
           <div>🗺️ Explore the village!</div>
         </div>
       </div>
+
+      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
     </div>
   );
 }
