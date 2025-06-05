@@ -1,0 +1,106 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Dongle&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Main container */
+.mountain-game-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #80664f;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Game viewport - SINGLE DEFINITION ONLY */
+.mountain-game-viewport {
+  width: 800px;
+  height: 600px;
+  border: 4px solid #78d658;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 30px rgba(121, 216, 88, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2);
+  background: #f0f9e6;
+}
+
+/* Game world */
+.mountain-game-world {
+  position: absolute;
+  width: 3825px;
+  height: 2008px;
+  top: 0;
+  left: 0;
+  will-change: transform;
+  transform-origin: top left;
+}
+
+/* mountain background applied to the game world */
+.mountain-background {
+  background-image: url("/assets/locations/mountain_inside.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Player */
+.mountain-player {
+  position: absolute;
+  width: 40px;
+  height: 60px;
+  z-index: 10;
+  transition: none;
+}
+
+.mountain-player-sprite {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+/* Back to Map Button at bottom */
+.back-to-map-button-inline {
+  display: block;
+  margin-top: 8px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  border: 2px solid #ffffff;
+  border-radius: 6px;
+  color: white;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 8px;
+  font-weight: bold;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 3px 6px rgba(79, 172, 254, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+  width: fit-content;
+}
+
+.back-to-map-button-inline:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 5px 10px rgba(79, 172, 254, 0.4), 0 2px 5px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.back-to-map-button-inline:active {
+  transform: translateY(-1px) scale(1.02);
+  transition: all 0.1s ease;
+}
+
+/* Update player coords to allow for button */
+.mountain-player-coords {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}

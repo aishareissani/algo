@@ -1,3 +1,4 @@
+// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SpeedModeProvider } from "./components/speed";
@@ -8,7 +9,7 @@ import House from "./components/house";
 import Field from "./components/field";
 import Beach from "./components/beach";
 import Restaurant from "./components/restaurant";
-// import Mountain from "./components/mountain";
+import Mountain from "./components/mountain";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/field" element={<Field />} />
           <Route path="/beach" element={<Beach />} />
           <Route path="/restaurant" element={<Restaurant />} />
+          <Route path="/mountain" element={<Mountain />} />
         </Routes>
       </SpeedModeProvider>
     </Router>

@@ -1,10 +1,10 @@
+// field.jsx
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
-import Inventory from "./inventory";
-import { handleUseItem } from "../utils/itemHandlers";
 import "../field.css";
+import ArrowKey from "./arrow_key";
 
 function Field() {
   const { isFastForward } = useSpeedMode();
@@ -17,7 +17,6 @@ function Field() {
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
-  const [showInventory, setShowInventory] = useState(false);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -36,6 +35,7 @@ function Field() {
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
 
+  // Initialize with stats from map or default values
   const defaultStats = {
     meal: 50,
     sleep: 50,
@@ -49,19 +49,22 @@ function Field() {
     skillPoints: 0,
     items: [],
   };
-
   const [playerStats, setPlayerStats] = useState(() => {
+    // Handle potentially corrupt stats data
     const stats = { ...defaultStats };
 
     if (initialStats) {
+      // Ensure all numeric values are actually numbers
       Object.keys(stats).forEach((key) => {
         if (key !== "items") {
+          // Make sure the value exists and is a valid number
           if (initialStats[key] !== undefined && !isNaN(Number(initialStats[key]))) {
             stats[key] = Number(initialStats[key]);
           }
         }
       });
 
+      // Handle items array separately
       if (Array.isArray(initialStats.items)) {
         stats.items = [...initialStats.items];
       }
@@ -69,19 +72,14 @@ function Field() {
 
     return stats;
   });
-
   const handleBackToMap = () => {
     navigate("/map", {
       state: {
         characterName,
         playerName,
-        stats: playerStats,
+        stats: playerStats, // Pass current stats back to map
       },
     });
-  };
-
-  const handleItemUse = (item) => {
-    handleUseItem(item, setPlayerStats);
   };
 
   const performActivity = (activityName, statChanges) => {
@@ -91,18 +89,21 @@ function Field() {
     setCurrentActivity(activityName);
     setActivityProgress(0);
     setShowDialog(false);
-
     if (isFastForward) {
+      // Fast Forward mode: apply all changes instantly
       setPlayerStats((prev) => {
         const newStats = { ...prev };
         Object.keys(statChanges).forEach((stat) => {
+          // Ensure changes are numeric
           const change = Number(statChanges[stat]);
-          if (isNaN(change)) return;
+          if (isNaN(change)) return; // Skip if not a valid number
 
           if (stat === "money" || stat === "experience" || stat === "skillPoints") {
+            // Ensure the previous value is a number
             const prevValue = Number(prev[stat]) || 0;
             newStats[stat] = Math.max(0, prevValue + change);
           } else {
+            // Ensure the previous value is a number
             const prevValue = Number(prev[stat]) || 0;
             newStats[stat] = Math.min(100, Math.max(0, prevValue + change));
           }
@@ -110,9 +111,11 @@ function Field() {
         return newStats;
       });
 
+      // Show a brief flash of activity
       setTimeout(() => {
         setActivityProgress(100);
 
+        // End activity after a brief moment
         setTimeout(() => {
           setIsPerformingActivity(false);
           setCurrentActivity("");
@@ -123,10 +126,13 @@ function Field() {
       const totalSteps = ACTIVITY_DURATION / ACTIVITY_UPDATE_INTERVAL;
       let currentStep = 0;
 
+      // Calculate incremental changes per step
       const incrementalChanges = {};
       Object.keys(statChanges).forEach((stat) => {
+        // Ensure changes are numeric
         const change = Number(statChanges[stat]);
-        if (isNaN(change)) return;
+        if (isNaN(change)) return; // Skip if not a valid number
+
         incrementalChanges[stat] = change / totalSteps;
       });
 
@@ -135,17 +141,21 @@ function Field() {
         const progress = (currentStep / totalSteps) * 100;
         setActivityProgress(progress);
 
+        // Update stats gradually
         setPlayerStats((prev) => {
           const newStats = { ...prev };
 
           Object.keys(incrementalChanges).forEach((stat) => {
+            // Ensure the increment is numeric
             const increment = Number(incrementalChanges[stat]);
-            if (isNaN(increment)) return;
+            if (isNaN(increment)) return; // Skip if not a valid number
 
             if (stat === "money" || stat === "experience" || stat === "skillPoints") {
+              // Ensure the previous value is a number
               const prevValue = Number(prev[stat]) || 0;
               newStats[stat] = Math.max(0, prevValue + increment);
             } else {
+              // Ensure the previous value is a number
               const prevValue = Number(prev[stat]) || 0;
               newStats[stat] = Math.min(100, Math.max(0, prevValue + increment));
             }
@@ -155,6 +165,7 @@ function Field() {
         });
 
         if (currentStep >= totalSteps) {
+          // Activity completed
           clearInterval(activityIntervalRef.current);
           setIsPerformingActivity(false);
           setActivityProgress(0);
@@ -192,6 +203,7 @@ function Field() {
     }
   };
 
+  // Clean up activity interval on unmount
   useEffect(() => {
     return () => {
       if (activityIntervalRef.current) {
@@ -227,6 +239,7 @@ function Field() {
     return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
 
+  // Get actual viewport size
   useEffect(() => {
     const updateViewportSize = () => {
       if (fieldRef.current) {
@@ -242,6 +255,7 @@ function Field() {
     return () => window.removeEventListener("resize", updateViewportSize);
   }, []);
 
+  // Handle camera movement
   useEffect(() => {
     if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
 
@@ -269,44 +283,34 @@ function Field() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (isPerformingActivity) return;
+  const handleArrowPress = (direction) => {
+    setPlayerPos((prev) => {
+      let newX = prev.x;
+      let newY = prev.y;
 
-      setPlayerPos((prev) => {
-        let newX = prev.x;
-        let newY = prev.y;
-        const playerHalfSize = (PLAYER_SIZE * PLAYER_SCALE) / 2;
+      switch (direction) {
+        case "up":
+          newY = Math.max(0, prev.y - MOVE_SPEED);
+          break;
+        case "down":
+          newY = Math.min(WORLD_HEIGHT - PLAYER_SIZE, prev.y + MOVE_SPEED);
+          break;
+        case "left":
+          newX = Math.max(0, prev.x - MOVE_SPEED);
+          break;
+        case "right":
+          newX = Math.min(WORLD_WIDTH - PLAYER_SIZE, prev.x + MOVE_SPEED);
+          break;
+        default:
+          break;
+      }
 
-        switch (e.key.toLowerCase()) {
-          case "arrowup":
-          case "w":
-            newY = Math.max(playerHalfSize, prev.y - MOVE_SPEED);
-            break;
-          case "arrowdown":
-          case "s":
-            newY = Math.min(WORLD_HEIGHT - playerHalfSize, prev.y + MOVE_SPEED);
-            break;
-          case "arrowleft":
-          case "a":
-            newX = Math.max(playerHalfSize, prev.x - MOVE_SPEED);
-            break;
-          case "arrowright":
-          case "d":
-            newX = Math.min(WORLD_WIDTH - playerHalfSize, prev.x + MOVE_SPEED);
-            break;
-          default:
-            return prev;
-        }
-        return { x: newX, y: newY };
-      });
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [MOVE_SPEED, PLAYER_SCALE, PLAYER_SIZE, WORLD_HEIGHT, WORLD_WIDTH, isPerformingActivity]);
+      return { x: newX, y: newY };
+    });
+  };
 
   useEffect(() => {
-    if (isPerformingActivity) return;
+    if (isPerformingActivity) return; // Don't show dialogs during activities
 
     if (isNearSwing(playerPos.x, playerPos.y)) {
       setCurrentLocationfield("Swing");
@@ -321,6 +325,7 @@ function Field() {
       setCurrentLocationfield("Fountain");
       setShowDialog(true);
     } else {
+      // IMPORTANT: Clear dialog when not near any location
       setCurrentLocationfield(null);
       setShowDialog(false);
     }
@@ -329,7 +334,7 @@ function Field() {
   return (
     <div className="field-game-container">
       <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
         <SpeedToggleButton />
       </div>
       <div className="field-game-viewport" ref={fieldRef}>
@@ -388,6 +393,7 @@ function Field() {
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
+            {/* Back to Map Button positioned directly below coordinates */}
             <button className="back-to-map-button-inline" onClick={handleBackToMap}>
               Back to Map
             </button>
@@ -398,8 +404,7 @@ function Field() {
           <div>🗺️ Explore the field!</div>
         </div>
       </div>
-
-      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
+      <ArrowKey onKeyPress={handleArrowPress} />
     </div>
   );
 }

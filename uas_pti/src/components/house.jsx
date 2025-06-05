@@ -5,6 +5,7 @@ import { useSpeedMode, SpeedToggleButton } from "./speed";
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import "../house.css";
+import ArrowKey from "./arrow_key";
 
 function House() {
   const { isFastForward } = useSpeedMode();
@@ -277,41 +278,31 @@ function House() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (isPerformingActivity) return;
+  const handleArrowPress = (direction) => {
+    setPlayerPos((prev) => {
+      let newX = prev.x;
+      let newY = prev.y;
 
-      setPlayerPos((prev) => {
-        let newX = prev.x;
-        let newY = prev.y;
-        const playerHalfSize = (PLAYER_SIZE * PLAYER_SCALE) / 2;
+      switch (direction) {
+        case "up":
+          newY = Math.max(0, prev.y - MOVE_SPEED);
+          break;
+        case "down":
+          newY = Math.min(WORLD_HEIGHT - PLAYER_SIZE, prev.y + MOVE_SPEED);
+          break;
+        case "left":
+          newX = Math.max(0, prev.x - MOVE_SPEED);
+          break;
+        case "right":
+          newX = Math.min(WORLD_WIDTH - PLAYER_SIZE, prev.x + MOVE_SPEED);
+          break;
+        default:
+          break;
+      }
 
-        switch (e.key.toLowerCase()) {
-          case "arrowup":
-          case "w":
-            newY = Math.max(playerHalfSize, prev.y - MOVE_SPEED);
-            break;
-          case "arrowdown":
-          case "s":
-            newY = Math.min(WORLD_HEIGHT - playerHalfSize, prev.y + MOVE_SPEED);
-            break;
-          case "arrowleft":
-          case "a":
-            newX = Math.max(playerHalfSize, prev.x - MOVE_SPEED);
-            break;
-          case "arrowright":
-          case "d":
-            newX = Math.min(WORLD_WIDTH - playerHalfSize, prev.x + MOVE_SPEED);
-            break;
-          default:
-            return prev;
-        }
-        return { x: newX, y: newY };
-      });
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [MOVE_SPEED, PLAYER_SCALE, PLAYER_SIZE, WORLD_HEIGHT, WORLD_WIDTH, isPerformingActivity]);
+      return { x: newX, y: newY };
+    });
+  };
 
   useEffect(() => {
     if (isPerformingActivity) return;
@@ -415,6 +406,8 @@ function House() {
       </div>
 
       {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
+
+      <ArrowKey onKeyPress={handleArrowPress} />
     </div>
   );
 }

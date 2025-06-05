@@ -46,8 +46,8 @@ function Inventory({ items = [], onClose, onUseItem }) {
         return "item-icon-conch-shell";
       case "Starfish":
         return "item-icon-starfish";
-      case "Shiny Rock":
-        return "item-icon-shiny-rock";
+      case "Quartz":
+        return "item-icon-quartz";
       case "Granite":
         return "item-icon-granite";
       case "Pencil":
@@ -59,7 +59,6 @@ function Inventory({ items = [], onClose, onUseItem }) {
     }
   };
 
-  // Handle mouse enter for an item - FIXED: Only show for Takeaway Meal
   const handleMouseEnter = (e, item) => {
     // Clear any existing timeout
     if (hoverTimeoutRef.current) {

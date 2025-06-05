@@ -2,9 +2,8 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
-import Inventory from "./inventory";
-import { handleUseItem } from "../utils/itemHandlers";
 import "../beach.css";
+import ArrowKey from "./arrow_key";
 
 function Beach() {
   const { isFastForward } = useSpeedMode();
@@ -17,7 +16,6 @@ function Beach() {
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
-  const [showInventory, setShowInventory] = useState(false);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -50,21 +48,27 @@ function Beach() {
     experience: 0,
     level: 1,
     skillPoints: 0,
-    items: [],
+    items: [], // Make sure this is included
   };
 
+  // Initialize with stats from map or default values
+  // Using proper type checking to avoid NaN values
   const [playerStats, setPlayerStats] = useState(() => {
+    // Handle potentially corrupt stats data
     const stats = { ...defaultStats };
 
     if (initialStats) {
+      // Ensure all numeric values are actually numbers
       Object.keys(stats).forEach((key) => {
         if (key !== "items") {
+          // Make sure the value exists and is a valid number
           if (initialStats[key] !== undefined && !isNaN(Number(initialStats[key]))) {
             stats[key] = Number(initialStats[key]);
           }
         }
       });
 
+      // Handle items array separately
       if (Array.isArray(initialStats.items)) {
         stats.items = [...initialStats.items];
       }
@@ -78,29 +82,29 @@ function Beach() {
       state: {
         characterName,
         playerName,
-        stats: playerStats,
+        stats: playerStats, // Pass current stats back to map
       },
     });
-  };
-
-  const handleItemUse = (item) => {
-    handleUseItem(item, setPlayerStats);
   };
 
   const addItemToInventory = (itemName, category, icon, onStatsUpdate) => {
     onStatsUpdate((prev) => {
       const existingItemIndex = prev.items.findIndex((item) => item.name === itemName);
       const updatedItems = [...prev.items];
+
+      // Add XP for collecting an item (1 item = 1 XP)
       const newExperience = prev.experience + 1;
 
       if (existingItemIndex !== -1) {
+        // Item already exists, increase quantity
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
           quantity: updatedItems[existingItemIndex].quantity + 1,
         };
       } else {
+        // New item, add to inventory
         const newItem = {
-          id: Date.now(),
+          id: Date.now(), // Simple ID generation
           name: itemName,
           category: category,
           icon: icon,
@@ -112,7 +116,7 @@ function Beach() {
       return {
         ...prev,
         items: updatedItems,
-        experience: newExperience,
+        experience: newExperience, // Update experience
       };
     });
   };
@@ -126,6 +130,7 @@ function Beach() {
     setShowDialog(false);
 
     if (isFastForward) {
+      // Fast Forward mode: apply all changes instantly
       setPlayerStats((prev) => {
         const newStats = { ...prev };
         Object.keys(statChanges).forEach((stat) => {
@@ -143,10 +148,12 @@ function Beach() {
         return newStats;
       });
 
+      // Add item to inventory if applicable
       if (collectItem) {
         addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
       }
 
+      // Show a brief flash of activity
       setTimeout(() => {
         setActivityProgress(100);
         setTimeout(() => {
@@ -189,6 +196,7 @@ function Beach() {
         });
 
         if (currentStep >= totalSteps) {
+          // Add item to inventory when activity completes
           if (collectItem) {
             addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
           }
@@ -238,6 +246,7 @@ function Beach() {
         }
       );
     } else if (currentLocationbeach === "Flower") {
+      // You can vary the flower type randomly if you want
       const flowers = [
         { name: "Rose", icon: "rose" },
         { name: "Daisy", icon: "daisy" },
@@ -281,23 +290,41 @@ function Beach() {
   };
 
   const isNearSunbath = (x, y) => {
-    return (x >= 1450 && x <= 1725 && y >= 1150 && y <= 1425) || (x >= 1450 && x <= 1725 && y >= 725 && y <= 925) || (x >= 675 && x <= 950 && y >= 725 && y <= 925) || (x >= 675 && x <= 950 && y >= 1150 && y <= 1425);
+    return (
+      (x >= 1450 && x <= 1725 && y >= 1150 && y <= 1425) || // Spot 1
+      (x >= 1450 && x <= 1725 && y >= 725 && y <= 925) || // Spot 2
+      (x >= 675 && x <= 950 && y >= 725 && y <= 925) || // Spot 3
+      (x >= 675 && x <= 950 && y >= 1150 && y <= 1425) // Spot 4
+    );
   };
 
   const isNearSandcastle = (x, y) => {
-    return (x >= 1850 && x <= 1975 && y >= 1375 && y <= 1675) || (x >= 400 && x <= 550 && y >= 600 && y <= 675);
+    return (
+      (x >= 1850 && x <= 1975 && y >= 1375 && y <= 1675) || // Spot 1
+      (x >= 400 && x <= 550 && y >= 600 && y <= 675) // Spot 2
+    );
   };
 
   const isNearSeashell = (x, y) => {
-    return (x >= 2100 && x <= 2200 && y >= 275 && y <= 500) || (x >= 1250 && x <= 1350 && y >= 750 && y <= 950);
+    return (
+      (x >= 2100 && x <= 2200 && y >= 275 && y <= 500) || // Spot 1
+      (x >= 1250 && x <= 1350 && y >= 750 && y <= 950)
+    );
   };
 
   const isNearFlower = (x, y) => {
-    return (x >= 625 && x <= 925 && y >= 1740 && y <= 1865) || (x >= 825 && x <= 1275 && y >= 290 && y <= 465);
+    return (
+      (x >= 625 && x <= 925 && y >= 1740 && y <= 1865) || // Spot 1
+      (x >= 825 && x <= 1275 && y >= 290 && y <= 465) // Spot 2
+    );
   };
 
   const isNearStarFish = (x, y) => {
-    return (x >= 2000 && x <= 2125 && y >= 1625 && y <= 1825) || (x >= 1150 && x <= 1275 && y >= 1225 && y <= 1450) || (x >= 375 && x <= 475 && y >= 300 && y <= 475);
+    return (
+      (x >= 2000 && x <= 2125 && y >= 1625 && y <= 1825) || // Spot 1
+      (x >= 1150 && x <= 1275 && y >= 1225 && y <= 1450) || // Spot 2
+      (x >= 375 && x <= 475 && y >= 300 && y <= 475)
+    );
   };
 
   const dialogMessages = {
@@ -313,6 +340,7 @@ function Beach() {
     return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
 
+  // Clean up activity interval on unmount
   useEffect(() => {
     return () => {
       if (activityIntervalRef.current) {
@@ -321,6 +349,7 @@ function Beach() {
     };
   }, []);
 
+  // Get actual viewport size
   useEffect(() => {
     const updateViewportSize = () => {
       if (beachRef.current) {
@@ -336,6 +365,7 @@ function Beach() {
     return () => window.removeEventListener("resize", updateViewportSize);
   }, []);
 
+  // Handle camera movement
   useEffect(() => {
     if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
 
@@ -363,44 +393,34 @@ function Beach() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (isPerformingActivity) return;
+  const handleArrowPress = (direction) => {
+    setPlayerPos((prev) => {
+      let newX = prev.x;
+      let newY = prev.y;
 
-      setPlayerPos((prev) => {
-        let newX = prev.x;
-        let newY = prev.y;
-        const playerHalfSize = (PLAYER_SIZE * PLAYER_SCALE) / 2;
+      switch (direction) {
+        case "up":
+          newY = Math.max(0, prev.y - MOVE_SPEED);
+          break;
+        case "down":
+          newY = Math.min(WORLD_HEIGHT - PLAYER_SIZE, prev.y + MOVE_SPEED);
+          break;
+        case "left":
+          newX = Math.max(0, prev.x - MOVE_SPEED);
+          break;
+        case "right":
+          newX = Math.min(WORLD_WIDTH - PLAYER_SIZE, prev.x + MOVE_SPEED);
+          break;
+        default:
+          break;
+      }
 
-        switch (e.key.toLowerCase()) {
-          case "arrowup":
-          case "w":
-            newY = Math.max(playerHalfSize, prev.y - MOVE_SPEED);
-            break;
-          case "arrowdown":
-          case "s":
-            newY = Math.min(WORLD_HEIGHT - playerHalfSize, prev.y + MOVE_SPEED);
-            break;
-          case "arrowleft":
-          case "a":
-            newX = Math.max(playerHalfSize, prev.x - MOVE_SPEED);
-            break;
-          case "arrowright":
-          case "d":
-            newX = Math.min(WORLD_WIDTH - playerHalfSize, prev.x + MOVE_SPEED);
-            break;
-          default:
-            return prev;
-        }
-        return { x: newX, y: newY };
-      });
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [MOVE_SPEED, PLAYER_SCALE, PLAYER_SIZE, WORLD_HEIGHT, WORLD_WIDTH, isPerformingActivity]);
+      return { x: newX, y: newY };
+    });
+  };
 
   useEffect(() => {
-    if (isPerformingActivity) return;
+    if (isPerformingActivity) return; // Don't show dialogs during activities
 
     if (isNearSwim(playerPos.x, playerPos.y)) {
       setCurrentLocationbeach("Swim");
@@ -421,6 +441,7 @@ function Beach() {
       setCurrentLocationbeach("StarFish");
       setShowDialog(true);
     } else {
+      // IMPORTANT: Clear dialog when not near any location
       setCurrentLocationbeach(null);
       setShowDialog(false);
     }
@@ -429,11 +450,11 @@ function Beach() {
   return (
     <div className="beach-game-container">
       <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
         <SpeedToggleButton />
       </div>
       <div className="beach-game-viewport" ref={beachRef}>
-        <SpeedToggleButton />
+        <SpeedToggleButton /> {/* Add the SpeedToggleButton here */}
         {showDialog && currentLocationbeach && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationbeach] || `Do you want to enter the ${currentLocationbeach}?`)}
@@ -487,6 +508,7 @@ function Beach() {
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
+            {/* Back to Map Button positioned directly below coordinates */}
             <button className="back-to-map-button-inline" onClick={handleBackToMap}>
               Back to Map
             </button>
@@ -498,7 +520,7 @@ function Beach() {
         </div>
       </div>
 
-      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
+      <ArrowKey onKeyPress={handleArrowPress} />
     </div>
   );
 }

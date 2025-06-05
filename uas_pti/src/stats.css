@@ -106,7 +106,7 @@ body {
 }
 
 .stat-container.good {
-  border-left-color: #79d959;
+  border-left-color: #66f880;
 }
 .stat-container.warning {
   border-left-color: #ffce5a;
@@ -295,7 +295,7 @@ body {
 .skill-icon {
   width: 25px;
   height: 25px;
-  background-image: url("./assets/icons/skill_icon.svg");
+  background-image: url("./assets/icons/skill.png");
   background-repeat: no-repeat;
   background-size: contain;
   display: inline-block;
