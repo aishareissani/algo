@@ -4,7 +4,7 @@ import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import Inventory from "./inventory";
 import "../restaurant.css";
-import ArrowKey from "./arrow_key";
+import ArrowKey from "./wasd_key";
 
 function Resto() {
   const { isFastForward } = useSpeedMode();

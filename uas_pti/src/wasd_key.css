@@ -1,0 +1,168 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+:root {
+  --main: #79d959;
+  --hover: #8ded81;
+  --active: #5cb24e;
+  --shadow: 0 2px 8px rgba(121, 217, 89, 0.2);
+  --key-shadow: 0 4px 0 #5cb24e;
+  --key-pressed: 0 2px 0 #4a9e3e;
+}
+
+.wasd-key-container {
+  position: fixed;
+  bottom: 120px;
+  right: 60px;
+  z-index: 50;
+}
+
+.wasd-key-container::before {
+  display: block;
+  text-align: center;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 11px;
+  color: var(--main);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.wasd-key-pad {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f8f8fe;
+  border-radius: 18px;
+  padding: 16px 22px 20px 22px;
+  border: 3px solid var(--main);
+  box-shadow: var(--shadow), 0 8px 0 #5cb24e;
+  font-family: "Press Start 2P", system-ui;
+  min-width: 180px;
+  user-select: none;
+}
+
+/* Top row with just W */
+.wasd-key-top-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+/* Bottom row with A S D */
+.wasd-key-middle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  justify-items: center;
+}
+
+.wasd-key {
+  font-family: inherit;
+  font-size: 24px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #f9fff8 0%, #dcfada 100%);
+  color: #273a16;
+  border: 2px solid var(--main);
+  border-radius: 12px;
+  height: 58px;
+  width: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--key-shadow);
+  cursor: pointer;
+  margin: 0 1px;
+  letter-spacing: 0;
+  transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.wasd-key::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: 10px 10px 0 0;
+}
+
+.wasd-key:hover,
+.wasd-key:focus-visible {
+  background: var(--hover);
+  color: #0b2106;
+  border-color: #5cb24e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #5cb24e;
+}
+
+.wasd-key:active {
+  background: var(--active);
+  color: #fff;
+  border-color: #456c35;
+  transform: translateY(2px);
+  box-shadow: var(--key-pressed);
+}
+
+/* Unique key styling */
+.wasd-key-w {
+  background: linear-gradient(135deg, #a4f78f 0%, #79d959 100%);
+  border-color: #5cb24e;
+}
+
+.wasd-key-a {
+  background: linear-gradient(135deg, #f9fff8 0%, #dcfada 100%);
+}
+
+.wasd-key-s {
+  background: linear-gradient(135deg, #f9fff8 0%, #dcfada 100%);
+}
+
+.wasd-key-d {
+  background: linear-gradient(135deg, #f9fff8 0%, #dcfada 100%);
+}
+
+/* Key press animation */
+@keyframes keyPress {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.wasd-key:active {
+  animation: keyPress 0.2s ease;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .wasd-key-container {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .wasd-key-pad {
+    padding: 12px 12px 16px 12px;
+    min-width: 140px;
+    gap: 6px;
+  }
+
+  .wasd-key {
+    font-size: 18px;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+  }
+
+  .wasd-key-container::before {
+    font-size: 9px;
+  }
+}

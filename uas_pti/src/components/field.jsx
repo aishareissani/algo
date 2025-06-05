@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import "../field.css";
-import ArrowKey from "./arrow_key";
+import ArrowKey from "./wasd_key";
 
 function Field() {
   const { isFastForward } = useSpeedMode();

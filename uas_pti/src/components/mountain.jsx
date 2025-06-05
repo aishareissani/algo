@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import "../mountain.css";
-import ArrowKey from "./arrow_key";
+import ArrowKey from "./wasd_key";
 
 function Mountain() {
   const { isFastForward } = useSpeedMode();

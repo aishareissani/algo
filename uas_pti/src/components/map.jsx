@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
-import ArrowKey from "./arrow_key";
+import ArrowKey from "./wasd_key";
 
 function Map() {
   const location = useLocation();

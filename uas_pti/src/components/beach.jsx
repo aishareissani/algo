@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import "../beach.css";
-import ArrowKey from "./arrow_key";
+import ArrowKey from "./wasd_key";
 
 function Beach() {
   const { isFastForward } = useSpeedMode();

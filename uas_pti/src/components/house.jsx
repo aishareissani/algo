@@ -5,7 +5,7 @@ import { useSpeedMode, SpeedToggleButton } from "./speed";
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import "../house.css";
-import ArrowKey from "./arrow_key";
+import ArrowKey from "./wasd_key";
 
 function House() {
   const { isFastForward } = useSpeedMode();
