@@ -1,4 +1,3 @@
-// Shared function to handle using items across all locations
 export const handleUseItem = (item, setPlayerStats) => {
   if (item.name === "Takeaway Meal") {
     setPlayerStats((prev) => {

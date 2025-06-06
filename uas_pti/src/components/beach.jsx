@@ -4,6 +4,7 @@ import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import "../beach.css";
 import ArrowKey from "./wasd_key";
+import Task from "./task";
 
 function Beach() {
   const { isFastForward } = useSpeedMode();
@@ -16,6 +17,8 @@ function Beach() {
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
+  const [showTasks, setShowTasks] = useState(true);
+  const [tasks, setTasks] = useState({})
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -420,6 +423,46 @@ function Beach() {
   };
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (isPerformingActivity) return;
+
+      let direction = null;
+      switch (e.key) {
+        case "ArrowUp":
+        case "w":
+        case "W":
+          direction = "up";
+          break;
+        case "ArrowDown":
+        case "s":
+        case "S":
+          direction = "down";
+          break;
+        case "ArrowLeft":
+        case "a":
+        case "A":
+          direction = "left";
+          break;
+        case "ArrowRight":
+        case "d":
+        case "D":
+          direction = "right";
+          break;
+        default:
+          break;
+      }
+
+      if (direction) {
+        e.preventDefault();
+        handleArrowPress(direction);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isPerformingActivity, handleArrowPress]);
+
+  useEffect(() => {
     if (isPerformingActivity) return; // Don't show dialogs during activities
 
     if (isNearSwim(playerPos.x, playerPos.y)) {
@@ -453,6 +496,7 @@ function Beach() {
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
         <SpeedToggleButton />
       </div>
+
       <div className="beach-game-viewport" ref={beachRef}>
         <SpeedToggleButton /> {/* Add the SpeedToggleButton here */}
         {showDialog && currentLocationbeach && !isPerformingActivity && (
@@ -521,6 +565,12 @@ function Beach() {
       </div>
 
       <ArrowKey onKeyPress={handleArrowPress} />
+
+      <Task
+        currentLocation="beach"
+        isInsideLocation={true} // Auto-expand karena di dalam location
+        customPosition={{ top: "65px" }} // Custom position
+      />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import "../mountain.css";
 import ArrowKey from "./wasd_key";
+import Task from "./task";
 
 function Mountain() {
   const { isFastForward } = useSpeedMode();
@@ -19,6 +20,8 @@ function Mountain() {
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
   const [showInventory, setShowInventory] = useState(false);
+  const [showTasks, setShowTasks] = useState(true);
+  const toggleTaskPanel = () => setShowTasks(!showTasks);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -365,6 +368,46 @@ function Mountain() {
   };
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (isPerformingActivity) return;
+
+      let direction = null;
+      switch (e.key) {
+        case "ArrowUp":
+        case "w":
+        case "W":
+          direction = "up";
+          break;
+        case "ArrowDown":
+        case "s":
+        case "S":
+          direction = "down";
+          break;
+        case "ArrowLeft":
+        case "a":
+        case "A":
+          direction = "left";
+          break;
+        case "ArrowRight":
+        case "d":
+        case "D":
+          direction = "right";
+          break;
+        default:
+          break;
+      }
+
+      if (direction) {
+        e.preventDefault();
+        handleArrowPress(direction);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isPerformingActivity, handleArrowPress]);
+
+  useEffect(() => {
     if (isPerformingActivity) return;
 
     if (isNearHike(playerPos.x, playerPos.y)) {
@@ -460,6 +503,12 @@ function Mountain() {
       {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
 
       <ArrowKey onKeyPress={handleArrowPress} />
+
+      <Task
+        currentLocation="mountain"
+        isInsideLocation={true} // Auto-expand karena di dalam location
+        customPosition={{ top: "65px" }} // Custom position
+      />
     </div>
   );
 }

@@ -1,10 +1,10 @@
-// src/components/map.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import ArrowKey from "./wasd_key";
+import Task from "./task";
 
 function Map() {
   const location = useLocation();
@@ -17,6 +17,7 @@ function Map() {
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [showInventory, setShowInventory] = useState(false);
+  const [showTasks, setShowTasks] = useState(true);
 
   const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
@@ -29,6 +30,8 @@ function Map() {
   const VIEWPORT_HEIGHT = 600;
   const PLAYER_SIZE = 40;
   const MOVE_SPEED = 8;
+
+  const [completedActivities, setCompletedActivities] = useState(["swim", "sunbath"]);
 
   // Location Detection Functions
   const isNearHouse = (x, y) => x >= 1918 && x <= 2262 && y >= 430 && y <= 660;
@@ -67,7 +70,6 @@ function Map() {
     handleUseItem(item, setPlayerStats);
   };
 
-  // Unified Movement Handler
   const handleArrowPress = (direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
@@ -94,7 +96,6 @@ function Map() {
     });
   };
 
-  // Keyboard Event Listener
   useEffect(() => {
     const handleKeyDown = (e) => {
       let direction = null;
@@ -133,7 +134,6 @@ function Map() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Camera Position Update
   useEffect(() => {
     const cameraCenterX = playerPos.x - VIEWPORT_WIDTH / 2;
     const cameraCenterY = playerPos.y - VIEWPORT_HEIGHT / 2;
@@ -144,7 +144,6 @@ function Map() {
     setCameraPos({ x: clampedX, y: clampedY });
   }, [playerPos]);
 
-  // Location Detection Dialog
   useEffect(() => {
     if (isNearHouse(playerPos.x, playerPos.y) || isNearField(playerPos.x, playerPos.y) || isNearBeach(playerPos.x, playerPos.y) || isNearResto(playerPos.x, playerPos.y) || isNearGunung(playerPos.x, playerPos.y)) {
       if (isNearHouse(playerPos.x, playerPos.y)) setCurrentLocation("house");
@@ -171,14 +170,17 @@ function Map() {
     });
   };
 
+  // Toggle Task panel
+  const toggleTaskPanel = () => setShowTasks(!showTasks);
+
   return (
     <div className="game-container">
-      {/* Stats Player */}
       <div>
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
       </div>
 
-      {/* Interaction Dialog */}
+      {showTasks && <Task currentLocation={currentLocation} completedActivities={completedActivities} />}
+
       {showDialog && currentLocation && (
         <div className="dialog fade-in-center">
           <p>
@@ -197,7 +199,6 @@ function Map() {
         </div>
       )}
 
-      {/* Game Viewport */}
       <div className="game-viewport" ref={mapRef}>
         <div className="game-world map-background" style={{ transform: `translate(-${cameraPos.x}px, -${cameraPos.y}px)` }}>
           <div className="player" ref={playerRef} style={{ left: playerPos.x, top: playerPos.y }}>
@@ -207,9 +208,7 @@ function Map() {
         </div>
       </div>
 
-      {/* Game HUD */}
       <div className="game-hud">
-        {/* Mini Map */}
         <div className="mini-map">
           <div className="mini-map-world">
             <div
@@ -219,7 +218,6 @@ function Map() {
                 top: `${((playerPos.y + PLAYER_SIZE / 2) / WORLD_HEIGHT) * 100}%`,
               }}
             />
-
             <div
               className="mini-map-viewport"
               style={{
@@ -231,8 +229,6 @@ function Map() {
             />
           </div>
         </div>
-
-        {/* Player Info */}
         <div className="player-info">
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
@@ -242,18 +238,13 @@ function Map() {
             </button>
           </div>
         </div>
-
-        {/* Controls Hint */}
         <div className="controls-hint">
           <div>🎮 Arrow Keys / WASD to move</div>
           <div>🗺️ Explore the village!</div>
         </div>
       </div>
-
       {/* Inventory */}
       {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
-
-      {/* On-screen Arrow Keys */}
       <ArrowKey onKeyPress={handleArrowPress} />
     </div>
   );

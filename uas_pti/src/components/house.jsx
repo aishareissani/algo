@@ -6,6 +6,7 @@ import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import "../house.css";
 import ArrowKey from "./wasd_key";
+import Task from "./task";
 
 function House() {
   const { isFastForward } = useSpeedMode();
@@ -18,7 +19,13 @@ function House() {
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
+
+  const toggleTaskPanel = () => setShowTasks(!showTasks);
   const [showInventory, setShowInventory] = useState(false);
+  const [showTasks, setShowTasks] = useState(true);
+
+  // Task completion tracking
+  const [tasks, setTasks] = useState({});
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -71,6 +78,30 @@ function House() {
     return stats;
   });
 
+  // Initialize tasks
+  useEffect(() => {
+    const initialTaskState = {};
+    const locations = {
+      home: [
+        { id: "bed", name: "Rest on Bed", priority: "daily" },
+        { id: "bath", name: "Take Bath", priority: "daily" },
+        { id: "kitchen", name: "Eat in the Kitchen", priority: "daily" },
+        { id: "cat", name: "Pet the Cat", priority: "bonus" },
+        { id: "table", name: "Work from Home", priority: "bonus" },
+      ],
+    };
+
+    // Initialize all tasks as not completed
+    Object.keys(locations).forEach((location) => {
+      locations[location].forEach((task) => {
+        const taskKey = `${location}-${task.id}`;
+        initialTaskState[taskKey] = { ...task, completed: false };
+      });
+    });
+
+    setTasks(initialTaskState);
+  }, []);
+
   const handleBackToMap = () => {
     navigate("/map", {
       state: {
@@ -85,6 +116,30 @@ function House() {
     handleUseItem(item, setPlayerStats);
   };
 
+  // Function to mark a task as completed
+  const completeTask = (taskId) => {
+    const taskKey = `home-${taskId}`;
+    setTasks((prev) => ({
+      ...prev,
+      [taskKey]: {
+        ...prev[taskKey],
+        completed: true,
+      },
+    }));
+  };
+
+  // Function to toggle task completion (for manual toggling via UI)
+  const toggleTaskCompletion = (taskId) => {
+    const taskKey = `home-${taskId}`;
+    setTasks((prev) => ({
+      ...prev,
+      [taskKey]: {
+        ...prev[taskKey],
+        completed: !prev[taskKey]?.completed,
+      },
+    }));
+  };
+
   const performActivity = (activityName, statChanges) => {
     if (isPerformingActivity) return;
 
@@ -92,6 +147,19 @@ function House() {
     setCurrentActivity(activityName);
     setActivityProgress(0);
     setShowDialog(false);
+
+    // Mark corresponding task as completed
+    if (currentLocationHouse === "Bed") {
+      completeTask("bed");
+    } else if (currentLocationHouse === "Bath") {
+      completeTask("bath");
+    } else if (currentLocationHouse === "Kitchen") {
+      completeTask("kitchen");
+    } else if (currentLocationHouse === "Cat") {
+      completeTask("cat");
+    } else if (currentLocationHouse === "Table") {
+      completeTask("table");
+    }
 
     if (isFastForward) {
       setPlayerStats((prev) => {
@@ -305,6 +373,46 @@ function House() {
   };
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (isPerformingActivity) return;
+
+      let direction = null;
+      switch (e.key) {
+        case "ArrowUp":
+        case "w":
+        case "W":
+          direction = "up";
+          break;
+        case "ArrowDown":
+        case "s":
+        case "S":
+          direction = "down";
+          break;
+        case "ArrowLeft":
+        case "a":
+        case "A":
+          direction = "left";
+          break;
+        case "ArrowRight":
+        case "d":
+        case "D":
+          direction = "right";
+          break;
+        default:
+          break;
+      }
+
+      if (direction) {
+        e.preventDefault();
+        handleArrowPress(direction);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isPerformingActivity, handleArrowPress]);
+
+  useEffect(() => {
     if (isPerformingActivity) return;
 
     if (isNearBed(playerPos.x, playerPos.y)) {
@@ -338,6 +446,7 @@ function House() {
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
         <SpeedToggleButton />
       </div>
+
       <div className="house-game-viewport" ref={houseRef}>
         {showDialog && currentLocationHouse && !isPerformingActivity && (
           <div className="dialog fade-in-center">
@@ -405,9 +514,9 @@ function House() {
         </div>
       </div>
 
-      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
-
       <ArrowKey onKeyPress={handleArrowPress} />
+
+      <Task currentLocation="home" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={tasks} onTaskComplete={toggleTaskCompletion} />
     </div>
   );
 }

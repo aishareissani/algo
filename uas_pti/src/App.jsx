@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SpeedModeProvider } from "./components/speed";
@@ -10,6 +9,7 @@ import Field from "./components/field";
 import Beach from "./components/beach";
 import Restaurant from "./components/restaurant";
 import Mountain from "./components/mountain";
+import Task from "./components/task"; // Import komponen Task
 
 function App() {
   return (
@@ -24,6 +24,7 @@ function App() {
           <Route path="/beach" element={<Beach />} />
           <Route path="/restaurant" element={<Restaurant />} />
           <Route path="/mountain" element={<Mountain />} />
+          <Route path="/tasks" element={<Task currentLocation="beach" completedActivities={["swim", "sunbath", "cat"]} />} />
         </Routes>
       </SpeedModeProvider>
     </Router>
