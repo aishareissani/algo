@@ -33,6 +33,23 @@ function Map() {
   const PLAYER_SIZE = 40;
   const MOVE_SPEED = 8;
 
+  // Location coordinates for pointers
+  const mainMapLocationPointers = [
+    { name: "home", x: 2150, y: 545, label: "Home" },
+    { name: "field", x: 3045, y: 960, label: "Field" },
+    { name: "beach", x: 3407, y: 906, label: "Beach" },
+    { name: "restaurant", x: 1622, y: 990, label: "Restaurant" },
+    { name: "mountain", x: 512, y: 537, label: "Mountain" },
+  ];
+
+  const miniMapLocationPointers = [
+    { name: "home", x: 2150, y: 390, label: "Home" },
+    { name: "field", x: 3045, y: 800, label: "Field" },
+    { name: "beach", x: 3407, y: 750, label: "Beach" },
+    { name: "restaurant", x: 1622, y: 870, label: "Restaurant" },
+    { name: "mountain", x: 512, y: 420, label: "Mountain" },
+  ];
+
   // Location Detection Functions
   const isNearHouse = (x, y) => x >= 1918 && x <= 2262 && y >= 430 && y <= 660;
   const isNearField = (x, y) => x >= 2894 && x <= 3160 && y >= 762 && y <= 1026;
@@ -53,15 +70,12 @@ function Map() {
       level: 1,
       skillPoints: 0,
       items: [],
-      tasks: {}, // Make sure we initialize tasks if not present
-      lastVisitedLocation: "home", // Default to home if no last visited location
+      tasks: {},
+      lastVisitedLocation: "home",
     }
   );
 
-  // Track the last visited location for Task component
-  const [lastVisitedLocation, setLastVisitedLocation] = useState(
-    passedStats?.lastVisitedLocation || "home" // Default to home
-  );
+  const [lastVisitedLocation, setLastVisitedLocation] = useState(passedStats?.lastVisitedLocation || "home");
 
   const handleBackToStart = () => {
     navigate("/", {
@@ -70,7 +84,7 @@ function Map() {
         playerName,
         stats: {
           ...playerStats,
-          lastVisitedLocation, // Save last visited location
+          lastVisitedLocation,
         },
       },
     });
@@ -96,16 +110,15 @@ function Map() {
           playerName,
           stats: {
             ...playerStats,
-            lastVisitedLocation, // Save last visited location
+            lastVisitedLocation,
           },
         },
       });
     }
   };
 
-  // Add task toggling function
   const toggleTaskCompletion = (taskId) => {
-    const taskLocation = lastVisitedLocation || "home"; // Use last visited location instead of current
+    const taskLocation = lastVisitedLocation || "home";
     const taskKey = `${taskLocation}-${taskId}`;
 
     setPlayerStats((prev) => ({
@@ -198,29 +211,28 @@ function Map() {
     if (isNearHouse(playerPos.x, playerPos.y) || isNearField(playerPos.x, playerPos.y) || isNearBeach(playerPos.x, playerPos.y) || isNearResto(playerPos.x, playerPos.y) || isNearGunung(playerPos.x, playerPos.y)) {
       if (isNearHouse(playerPos.x, playerPos.y)) {
         setCurrentLocation("home");
-        setLastVisitedLocation("home"); // Update last visited location
+        setLastVisitedLocation("home");
       }
       if (isNearField(playerPos.x, playerPos.y)) {
         setCurrentLocation("field");
-        setLastVisitedLocation("field"); // Update last visited location
+        setLastVisitedLocation("field");
       }
       if (isNearBeach(playerPos.x, playerPos.y)) {
         setCurrentLocation("beach");
-        setLastVisitedLocation("beach"); // Update last visited location
+        setLastVisitedLocation("beach");
       }
       if (isNearResto(playerPos.x, playerPos.y)) {
         setCurrentLocation("restaurant");
-        setLastVisitedLocation("restaurant"); // Update last visited location
+        setLastVisitedLocation("restaurant");
       }
       if (isNearGunung(playerPos.x, playerPos.y)) {
         setCurrentLocation("mountain");
-        setLastVisitedLocation("mountain"); // Update last visited location
+        setLastVisitedLocation("mountain");
       }
       setShowDialog(true);
     } else {
-      setCurrentLocation("map"); // Default to "map" when not near any location
+      setCurrentLocation("map");
       setShowDialog(false);
-      // Don't update lastVisitedLocation when in "map" - keep the last real location
     }
   }, [playerPos]);
 
@@ -235,13 +247,12 @@ function Map() {
         playerName,
         stats: {
           ...playerStats,
-          lastVisitedLocation, // Save last visited location
+          lastVisitedLocation,
         },
       },
     });
   };
 
-  // Toggle Task panel
   const toggleTaskPanel = () => setShowTasks(!showTasks);
 
   return (
@@ -254,18 +265,12 @@ function Map() {
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
       </div>
 
-      {/* Use lastVisitedLocation instead of currentLocation for Task component */}
       {showTasks && <Task currentLocation={lastVisitedLocation || "home"} isInsideLocation={false} externalTasks={playerStats.tasks || {}} onTaskComplete={toggleTaskCompletion} />}
 
       {showDialog && currentLocation && currentLocation !== "map" && (
         <div className="dialog fade-in-center">
-          <p>
-            Do you want
-            <br />
-            to enter
-            <br />
-            the {capitalize(currentLocation === "home" ? "home" : currentLocation)}?
-          </p>
+          <p>{currentLocation === "home" ? "Do you want to go home?" : `Do you want to enter the ${capitalize(currentLocation)}?`}</p>
+
           <button className="yes-btn" onClick={handleEnterLocation}>
             Yes
           </button>
@@ -278,6 +283,22 @@ function Map() {
       <div className="game-viewport" ref={mapRef}>
         <SpeedToggleButton />
         <div className="game-world map-background" style={{ transform: `translate(-${cameraPos.x}px, -${cameraPos.y}px)` }}>
+          {/* Main Map Location Pointers */}
+          {mainMapLocationPointers.map((pointer) => (
+            <div
+              key={pointer.name}
+              className="location-pointer"
+              style={{
+                left: pointer.x,
+                top: pointer.y,
+              }}
+              onClick={() => handleLocationClick(pointer.name)}
+            >
+              <img src={`/assets/icons/${pointer.name}_pin.png`} alt={`${pointer.label} pointer`} className="pointer-image" />
+              <div className="pointer-label">{pointer.label}</div>
+            </div>
+          ))}
+
           <div className="player" ref={playerRef} style={{ left: playerPos.x, top: playerPos.y }}>
             <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="player-sprite" draggable={false} />
             <div />
@@ -288,6 +309,19 @@ function Map() {
       <div className="game-hud">
         <div className="mini-map">
           <div className="mini-map-world">
+            {/* Mini-map Location Pointers */}
+            {miniMapLocationPointers.map((pointer) => (
+              <div
+                key={`mini-${pointer.name}`}
+                className="mini-map-pointer"
+                style={{
+                  left: `${(pointer.x / WORLD_WIDTH) * 100}%`,
+                  top: `${(pointer.y / WORLD_HEIGHT) * 100}%`,
+                }}
+              >
+                <img src={`/assets/icons/${pointer.name}_pin.png`} alt={`${pointer.label} pointer`} className="mini-pointer-image" />
+              </div>
+            ))}
             <div
               className="mini-map-player"
               style={{
@@ -320,7 +354,6 @@ function Map() {
           <div>🗺️ Explore the village!</div>
         </div>
       </div>
-      {/* Inventory */}
       {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
       <ArrowKey onKeyPress={handleArrowPress} />
     </div>

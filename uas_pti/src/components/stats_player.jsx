@@ -57,7 +57,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
     },
     money: {
       title: "Money",
-      description: "Currency for buying items. Earn by working or selling items.",
+      description: "Currency for buying items. Earn by working",
     },
     experience: {
       title: "Experience (XP)",

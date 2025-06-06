@@ -562,10 +562,7 @@ function Mountain() {
             </button>
           </div>
         </div>
-        <div className="controls-hint">
-          <div>🎮 Arrow Keys / WASD to move</div>
-          <div>🗺️ Explore the mountain!</div>
-        </div>
+        z
       </div>
 
       {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
