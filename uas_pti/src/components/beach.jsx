@@ -18,7 +18,7 @@ function Beach() {
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
   const [showTasks, setShowTasks] = useState(true);
-  const [tasks, setTasks] = useState({})
+  const [tasks, setTasks] = useState({});
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -51,11 +51,10 @@ function Beach() {
     experience: 0,
     level: 1,
     skillPoints: 0,
-    items: [], // Make sure this is included
+    items: [],
   };
 
   // Initialize with stats from map or default values
-  // Using proper type checking to avoid NaN values
   const [playerStats, setPlayerStats] = useState(() => {
     // Handle potentially corrupt stats data
     const stats = { ...defaultStats };
@@ -80,14 +79,70 @@ function Beach() {
     return stats;
   });
 
+  // Initialize tasks
+  useEffect(() => {
+    const initialTaskState = {};
+    const taskLocations = {
+      beach: [
+        { id: "swim", name: "Swim Around", priority: "daily" },
+        { id: "sunbath", name: "Enjoy Sunbath", priority: "daily" },
+        { id: "sandcastle", name: "Make Sandcastle", priority: "bonus" },
+        { id: "seashell", name: "Collect Seashells", priority: "bonus" },
+        { id: "flower", name: "Collect Flowers", priority: "bonus" },
+        { id: "starfish", name: "Find Starfish", priority: "bonus" },
+      ],
+    };
+
+    // Load existing tasks from navigation state if available
+    const existingTasks = initialStats.tasks || {};
+
+    Object.keys(taskLocations).forEach((location) => {
+      taskLocations[location].forEach((task) => {
+        const taskKey = `${location}-${task.id}`;
+        // Use existing task state or initialize as not completed
+        initialTaskState[taskKey] = existingTasks[taskKey] || { ...task, completed: false };
+      });
+    });
+
+    setTasks(initialTaskState);
+  }, [initialStats.tasks]);
+
+  // Ubah handleBackToMap function:
   const handleBackToMap = () => {
     navigate("/map", {
       state: {
         characterName,
         playerName,
-        stats: playerStats, // Pass current stats back to map
+        stats: {
+          ...playerStats,
+          tasks: tasks, // Include tasks in the state
+        },
       },
     });
+  };
+
+  // Function to mark a task as completed
+  const completeTask = (taskId) => {
+    const taskKey = `beach-${taskId}`;
+    setTasks((prev) => ({
+      ...prev,
+      [taskKey]: {
+        ...prev[taskKey],
+        completed: true,
+      },
+    }));
+  };
+
+  // Function to toggle task completion (for manual toggling via UI)
+  const toggleTaskCompletion = (taskId) => {
+    const taskKey = `beach-${taskId}`;
+    setTasks((prev) => ({
+      ...prev,
+      [taskKey]: {
+        ...prev[taskKey],
+        completed: !prev[taskKey]?.completed,
+      },
+    }));
   };
 
   const addItemToInventory = (itemName, category, icon, onStatsUpdate) => {
@@ -131,6 +186,21 @@ function Beach() {
     setCurrentActivity(activityName);
     setActivityProgress(0);
     setShowDialog(false);
+
+    // Mark corresponding task as completed
+    if (currentLocationbeach === "Swim") {
+      completeTask("swim");
+    } else if (currentLocationbeach === "Sunbath") {
+      completeTask("sunbath");
+    } else if (currentLocationbeach === "Sandcastle") {
+      completeTask("sandcastle");
+    } else if (currentLocationbeach === "Seashell") {
+      completeTask("seashell");
+    } else if (currentLocationbeach === "Flower") {
+      completeTask("flower");
+    } else if (currentLocationbeach === "StarFish") {
+      completeTask("starfish");
+    }
 
     if (isFastForward) {
       // Fast Forward mode: apply all changes instantly
@@ -498,7 +568,7 @@ function Beach() {
       </div>
 
       <div className="beach-game-viewport" ref={beachRef}>
-        <SpeedToggleButton /> {/* Add the SpeedToggleButton here */}
+        <SpeedToggleButton />
         {showDialog && currentLocationbeach && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationbeach] || `Do you want to enter the ${currentLocationbeach}?`)}
@@ -552,7 +622,6 @@ function Beach() {
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            {/* Back to Map Button positioned directly below coordinates */}
             <button className="back-to-map-button-inline" onClick={handleBackToMap}>
               Back to Map
             </button>
@@ -566,11 +635,7 @@ function Beach() {
 
       <ArrowKey onKeyPress={handleArrowPress} />
 
-      <Task
-        currentLocation="beach"
-        isInsideLocation={true} // Auto-expand karena di dalam location
-        customPosition={{ top: "65px" }} // Custom position
-      />
+      <Task currentLocation="beach" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={tasks} onTaskComplete={toggleTaskCompletion} />
     </div>
   );
 }

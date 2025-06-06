@@ -70,6 +70,28 @@ function Map() {
     handleUseItem(item, setPlayerStats);
   };
 
+  // Di Map component, pastikan tasks di-pass ke semua lokasi:
+
+  const handleLocationClick = (locationName) => {
+    const routes = {
+      house: "/house",
+      beach: "/beach",
+      field: "/field",
+      mountain: "/mountain",
+      restaurant: "/restaurant",
+    };
+
+    if (routes[locationName]) {
+      navigate(routes[locationName], {
+        state: {
+          characterName,
+          playerName,
+          stats: playerStats, // Ini sudah include tasks juga
+        },
+      });
+    }
+  };
+
   const handleArrowPress = (direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;

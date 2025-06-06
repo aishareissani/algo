@@ -21,7 +21,7 @@ function Mountain() {
   const [currentActivity, setCurrentActivity] = useState("");
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
-  const toggleTaskPanel = () => setShowTasks(!showTasks);
+  const [tasks, setTasks] = useState({});
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -77,18 +77,71 @@ function Mountain() {
     return stats;
   });
 
+  // Initialize tasks
+  // Di function Mountain(), ubah:
+
+  useEffect(() => {
+    const initialTaskState = {};
+    const taskLocations = {
+      mountain: [
+        { id: "hike", name: "Start a Hike", priority: "daily" },
+        { id: "stream", name: "Visit the Stream", priority: "daily" },
+        { id: "flower", name: "Collect Flower", priority: "bonus" },
+        { id: "rock", name: "Collect some Rock", priority: "bonus" },
+      ],
+    };
+
+    const existingTasks = initialStats.tasks || {};
+
+    Object.keys(taskLocations).forEach((location) => {
+      taskLocations[location].forEach((task) => {
+        const taskKey = `${location}-${task.id}`;
+        initialTaskState[taskKey] = existingTasks[taskKey] || { ...task, completed: false };
+      });
+    });
+
+    setTasks(initialTaskState);
+  }, [initialStats.tasks]);
+
   const handleBackToMap = () => {
     navigate("/map", {
       state: {
         characterName,
         playerName,
-        stats: playerStats,
+        stats: {
+          ...playerStats,
+          tasks: tasks,
+        },
       },
     });
   };
 
   const handleItemUse = (item) => {
     handleUseItem(item, setPlayerStats);
+  };
+
+  // Function to mark a task as completed
+  const completeTask = (taskId) => {
+    const taskKey = `mountain-${taskId}`;
+    setTasks((prev) => ({
+      ...prev,
+      [taskKey]: {
+        ...prev[taskKey],
+        completed: true,
+      },
+    }));
+  };
+
+  // Function to toggle task completion (for manual toggling via UI)
+  const toggleTaskCompletion = (taskId) => {
+    const taskKey = `mountain-${taskId}`;
+    setTasks((prev) => ({
+      ...prev,
+      [taskKey]: {
+        ...prev[taskKey],
+        completed: !prev[taskKey]?.completed,
+      },
+    }));
   };
 
   const addItemToInventory = (itemName, category, icon, onStatsUpdate) => {
@@ -128,6 +181,17 @@ function Mountain() {
     setCurrentActivity(activityName);
     setActivityProgress(0);
     setShowDialog(false);
+
+    // Mark corresponding task as completed
+    if (currentLocationmountain === "Hike") {
+      completeTask("hike");
+    } else if (currentLocationmountain === "Stream") {
+      completeTask("stream");
+    } else if (currentLocationmountain === "Flower") {
+      completeTask("flower");
+    } else if (currentLocationmountain === "Rock") {
+      completeTask("rock");
+    }
 
     if (isFastForward) {
       setPlayerStats((prev) => {
@@ -435,7 +499,6 @@ function Mountain() {
         <SpeedToggleButton />
       </div>
       <div className="mountain-game-viewport" ref={mountainRef}>
-        <SpeedToggleButton />
         {showDialog && currentLocationmountain && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationmountain] || `Do you want to enter the ${currentLocationmountain}?`)}
@@ -504,11 +567,7 @@ function Mountain() {
 
       <ArrowKey onKeyPress={handleArrowPress} />
 
-      <Task
-        currentLocation="mountain"
-        isInsideLocation={true} // Auto-expand karena di dalam location
-        customPosition={{ top: "65px" }} // Custom position
-      />
+      <Task currentLocation="mountain" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={tasks} onTaskComplete={toggleTaskCompletion} />
     </div>
   );
 }

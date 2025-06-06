@@ -20,7 +20,7 @@ function Resto() {
   const [currentActivity, setCurrentActivity] = useState("");
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
-  const toggleTaskPanel = () => setShowTasks(!showTasks);
+  const [tasks, setTasks] = useState({});
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -53,27 +53,21 @@ function Resto() {
     experience: 0,
     level: 1,
     skillPoints: 0,
-    items: [], // Make sure this is included
+    items: [],
   };
 
-  // Initialize with stats from map or default values
-  // Using proper type checking to avoid NaN values
   const [playerStats, setPlayerStats] = useState(() => {
-    // Handle potentially corrupt stats data
     const stats = { ...defaultStats };
 
     if (initialStats) {
-      // Ensure all numeric values are actually numbers
       Object.keys(stats).forEach((key) => {
         if (key !== "items") {
-          // Make sure the value exists and is a valid number
           if (initialStats[key] !== undefined && !isNaN(Number(initialStats[key]))) {
             stats[key] = Number(initialStats[key]);
           }
         }
       });
 
-      // Handle items array separately
       if (Array.isArray(initialStats.items)) {
         stats.items = [...initialStats.items];
       }
@@ -82,14 +76,65 @@ function Resto() {
     return stats;
   });
 
+  // Di function Resto(), ubah:
+
+  useEffect(() => {
+    const initialTaskState = {};
+    const taskLocations = {
+      restaurant: [
+        { id: "takeaway", name: "Order Takeaway", priority: "daily" },
+        { id: "eat", name: "Eat Delicious Meal", priority: "daily" },
+        { id: "drink", name: "Drink Some Juice", priority: "daily" },
+      ],
+    };
+
+    const existingTasks = initialStats.tasks || {};
+
+    Object.keys(taskLocations).forEach((location) => {
+      taskLocations[location].forEach((task) => {
+        const taskKey = `${location}-${task.id}`;
+        initialTaskState[taskKey] = existingTasks[taskKey] || { ...task, completed: false };
+      });
+    });
+
+    setTasks(initialTaskState);
+  }, [initialStats.tasks]);
+
   const handleBackToMap = () => {
     navigate("/map", {
       state: {
         characterName,
         playerName,
-        stats: playerStats, // Pass current stats back to map
+        stats: {
+          ...playerStats,
+          tasks: tasks,
+        },
       },
     });
+  };
+
+  // Function to mark a task as completed
+  const completeTask = (taskId) => {
+    const taskKey = `restaurant-${taskId}`;
+    setTasks((prev) => ({
+      ...prev,
+      [taskKey]: {
+        ...prev[taskKey],
+        completed: true,
+      },
+    }));
+  };
+
+  // Function to toggle task completion (for manual toggling via UI)
+  const toggleTaskCompletion = (taskId) => {
+    const taskKey = `restaurant-${taskId}`;
+    setTasks((prev) => ({
+      ...prev,
+      [taskKey]: {
+        ...prev[taskKey],
+        completed: !prev[taskKey]?.completed,
+      },
+    }));
   };
 
   const addItemToInventory = (itemName, category, icon, onStatsUpdate) => {
@@ -130,8 +175,16 @@ function Resto() {
     setActivityProgress(0);
     setShowDialog(false);
 
+    // Mark corresponding task as completed
+    if (currentLocationResto === "Takeaway") {
+      completeTask("takeaway");
+    } else if (currentLocationResto === "Eat") {
+      completeTask("eat");
+    } else if (currentLocationResto === "Drink") {
+      completeTask("drink");
+    }
+
     if (isFastForward) {
-      // Fast Forward mode: apply all changes instantly
       setPlayerStats((prev) => {
         const newStats = { ...prev };
         Object.keys(statChanges).forEach((stat) => {
@@ -149,12 +202,10 @@ function Resto() {
         return newStats;
       });
 
-      // Add item to inventory if applicable
       if (collectItem) {
         addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
       }
 
-      // Show a brief flash of activity
       setTimeout(() => {
         setActivityProgress(100);
         setTimeout(() => {
@@ -197,7 +248,6 @@ function Resto() {
         });
 
         if (currentStep >= totalSteps) {
-          // Add item to inventory when activity completes
           if (collectItem) {
             addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
           }
@@ -248,12 +298,7 @@ function Resto() {
   };
 
   const isNearTable = (x, y) => {
-    return (
-      (x >= 1750 && x <= 2050 && y >= 750 && y <= 1025) || // Spot 1
-      (x >= 1750 && x <= 2050 && y >= 1375 && y <= 1725) || // Spot 2
-      (x >= 525 && x <= 825 && y >= 1375 && y <= 1725) || // Spot 3
-      (x >= 525 && x <= 825 && y >= 750 && y <= 1025) // Spot 4
-    );
+    return (x >= 1750 && x <= 2050 && y >= 750 && y <= 1025) || (x >= 1750 && x <= 2050 && y >= 1375 && y <= 1725) || (x >= 525 && x <= 825 && y >= 1375 && y <= 1725) || (x >= 525 && x <= 825 && y >= 750 && y <= 1025);
   };
 
   const isNearChair = (x, y) => {
@@ -270,21 +315,17 @@ function Resto() {
     return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
 
-  // Replace the handleUseItem function in Resto.js with this:
   const handleUseItem = (item) => {
     if (item.name !== "Takeaway Meal") return;
 
     setPlayerStats((prev) => {
-      /* cari item */
       const idx = prev.items.findIndex((it) => it.name === item.name);
       if (idx === -1) return prev;
 
-      /* kurangi qty */
       const items = [...prev.items];
       items[idx] = { ...items[idx], quantity: items[idx].quantity - 1 };
       const cleaned = items.filter((it) => it.quantity > 0);
 
-      /* update stats (clamp 0-100) */
       const energy = Math.min(100, prev.energy + 25);
       const meal = Math.min(100, prev.meal + 40);
 
@@ -300,7 +341,6 @@ function Resto() {
     };
   }, []);
 
-  // Get actual viewport size
   useEffect(() => {
     const updateViewportSize = () => {
       if (restoRef.current) {
@@ -316,7 +356,6 @@ function Resto() {
     return () => window.removeEventListener("resize", updateViewportSize);
   }, []);
 
-  // Handle camera movement
   useEffect(() => {
     if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
 
@@ -411,7 +450,7 @@ function Resto() {
   }, [isPerformingActivity, handleArrowPress]);
 
   useEffect(() => {
-    if (isPerformingActivity) return; // Don't show dialogs during activities
+    if (isPerformingActivity) return;
 
     if (isNearCashier(playerPos.x, playerPos.y)) {
       setcurrentLocationResto("Takeaway");
@@ -431,11 +470,10 @@ function Resto() {
   return (
     <div className="resto-game-container">
       <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleUseItem} /* ← add */ />
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleUseItem} />
         <SpeedToggleButton />
       </div>
       <div className="resto-game-viewport" ref={restoRef}>
-        <SpeedToggleButton />
         {showDialog && currentLocationResto && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationResto] || `Do you want to enter the ${currentLocationResto}?`)}
@@ -489,7 +527,6 @@ function Resto() {
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            {/* Back to Map Button positioned directly below coordinates */}
             <button className="back-to-map-button-inline" onClick={handleBackToMap}>
               Back to Map
             </button>
@@ -505,11 +542,7 @@ function Resto() {
 
       <ArrowKey onKeyPress={handleArrowPress} />
 
-      <Task
-        currentLocation="restaurant"
-        isInsideLocation={true} // Auto-expand karena di dalam location
-        customPosition={{ top: "65px" }} // Custom position
-      />
+      <Task currentLocation="restaurant" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={tasks} onTaskComplete={toggleTaskCompletion} />
     </div>
   );
 }

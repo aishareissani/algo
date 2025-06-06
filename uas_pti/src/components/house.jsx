@@ -81,7 +81,7 @@ function House() {
   // Initialize tasks
   useEffect(() => {
     const initialTaskState = {};
-    const locations = {
+    const taskLocations = {
       home: [
         { id: "bed", name: "Rest on Bed", priority: "daily" },
         { id: "bath", name: "Take Bath", priority: "daily" },
@@ -91,23 +91,27 @@ function House() {
       ],
     };
 
-    // Initialize all tasks as not completed
-    Object.keys(locations).forEach((location) => {
-      locations[location].forEach((task) => {
+    const existingTasks = initialStats.tasks || {};
+
+    Object.keys(taskLocations).forEach((location) => {
+      taskLocations[location].forEach((task) => {
         const taskKey = `${location}-${task.id}`;
-        initialTaskState[taskKey] = { ...task, completed: false };
+        initialTaskState[taskKey] = existingTasks[taskKey] || { ...task, completed: false };
       });
     });
 
     setTasks(initialTaskState);
-  }, []);
+  }, [initialStats.tasks]);
 
   const handleBackToMap = () => {
     navigate("/map", {
       state: {
         characterName,
         playerName,
-        stats: playerStats,
+        stats: {
+          ...playerStats,
+          tasks: tasks,
+        },
       },
     });
   };
