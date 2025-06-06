@@ -2,11 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import Inventory from "./inventory";
+import { useSpeedMode, SpeedToggleButton } from "./speed";
 import { handleUseItem } from "../utils/itemHandlers";
 import ArrowKey from "./wasd_key";
 import Task from "./task";
 
 function Map() {
+  const { isFastForward } = useSpeedMode();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -31,8 +33,6 @@ function Map() {
   const PLAYER_SIZE = 40;
   const MOVE_SPEED = 8;
 
-  const [completedActivities, setCompletedActivities] = useState(["swim", "sunbath"]);
-
   // Location Detection Functions
   const isNearHouse = (x, y) => x >= 1918 && x <= 2262 && y >= 430 && y <= 660;
   const isNearField = (x, y) => x >= 2894 && x <= 3160 && y >= 762 && y <= 1026;
@@ -53,7 +53,14 @@ function Map() {
       level: 1,
       skillPoints: 0,
       items: [],
+      tasks: {}, // Make sure we initialize tasks if not present
+      lastVisitedLocation: "home", // Default to home if no last visited location
     }
+  );
+
+  // Track the last visited location for Task component
+  const [lastVisitedLocation, setLastVisitedLocation] = useState(
+    passedStats?.lastVisitedLocation || "home" // Default to home
   );
 
   const handleBackToStart = () => {
@@ -61,7 +68,10 @@ function Map() {
       state: {
         characterName,
         playerName,
-        stats: playerStats,
+        stats: {
+          ...playerStats,
+          lastVisitedLocation, // Save last visited location
+        },
       },
     });
   };
@@ -70,11 +80,9 @@ function Map() {
     handleUseItem(item, setPlayerStats);
   };
 
-  // Di Map component, pastikan tasks di-pass ke semua lokasi:
-
   const handleLocationClick = (locationName) => {
     const routes = {
-      house: "/house",
+      home: "/home",
       beach: "/beach",
       field: "/field",
       mountain: "/mountain",
@@ -86,10 +94,30 @@ function Map() {
         state: {
           characterName,
           playerName,
-          stats: playerStats, // Ini sudah include tasks juga
+          stats: {
+            ...playerStats,
+            lastVisitedLocation, // Save last visited location
+          },
         },
       });
     }
+  };
+
+  // Add task toggling function
+  const toggleTaskCompletion = (taskId) => {
+    const taskLocation = lastVisitedLocation || "home"; // Use last visited location instead of current
+    const taskKey = `${taskLocation}-${taskId}`;
+
+    setPlayerStats((prev) => ({
+      ...prev,
+      tasks: {
+        ...prev.tasks,
+        [taskKey]: {
+          ...(prev.tasks?.[taskKey] || {}),
+          completed: !(prev.tasks?.[taskKey]?.completed || false),
+        },
+      },
+    }));
   };
 
   const handleArrowPress = (direction) => {
@@ -168,26 +196,47 @@ function Map() {
 
   useEffect(() => {
     if (isNearHouse(playerPos.x, playerPos.y) || isNearField(playerPos.x, playerPos.y) || isNearBeach(playerPos.x, playerPos.y) || isNearResto(playerPos.x, playerPos.y) || isNearGunung(playerPos.x, playerPos.y)) {
-      if (isNearHouse(playerPos.x, playerPos.y)) setCurrentLocation("house");
-      if (isNearField(playerPos.x, playerPos.y)) setCurrentLocation("field");
-      if (isNearBeach(playerPos.x, playerPos.y)) setCurrentLocation("beach");
-      if (isNearResto(playerPos.x, playerPos.y)) setCurrentLocation("restaurant");
-      if (isNearGunung(playerPos.x, playerPos.y)) setCurrentLocation("mountain");
+      if (isNearHouse(playerPos.x, playerPos.y)) {
+        setCurrentLocation("home");
+        setLastVisitedLocation("home"); // Update last visited location
+      }
+      if (isNearField(playerPos.x, playerPos.y)) {
+        setCurrentLocation("field");
+        setLastVisitedLocation("field"); // Update last visited location
+      }
+      if (isNearBeach(playerPos.x, playerPos.y)) {
+        setCurrentLocation("beach");
+        setLastVisitedLocation("beach"); // Update last visited location
+      }
+      if (isNearResto(playerPos.x, playerPos.y)) {
+        setCurrentLocation("restaurant");
+        setLastVisitedLocation("restaurant"); // Update last visited location
+      }
+      if (isNearGunung(playerPos.x, playerPos.y)) {
+        setCurrentLocation("mountain");
+        setLastVisitedLocation("mountain"); // Update last visited location
+      }
       setShowDialog(true);
     } else {
-      setCurrentLocation(null);
+      setCurrentLocation("map"); // Default to "map" when not near any location
       setShowDialog(false);
+      // Don't update lastVisitedLocation when in "map" - keep the last real location
     }
   }, [playerPos]);
 
   const handleEnterLocation = () => {
-    if (!currentLocation) return;
+    if (!currentLocation || currentLocation === "map") return;
 
-    navigate(`/${currentLocation}`, {
+    const locationRoute = currentLocation === "home" ? "home" : currentLocation;
+
+    navigate(`/${locationRoute}`, {
       state: {
         characterName,
         playerName,
-        stats: playerStats,
+        stats: {
+          ...playerStats,
+          lastVisitedLocation, // Save last visited location
+        },
       },
     });
   };
@@ -198,19 +247,24 @@ function Map() {
   return (
     <div className="game-container">
       <div>
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
+        <SpeedToggleButton />
+      </div>
+      <div>
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
       </div>
 
-      {showTasks && <Task currentLocation={currentLocation} completedActivities={completedActivities} />}
+      {/* Use lastVisitedLocation instead of currentLocation for Task component */}
+      {showTasks && <Task currentLocation={lastVisitedLocation || "home"} isInsideLocation={false} externalTasks={playerStats.tasks || {}} onTaskComplete={toggleTaskCompletion} />}
 
-      {showDialog && currentLocation && (
+      {showDialog && currentLocation && currentLocation !== "map" && (
         <div className="dialog fade-in-center">
           <p>
             Do you want
             <br />
             to enter
             <br />
-            the {capitalize(currentLocation)}?
+            the {capitalize(currentLocation === "home" ? "home" : currentLocation)}?
           </p>
           <button className="yes-btn" onClick={handleEnterLocation}>
             Yes
@@ -222,6 +276,7 @@ function Map() {
       )}
 
       <div className="game-viewport" ref={mapRef}>
+        <SpeedToggleButton />
         <div className="game-world map-background" style={{ transform: `translate(-${cameraPos.x}px, -${cameraPos.y}px)` }}>
           <div className="player" ref={playerRef} style={{ left: playerPos.x, top: playerPos.y }}>
             <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="player-sprite" draggable={false} />

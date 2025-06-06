@@ -111,6 +111,7 @@ function Mountain() {
         stats: {
           ...playerStats,
           tasks: tasks,
+          lastVisitedLocation: "mountain", // Set this location as the last visited
         },
       },
     });
@@ -278,12 +279,14 @@ function Mountain() {
         health: 15,
         happiness: 15,
         meal: -25,
+        skillPoints: 1,
       });
     } else if (currentLocationmountain === "Stream") {
       performActivity("Playing in the mountain stream", {
         happiness: 35,
         cleanliness: 20,
         energy: -15,
+        experience: 1,
       });
     } else if (currentLocationmountain === "Flower") {
       const mountainFlowers = [
@@ -299,6 +302,7 @@ function Mountain() {
         {
           happiness: 40,
           energy: -20,
+          skillPoints: 1,
         },
         {
           name: randomFlower.name,
@@ -318,6 +322,7 @@ function Mountain() {
         {
           happiness: 20,
           energy: -20,
+          skillPoints: 1,
         },
         {
           name: randomRock.name,

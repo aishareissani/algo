@@ -4,7 +4,7 @@ import { SpeedModeProvider } from "./components/speed";
 import LoadingScreen from "./components/loading_screen";
 import ChooseCharacter from "./components/choose_character";
 import Map from "./components/map";
-import House from "./components/house";
+import Home from "./components/home";
 import Field from "./components/field";
 import Beach from "./components/beach";
 import Restaurant from "./components/restaurant";
@@ -19,7 +19,7 @@ function App() {
           <Route path="/" element={<LoadingScreen />} />
           <Route path="/choose_character" element={<ChooseCharacter />} />
           <Route path="/map" element={<Map />} />
-          <Route path="/house" element={<House />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/field" element={<Field />} />
           <Route path="/beach" element={<Beach />} />
           <Route path="/restaurant" element={<Restaurant />} />

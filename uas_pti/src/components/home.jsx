@@ -4,11 +4,11 @@ import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
-import "../house.css";
+import "../home.css";
 import ArrowKey from "./wasd_key";
 import Task from "./task";
 
-function House() {
+function Home() {
   const { isFastForward } = useSpeedMode();
   const location = useLocation();
   const navigate = useNavigate();
@@ -111,6 +111,7 @@ function House() {
         stats: {
           ...playerStats,
           tasks: tasks,
+          lastVisitedLocation: "home", // Set this location as the last visited
         },
       },
     });
@@ -246,20 +247,24 @@ function House() {
         energy: 25,
         health: 20,
         happiness: 15,
+        experience: 1,
       });
     } else if (currentLocationHouse === "Bath") {
       performActivity("Taking a bath", {
         cleanliness: 100,
         happiness: 20,
+        experience: 1,
       });
     } else if (currentLocationHouse === "Kitchen") {
       performActivity("Eating", {
         meal: 40,
         happiness: 20,
+        experience: 1,
       });
     } else if (currentLocationHouse === "Cat") {
       performActivity("Playing with cat", {
         happiness: 50,
+        experience: 1,
       });
     } else if (currentLocationHouse === "Table") {
       performActivity("Working from home", {
@@ -268,6 +273,7 @@ function House() {
         sleep: -10,
         meal: -10,
         happiness: -10,
+        skillPoints: 1,
       });
     }
   };
@@ -525,4 +531,4 @@ function House() {
   );
 }
 
-export default House;
+export default Home;

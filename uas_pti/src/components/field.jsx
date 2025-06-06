@@ -103,6 +103,7 @@ function Field() {
         stats: {
           ...playerStats,
           tasks: tasks,
+          lastVisitedLocation: "field", // Set this location as the last visited
         },
       },
     });
@@ -231,21 +232,25 @@ function Field() {
         energy: -25,
         health: 20,
         happiness: 40,
+        experience: 1,
       });
     } else if (currentLocationfield === "Picnic") {
       performActivity("Taking a Picnic", {
         happiness: 30,
         meal: 50,
+        experience: 1,
       });
     } else if (currentLocationfield === "Chair") {
       performActivity("Sit", {
         happiness: 20,
         energy: 20,
+        experience: 1,
       });
     } else if (currentLocationfield === "Fountain") {
       performActivity("Making a wish", {
         happiness: 40,
         money: -5,
+        experience: 1,
       });
     }
   };

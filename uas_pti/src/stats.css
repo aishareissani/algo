@@ -590,3 +590,47 @@ body {
     transform: translate(-50%, -50%) scale(10);
   }
 }
+
+/* Stat Tooltip */
+.stat-tooltip {
+  position: fixed; /* Ubah ke fixed supaya lebih stabil */
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #79d959;
+  border-radius: 8px;
+  padding: 12px;
+  max-width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  pointer-events: none;
+  font-size: 9px;
+  line-height: 1.6;
+  text-align: justify;
+  transform: translateY(-25%);
+}
+
+.stat-tooltip h4 {
+  color: #4a90e2;
+  margin: 0 0 8px 0;
+  font-size: 10px;
+  text-shadow: none;
+}
+
+.stat-tooltip p {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-90%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-100%);
+  }
+}
+
+.stat-container {
+  position: relative;
+}

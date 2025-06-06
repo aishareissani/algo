@@ -108,6 +108,7 @@ function Resto() {
         stats: {
           ...playerStats,
           tasks: tasks,
+          lastVisitedLocation: "restaurant", // Set this location as the last visited
         },
       },
     });
@@ -269,6 +270,7 @@ function Resto() {
         {
           happiness: 20,
           money: -20,
+          experience: 1,
         },
         {
           name: "Takeaway Meal",
@@ -282,6 +284,7 @@ function Resto() {
         energy: 25,
         meal: 40,
         money: -20,
+        experience: 1,
       });
     } else if (currentLocationResto === "Drink") {
       performActivity("Having a Drink", {
@@ -289,6 +292,7 @@ function Resto() {
         energy: 25,
         meal: 10,
         money: -5,
+        experience: 1,
       });
     }
   };

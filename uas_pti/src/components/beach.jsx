@@ -115,7 +115,8 @@ function Beach() {
         playerName,
         stats: {
           ...playerStats,
-          tasks: tasks, // Include tasks in the state
+          tasks: tasks,
+          lastVisitedLocation: "beach", // Set this location as the last visited
         },
       },
     });
@@ -291,11 +292,13 @@ function Beach() {
         happiness: 40,
         health: 10,
         meal: -20,
+        experience: 1,
       });
     } else if (currentLocationbeach === "Sunbath") {
       performActivity("Taking a Sunbath", {
         happiness: 30,
         energy: 10,
+        experience: 1,
       });
     } else if (currentLocationbeach === "Sandcastle") {
       performActivity("Making a sand castle", {
@@ -303,6 +306,7 @@ function Beach() {
         energy: 20,
         meal: -5,
         cleanliness: -10,
+        skillPoints: 1,
       });
     } else if (currentLocationbeach === "Seashell") {
       performActivity(
@@ -311,6 +315,7 @@ function Beach() {
           happiness: 40,
           energy: -20,
           meal: -20,
+          skillPoints: 1,
         },
         {
           name: "Conch Shell",
@@ -334,6 +339,7 @@ function Beach() {
           happiness: 40,
           energy: -20,
           meal: -20,
+          skillPoints: 1,
         },
         {
           name: randomFlower.name,
@@ -348,6 +354,7 @@ function Beach() {
           happiness: 40,
           energy: -20,
           meal: -20,
+          skillPoints: 1,
         },
         {
           name: "Starfish",

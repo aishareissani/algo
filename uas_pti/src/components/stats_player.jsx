@@ -13,7 +13,11 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
   const [levelUpAnimation, setLevelUpAnimation] = useState(false);
   const [xpGainAnimation, setXpGainAnimation] = useState(false);
   const prevStatsRef = useRef();
-  const { isFastForward } = useSpeedMode(); // Assuming this adjusts the interval speed
+  const { isFastForward } = useSpeedMode();
+
+  const [hoveredStat, setHoveredStat] = useState(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const statRefs = useRef({});
 
   // Helper function to determine status color
   const getStatusColor = (v) => (v <= 25 ? "critical" : v <= 50 ? "warning" : "good");
@@ -25,6 +29,45 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
       {decreasedIndicators[statKey] && <span className="stat-decrease-indicator">-</span>}
     </>
   );
+
+  const STAT_DESCRIPTIONS = {
+    health: {
+      title: "Health",
+      description: "Your overall physical well-being. Maintain it by resting and avoiding harmful activities.",
+    },
+    energy: {
+      title: "Energy",
+      description: "Determines how much you can do before getting tired. Replenish by sleeping and eating.",
+    },
+    meal: {
+      title: "Hunger",
+      description: "Indicates how hungry you are. Keep it high by eating regularly.",
+    },
+    sleep: {
+      title: "Sleep",
+      description: "Your restfulness. Sleep regularly to maintain good health and energy.",
+    },
+    happiness: {
+      title: "Mood",
+      description: "Your emotional state. Boost it by doing enjoyable activities.",
+    },
+    cleanliness: {
+      title: "Cleanliness",
+      description: "Your personal hygiene. Keep it high by bathing regularly.",
+    },
+    money: {
+      title: "Money",
+      description: "Currency for buying items. Earn by working or selling items.",
+    },
+    experience: {
+      title: "Experience (XP)",
+      description: "Gained from activities. Every 5 XP increases your level.",
+    },
+    skillPoints: {
+      title: "Skill Points (SP)",
+      description: "Gained from special activities. Every 5 SP increases your level.",
+    },
+  };
 
   // Track changes in stats over time
   useEffect(() => {
@@ -73,11 +116,10 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
         setTimeout(() => setXpGainAnimation(false), 1000);
       }
 
-      // Updated level calculation - every 5 XP = 1 level
-      // Level 1: 0-4 XP
-      // Level 2: 5-9 XP
-      // Level 3: 10-14 XP, etc.
-      const calculatedLevel = Math.floor(stats.experience / 5) + 1;
+      const baseLevel = 1;
+      const xpLevels = Math.floor(stats.experience / 5);
+      const spLevels = Math.floor(stats.skillPoints / 5);
+      const calculatedLevel = baseLevel + xpLevels + spLevels;
 
       if (calculatedLevel > stats.level) {
         // Trigger level up animation
@@ -132,6 +174,15 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
   const xpForNextLevel = 5;
   const currentLevelXP = (level - 1) * 5;
 
+  const handleStatHover = (statKey, event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setTooltipPosition({
+      x: rect.left + window.scrollX + rect.width / 2,
+      y: rect.top + window.scrollY - 10,
+    });
+    setHoveredStat(statKey);
+  };
+
   return (
     <>
       <div className="stats-card" role="region" aria-label="Player status">
@@ -143,8 +194,8 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
           </div>
         </div>
         <div className="stats-grid">
-          {/* Stats grid for health */}
-          <div className={`stat-container ${getStatusColor(health)}`}>
+          {/* Health */}
+          <div className={`stat-container ${getStatusColor(health)}`} onMouseEnter={(e) => handleStatHover("health", e)} onMouseLeave={() => setHoveredStat(null)} ref={(ref) => (statRefs.current["health"] = ref)}>
             <div className="stat-icon health-icon" />
             <div className="stat-bar-container">
               <div className="stat-label">
@@ -161,7 +212,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
           </div>
 
           {/* Energy */}
-          <div className={`stat-container ${getStatusColor(energy)}`}>
+          <div className={`stat-container ${getStatusColor(energy)}`} onMouseEnter={(e) => handleStatHover("energy", e)} onMouseLeave={() => setHoveredStat(null)}>
             <div className="stat-icon energy-icon" />
             <div className="stat-bar-container">
               <div className="stat-label">
@@ -178,7 +229,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
           </div>
 
           {/* Hunger */}
-          <div className={`stat-container ${getStatusColor(meal)}`}>
+          <div className={`stat-container ${getStatusColor(meal)}`} onMouseEnter={(e) => handleStatHover("meal", e)} onMouseLeave={() => setHoveredStat(null)}>
             <div className="stat-icon meal-icon" />
             <div className="stat-bar-container">
               <div className="stat-label">
@@ -194,7 +245,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
           </div>
 
           {/* Sleep */}
-          <div className={`stat-container ${getStatusColor(sleep)}`}>
+          <div className={`stat-container ${getStatusColor(sleep)}`} onMouseEnter={(e) => handleStatHover("sleep", e)} onMouseLeave={() => setHoveredStat(null)}>
             <div className="stat-icon sleep-icon" />
             <div className="stat-bar-container">
               <div className="stat-label">
@@ -211,7 +262,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
           </div>
 
           {/* Mood */}
-          <div className={`stat-container mood ${getStatusColor(happiness)}`}>
+          <div className={`stat-container mood ${getStatusColor(happiness)}`} onMouseEnter={(e) => handleStatHover("happiness", e)} onMouseLeave={() => setHoveredStat(null)}>
             <div className={`stat-icon mood-icon mood-${getStatusColor(happiness)}`} />
             <div className="stat-bar-container">
               <div className="stat-label">
@@ -228,7 +279,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
           </div>
 
           {/* Cleanliness */}
-          <div className={`stat-container ${getStatusColor(cleanliness)}`}>
+          <div className={`stat-container ${getStatusColor(cleanliness)}`} onMouseEnter={(e) => handleStatHover("cleanliness", e)} onMouseLeave={() => setHoveredStat(null)}>
             <div className="stat-icon clean-icon" />
             <div className="stat-bar-container">
               <div className="stat-label">
@@ -244,24 +295,25 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
             </div>
           </div>
         </div>
-
         {/* Footer with resources */}
         <div className="stats-footer">
           <div className="resources">
-            <div className="resource-item">
+            <div className="resource-item" onMouseEnter={(e) => handleStatHover("money", e)} onMouseLeave={() => setHoveredStat(null)}>
               <div className="resource-icon money-icon" />
               <span className="resource-value">
                 <Indicator statKey="money" />${money}
               </span>
             </div>
-            <div className={`resource-item ${xpGainAnimation ? "xp-gain-glow" : ""}`}>
+
+            <div className={`resource-item ${xpGainAnimation ? "xp-gain-glow" : ""}`} onMouseEnter={(e) => handleStatHover("experience", e)} onMouseLeave={() => setHoveredStat(null)}>
               <div className={`resource-icon xp-icon ${xpGainAnimation ? "xp-icon-spin" : ""}`} />
               <span className="resource-value">
                 <Indicator statKey="experience" />
                 {`${experience} XP`}
               </span>
             </div>
-            <div className="resource-item">
+
+            <div className="resource-item" onMouseEnter={(e) => handleStatHover("skillPoints", e)} onMouseLeave={() => setHoveredStat(null)}>
               <div className="resource-icon skill-icon" />
               <span className="resource-value">
                 <Indicator statKey="skillPoints" />
@@ -275,6 +327,20 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
           </button>
         </div>
       </div>
+
+      {hoveredStat && STAT_DESCRIPTIONS[hoveredStat] && (
+        <div
+          className="stat-tooltip"
+          style={{
+            left: `${tooltipPosition.x}px`,
+            top: `${tooltipPosition.y}px`,
+            display: "block",
+          }}
+        >
+          <h4>{STAT_DESCRIPTIONS[hoveredStat].title}</h4>
+          <p>{STAT_DESCRIPTIONS[hoveredStat].description}</p>
+        </div>
+      )}
 
       {/* Level Up Notification */}
       {levelUpAnimation && (
