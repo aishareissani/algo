@@ -357,7 +357,7 @@ function StatsPlayer({
               <div className={`resource-icon xp-icon ${xpGainAnimation ? "xp-icon-spin" : ""}`} />
               <span className="resource-value">
                 <Indicator statKey="experience" />
-                {`${experience} XP`}
+                {`${+experience.toFixed(1)} XP`}
               </span>
             </div>
 
@@ -365,7 +365,7 @@ function StatsPlayer({
               <div className="resource-icon skill-icon" />
               <span className="resource-value">
                 <Indicator statKey="skillPoints" />
-                {`${skillPoints} SP`}
+                {`${+skillPoints.toFixed(1)} SP`}
               </span>
             </div>
           </div>

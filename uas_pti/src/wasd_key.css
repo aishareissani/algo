@@ -13,7 +13,7 @@
   position: fixed;
   bottom: 155px;
   right: 74px;
-  z-index: 50;
+  z-index: 2000;
 }
 
 /* Map-specific position ONLY - same size, different position */
