@@ -20,12 +20,8 @@ function Home() {
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
 
-  const toggleTaskPanel = () => setShowTasks(!showTasks);
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
-
-  // Task completion tracking
-  const [tasks, setTasks] = useState({});
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -56,6 +52,7 @@ function Home() {
     level: 1,
     skillPoints: 0,
     items: [],
+    tasks: {}, // Make sure tasks is always included
   };
 
   const [playerStats, setPlayerStats] = useState(() => {
@@ -63,24 +60,27 @@ function Home() {
 
     if (initialStats) {
       Object.keys(stats).forEach((key) => {
-        if (key !== "items") {
+        if (key === "items") {
+          if (Array.isArray(initialStats.items)) {
+            stats.items = [...initialStats.items];
+          }
+        } else if (key === "tasks") {
+          if (initialStats.tasks && typeof initialStats.tasks === "object") {
+            stats.tasks = { ...initialStats.tasks };
+          }
+        } else {
           if (initialStats[key] !== undefined && !isNaN(Number(initialStats[key]))) {
             stats[key] = Number(initialStats[key]);
           }
         }
       });
-
-      if (Array.isArray(initialStats.items)) {
-        stats.items = [...initialStats.items];
-      }
     }
 
     return stats;
   });
 
-  // Initialize tasks
+  // Initialize tasks if they don't exist
   useEffect(() => {
-    const initialTaskState = {};
     const taskLocations = {
       home: [
         { id: "bed", name: "Rest on Bed", priority: "daily" },
@@ -91,28 +91,36 @@ function Home() {
       ],
     };
 
-    const existingTasks = initialStats.tasks || {};
+    setPlayerStats((prev) => {
+      const updatedTasks = { ...prev.tasks };
+      let needsUpdate = false;
 
-    Object.keys(taskLocations).forEach((location) => {
-      taskLocations[location].forEach((task) => {
-        const taskKey = `${location}-${task.id}`;
-        initialTaskState[taskKey] = existingTasks[taskKey] || { ...task, completed: false };
+      Object.keys(taskLocations).forEach((location) => {
+        taskLocations[location].forEach((task) => {
+          const taskKey = `${location}-${task.id}`;
+          if (!updatedTasks[taskKey]) {
+            updatedTasks[taskKey] = { ...task, completed: false };
+            needsUpdate = true;
+          }
+        });
       });
-    });
 
-    setTasks(initialTaskState);
-  }, [initialStats.tasks]);
+      if (needsUpdate) {
+        return {
+          ...prev,
+          tasks: updatedTasks,
+        };
+      }
+      return prev;
+    });
+  }, []);
 
   const handleBackToMap = () => {
     navigate("/map", {
       state: {
         characterName,
         playerName,
-        stats: {
-          ...playerStats,
-          tasks: tasks,
-          lastVisitedLocation: "home", // Set this location as the last visited
-        },
+        stats: playerStats, // Pass the entire playerStats including tasks
       },
     });
   };
@@ -124,11 +132,14 @@ function Home() {
   // Function to mark a task as completed
   const completeTask = (taskId) => {
     const taskKey = `home-${taskId}`;
-    setTasks((prev) => ({
+    setPlayerStats((prev) => ({
       ...prev,
-      [taskKey]: {
-        ...prev[taskKey],
-        completed: true,
+      tasks: {
+        ...prev.tasks,
+        [taskKey]: {
+          ...prev.tasks[taskKey],
+          completed: true,
+        },
       },
     }));
   };
@@ -136,11 +147,14 @@ function Home() {
   // Function to toggle task completion (for manual toggling via UI)
   const toggleTaskCompletion = (taskId) => {
     const taskKey = `home-${taskId}`;
-    setTasks((prev) => ({
+    setPlayerStats((prev) => ({
       ...prev,
-      [taskKey]: {
-        ...prev[taskKey],
-        completed: !prev[taskKey]?.completed,
+      tasks: {
+        ...prev.tasks,
+        [taskKey]: {
+          ...prev.tasks[taskKey],
+          completed: !prev.tasks[taskKey]?.completed,
+        },
       },
     }));
   };
@@ -245,7 +259,7 @@ function Home() {
       performActivity("Sleeping", {
         sleep: 100,
         energy: 25,
-        health: 20,
+        health: -40,
         happiness: 15,
         experience: 1,
       });
@@ -526,7 +540,7 @@ function Home() {
 
       <ArrowKey onKeyPress={handleArrowPress} />
 
-      <Task currentLocation="home" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={tasks} onTaskComplete={toggleTaskCompletion} />
+      <Task currentLocation="home" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
     </div>
   );
 }

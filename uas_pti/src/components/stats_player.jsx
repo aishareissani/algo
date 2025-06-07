@@ -2,8 +2,19 @@ import React, { useState, useEffect, useRef } from "react";
 import "../stats.css";
 import { useSpeedMode } from "./speed";
 import Inventory from "./inventory";
+import GameOver from "./game_over";
 
-function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
+function StatsPlayer({
+  stats = {},
+  onStatsUpdate,
+  onResetStats,
+  onUseItem,
+  // Add these new props for GameOver
+  visitedLocations = new Set(["home"]),
+  usedItems = new Set(),
+  playtime = 0,
+  onMainMenu,
+}) {
   // Destructure stats object
   const { meal = 50, sleep = 50, health = 80, energy = 80, happiness = 50, cleanliness = 50, money = 100, experience = 0, level = 1, skillPoints = 0, items = [] } = stats;
 
@@ -18,6 +29,8 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
   const [hoveredStat, setHoveredStat] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const statRefs = useRef({});
+
+  const [showGameOver, setShowGameOver] = useState(false);
 
   // Helper function to determine status color
   const getStatusColor = (v) => (v <= 25 ? "critical" : v <= 50 ? "warning" : "good");
@@ -68,6 +81,13 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
       description: "Gained from special activities. Every 5 SP increases your level.",
     },
   };
+
+  // Check for Game Over condition
+  useEffect(() => {
+    if (health <= 0 && !showGameOver) {
+      setShowGameOver(true);
+    }
+  }, [health, showGameOver]);
 
   // Track changes in stats over time
   useEffect(() => {
@@ -138,6 +158,9 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
 
   // Simulate degradation for specific stats every 15 seconds
   useEffect(() => {
+    // Don't run degradation if game is over
+    if (showGameOver) return;
+
     const interval = setInterval(
       () => {
         // Merge the current stats with the updated values,
@@ -160,7 +183,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
     );
 
     return () => clearInterval(interval);
-  }, [stats, onStatsUpdate, isFastForward]);
+  }, [stats, onStatsUpdate, isFastForward, showGameOver]);
 
   const handleInventoryClick = () => {
     setShowInventory(true);
@@ -185,6 +208,31 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
 
   return (
     <>
+      {/* Game Over Screen - Should be at the very top level */}
+      {showGameOver && (
+        <GameOver
+          playerStats={stats}
+          tasks={stats.tasks || {}}
+          visitedLocations={visitedLocations}
+          usedItems={usedItems}
+          playtime={playtime}
+          onNewGame={() => {
+            // Reset all stats and close game over
+            if (onResetStats) {
+              onResetStats();
+            }
+            setShowGameOver(false);
+          }}
+          onMainMenu={() => {
+            // Handle return to main menu
+            if (onMainMenu) {
+              onMainMenu();
+            }
+            setShowGameOver(false);
+          }}
+        />
+      )}
+
       <div className="stats-card" role="region" aria-label="Player status">
         <div className="stats-header">
           <h3>PLAYER STATUS</h3>
@@ -350,7 +398,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem }) {
         </div>
       )}
 
-      {showInventory && <Inventory items={items} onClose={handleCloseInventory} onUseItem={onUseItem} /* ← add */ />}
+      {showInventory && <Inventory items={items} onClose={handleCloseInventory} onUseItem={onUseItem} />}
     </>
   );
 }

@@ -4,7 +4,7 @@ import StatsPlayer from "./stats_player";
 import Inventory from "./inventory";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import { handleUseItem } from "../utils/itemHandlers";
-import ArrowKey from "./wasd_key";
+import WASDKey from "./wasd_key";
 import Task from "./task";
 
 function Map() {
@@ -20,6 +20,11 @@ function Map() {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
+
+  // Add tracking for GameOver data
+  const [visitedLocations, setVisitedLocations] = useState(new Set(["home"]));
+  const [usedItems, setUsedItems] = useState(new Set());
+  const [gameStartTime] = useState(Date.now());
 
   const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
@@ -91,10 +96,15 @@ function Map() {
   };
 
   const handleItemUse = (item) => {
+    // Track used items
+    setUsedItems((prev) => new Set([...prev, item.name]));
     handleUseItem(item, setPlayerStats);
   };
 
   const handleLocationClick = (locationName) => {
+    // Track visited locations
+    setVisitedLocations((prev) => new Set([...prev, locationName]));
+
     const routes = {
       home: "/home",
       beach: "/beach",
@@ -131,6 +141,37 @@ function Map() {
         },
       },
     }));
+  };
+
+  // Calculate playtime
+  const getPlaytime = () => {
+    return Math.floor((Date.now() - gameStartTime) / 1000);
+  };
+
+  // Reset stats function for new game
+  const handleResetStats = () => {
+    const defaultStats = {
+      meal: 50,
+      sleep: 50,
+      health: 80,
+      energy: 80,
+      happiness: 50,
+      cleanliness: 50,
+      money: 100,
+      experience: 0,
+      level: 1,
+      skillPoints: 0,
+      items: [],
+      tasks: {},
+      lastVisitedLocation: "home",
+    };
+    setPlayerStats(defaultStats);
+    setVisitedLocations(new Set(["home"]));
+    setUsedItems(new Set());
+  };
+
+  const handleMainMenu = () => {
+    navigate("/");
   };
 
   const handleArrowPress = (direction) => {
@@ -212,22 +253,27 @@ function Map() {
       if (isNearHouse(playerPos.x, playerPos.y)) {
         setCurrentLocation("home");
         setLastVisitedLocation("home");
+        setVisitedLocations((prev) => new Set([...prev, "home"]));
       }
       if (isNearField(playerPos.x, playerPos.y)) {
         setCurrentLocation("field");
         setLastVisitedLocation("field");
+        setVisitedLocations((prev) => new Set([...prev, "field"]));
       }
       if (isNearBeach(playerPos.x, playerPos.y)) {
         setCurrentLocation("beach");
         setLastVisitedLocation("beach");
+        setVisitedLocations((prev) => new Set([...prev, "beach"]));
       }
       if (isNearResto(playerPos.x, playerPos.y)) {
         setCurrentLocation("restaurant");
         setLastVisitedLocation("restaurant");
+        setVisitedLocations((prev) => new Set([...prev, "restaurant"]));
       }
       if (isNearGunung(playerPos.x, playerPos.y)) {
         setCurrentLocation("mountain");
         setLastVisitedLocation("mountain");
+        setVisitedLocations((prev) => new Set([...prev, "mountain"]));
       }
       setShowDialog(true);
     } else {
@@ -257,15 +303,13 @@ function Map() {
 
   return (
     <div className="game-container">
+      {/* Task component with lowest z-index (below everything except map background) */}
+      {showTasks && <Task currentLocation={lastVisitedLocation || "home"} isInsideLocation={false} externalTasks={playerStats.tasks || {}} onTaskComplete={toggleTaskCompletion} />}
+
       <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onResetStats={handleResetStats} onUseItem={handleItemUse} visitedLocations={visitedLocations} usedItems={usedItems} playtime={getPlaytime()} onMainMenu={handleMainMenu} />
         <SpeedToggleButton />
       </div>
-      <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
-      </div>
-
-      {showTasks && <Task currentLocation={lastVisitedLocation || "home"} isInsideLocation={false} externalTasks={playerStats.tasks || {}} onTaskComplete={toggleTaskCompletion} />}
 
       {showDialog && currentLocation && currentLocation !== "map" && (
         <div className="dialog fade-in-center">
@@ -354,8 +398,9 @@ function Map() {
           <div>🗺️ Explore the village!</div>
         </div>
       </div>
+
+      <WASDKey onKeyPress={handleArrowPress} isMapLocation={true} />
       {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
-      <ArrowKey onKeyPress={handleArrowPress} />
     </div>
   );
 }

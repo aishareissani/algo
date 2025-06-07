@@ -6,45 +6,19 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 1000;
+  z-index: 100; /* Much lower than inventory */
 }
 
-/* Task Container */
 .task-container {
   position: fixed;
-  top: 230px;
+  top: 226px;
   right: 80px;
   pointer-events: auto;
-  z-index: 1001;
+  z-index: 101 !important; /* Much lower than inventory */
   display: flex;
   flex-direction: column;
   width: 270px;
   align-items: flex-start;
-}
-
-/* Minimized State */
-.task-minimized {
-  background: linear-gradient(135deg, #4a90e2 0%, #3a7bd5 100%);
-  border: 3px solid #5ba0f2;
-  border-radius: 12px;
-  padding: 12px 42px; /* Disesuaikan untuk width 275px */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3);
-  transition: all 0.3s ease;
-  animation: bounceIn 0.5s ease-out;
-  z-index: 1002;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.task-minimized:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
-  background: linear-gradient(135deg, #5ba0f2 0%, #4a90e2 100%);
 }
 
 .task-icon {
@@ -61,21 +35,29 @@
   letter-spacing: 1px;
 }
 
-/* Expanded Window */
 .task-window {
   background: #ffffff;
   border: 3px solid #4a90e2;
   border-radius: 15px;
   box-shadow: 0 8px 32px rgba(74, 144, 226, 0.3);
-  width: 275px !important; /* Force width 300px, tidak mengikuti container */
-  height: 350px;
+  width: 275px !important;
+  height: 375px !important;
   display: flex;
   flex-direction: column;
   animation: slideDown 0.3s ease-out;
   font-family: "Press Start 2P", system-ui;
-  margin-top: 10px;
   box-sizing: border-box;
   position: relative;
+  z-index: 102 !important; /* Still much lower than inventory */
+}
+
+.task-header,
+.task-location-selector,
+.task-categories,
+.task-list-container,
+.task-list,
+.task-item {
+  z-index: inherit !important; /* Inherit from parent, don't override */
 }
 
 @keyframes slideDown {
@@ -250,31 +232,12 @@
   overflow: hidden;
 }
 
-/* Task List */
 .task-list {
   padding: var(--padding-base, 20px);
   overflow-y: auto;
   height: 100%;
-  max-height: 200px;
-}
-
-/* Custom Scrollbar */
-.task-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.task-list::-webkit-scrollbar-track {
-  background: #e8f0ff;
-  border-radius: 10px;
-}
-
-.task-list::-webkit-scrollbar-thumb {
-  background: #4a90e2;
-  border-radius: 10px;
-}
-
-.task-list::-webkit-scrollbar-thumb:hover {
-  background: #3a7bd5;
+  max-height: 215px;
+  scrollbar-color: #4a90e2 #e8f0ff;
 }
 
 /* Task Items */

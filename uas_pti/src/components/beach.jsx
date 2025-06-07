@@ -18,7 +18,6 @@ function Beach() {
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
   const [showTasks, setShowTasks] = useState(true);
-  const [tasks, setTasks] = useState({});
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -52,28 +51,28 @@ function Beach() {
     level: 1,
     skillPoints: 0,
     items: [],
+    tasks: {},
   };
 
-  // Initialize with stats from map or default values
   const [playerStats, setPlayerStats] = useState(() => {
-    // Handle potentially corrupt stats data
     const stats = { ...defaultStats };
 
     if (initialStats) {
-      // Ensure all numeric values are actually numbers
       Object.keys(stats).forEach((key) => {
-        if (key !== "items") {
-          // Make sure the value exists and is a valid number
+        if (key === "items") {
+          if (Array.isArray(initialStats.items)) {
+            stats.items = [...initialStats.items];
+          }
+        } else if (key === "tasks") {
+          if (initialStats.tasks && typeof initialStats.tasks === "object") {
+            stats.tasks = { ...initialStats.tasks };
+          }
+        } else {
           if (initialStats[key] !== undefined && !isNaN(Number(initialStats[key]))) {
             stats[key] = Number(initialStats[key]);
           }
         }
       });
-
-      // Handle items array separately
-      if (Array.isArray(initialStats.items)) {
-        stats.items = [...initialStats.items];
-      }
     }
 
     return stats;
@@ -81,7 +80,6 @@ function Beach() {
 
   // Initialize tasks
   useEffect(() => {
-    const initialTaskState = {};
     const taskLocations = {
       beach: [
         { id: "swim", name: "Swim Around", priority: "daily" },
@@ -93,31 +91,36 @@ function Beach() {
       ],
     };
 
-    // Load existing tasks from navigation state if available
-    const existingTasks = initialStats.tasks || {};
+    setPlayerStats((prev) => {
+      const updatedTasks = { ...prev.tasks };
+      let needsUpdate = false;
 
-    Object.keys(taskLocations).forEach((location) => {
-      taskLocations[location].forEach((task) => {
-        const taskKey = `${location}-${task.id}`;
-        // Use existing task state or initialize as not completed
-        initialTaskState[taskKey] = existingTasks[taskKey] || { ...task, completed: false };
+      Object.keys(taskLocations).forEach((location) => {
+        taskLocations[location].forEach((task) => {
+          const taskKey = `${location}-${task.id}`;
+          if (!updatedTasks[taskKey]) {
+            updatedTasks[taskKey] = { ...task, completed: false };
+            needsUpdate = true;
+          }
+        });
       });
+
+      if (needsUpdate) {
+        return {
+          ...prev,
+          tasks: updatedTasks,
+        };
+      }
+      return prev;
     });
+  }, []);
 
-    setTasks(initialTaskState);
-  }, [initialStats.tasks]);
-
-  // Ubah handleBackToMap function:
   const handleBackToMap = () => {
     navigate("/map", {
       state: {
         characterName,
         playerName,
-        stats: {
-          ...playerStats,
-          tasks: tasks,
-          lastVisitedLocation: "beach", // Set this location as the last visited
-        },
+        stats: playerStats,
       },
     });
   };
@@ -125,11 +128,14 @@ function Beach() {
   // Function to mark a task as completed
   const completeTask = (taskId) => {
     const taskKey = `beach-${taskId}`;
-    setTasks((prev) => ({
+    setPlayerStats((prev) => ({
       ...prev,
-      [taskKey]: {
-        ...prev[taskKey],
-        completed: true,
+      tasks: {
+        ...prev.tasks,
+        [taskKey]: {
+          ...prev.tasks[taskKey],
+          completed: true,
+        },
       },
     }));
   };
@@ -137,11 +143,14 @@ function Beach() {
   // Function to toggle task completion (for manual toggling via UI)
   const toggleTaskCompletion = (taskId) => {
     const taskKey = `beach-${taskId}`;
-    setTasks((prev) => ({
+    setPlayerStats((prev) => ({
       ...prev,
-      [taskKey]: {
-        ...prev[taskKey],
-        completed: !prev[taskKey]?.completed,
+      tasks: {
+        ...prev.tasks,
+        [taskKey]: {
+          ...prev.tasks[taskKey],
+          completed: !prev.tasks[taskKey]?.completed,
+        },
       },
     }));
   };
@@ -642,7 +651,7 @@ function Beach() {
 
       <ArrowKey onKeyPress={handleArrowPress} />
 
-      <Task currentLocation="beach" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={tasks} onTaskComplete={toggleTaskCompletion} />
+      <Task currentLocation="beach" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
     </div>
   );
 }

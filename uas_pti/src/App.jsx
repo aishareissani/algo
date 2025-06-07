@@ -9,7 +9,7 @@ import Field from "./components/field";
 import Beach from "./components/beach";
 import Restaurant from "./components/restaurant";
 import Mountain from "./components/mountain";
-import Task from "./components/task"; // Import komponen Task
+import Task from "./components/task";
 
 function App() {
   return (

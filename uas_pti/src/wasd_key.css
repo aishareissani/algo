@@ -11,9 +11,15 @@
 
 .wasd-key-container {
   position: fixed;
-  bottom: 120px;
-  right: 60px;
+  bottom: 155px;
+  right: 74px;
   z-index: 50;
+}
+
+/* Map-specific position ONLY - same size, different position */
+.wasd-key-container.map-location {
+  bottom: 102px;
+  right: 410px;
 }
 
 .wasd-key-container::before {
@@ -33,11 +39,10 @@
   gap: 8px;
   background: #f8f8fe;
   border-radius: 18px;
-  padding: 16px 22px 20px 22px;
+  padding: 16px;
   border: 3px solid var(--main);
   box-shadow: var(--shadow), 0 8px 0 #5cb24e;
   font-family: "Press Start 2P", system-ui;
-  min-width: 180px;
   user-select: none;
 }
 
@@ -64,17 +69,14 @@
   color: #273a16;
   border: 2px solid var(--main);
   border-radius: 12px;
-  height: 58px;
-  width: 58px;
+  height: 45px;
+  width: 74px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: var(--key-shadow);
   cursor: pointer;
-  margin: 0 1px;
-  letter-spacing: 0;
   transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  outline: none;
   position: relative;
   overflow: hidden;
 }
@@ -143,23 +145,27 @@
 }
 
 /* Media queries for responsive design */
-@media (max-width: 768px) {
+@media (max-width: 76px) {
   .wasd-key-container {
     bottom: 16px;
     right: 16px;
   }
 
+  /* Map-specific mobile position */
+  .wasd-key-container.map-location {
+    bottom: 16px;
+    left: 16px;
+  }
+
   .wasd-key-pad {
-    padding: 12px 12px 16px 12px;
-    min-width: 140px;
+    padding: 12px;
     gap: 6px;
   }
 
   .wasd-key {
     font-size: 18px;
-    width: 42px;
-    height: 42px;
-    border-radius: 8px;
+    width: 48px;
+    height: 48px;
   }
 
   .wasd-key-container::before {

@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import "../task.css";
 
-const Task = ({
-  currentLocation,
-  containerWidth = 250,
-  containerHeight = 350,
-  isInsideLocation = false,
-  customPosition = null,
-  externalTasks = null, // New prop to receive tasks from parent
-  onTaskComplete = null, // New prop to handle task completion
-}) => {
-  const [isMinimized, setIsMinimized] = useState(!isInsideLocation);
+const Task = ({ currentLocation, containerWidth = 250, containerHeight = 350, isInsideLocation = false, customPosition = null, externalTasks = null, onTaskComplete = null }) => {
   const [selectedLocation, setSelectedLocation] = useState(currentLocation);
   const [locationIndex, setLocationIndex] = useState(0);
   const [taskFilter, setTaskFilter] = useState("all");
@@ -76,18 +66,10 @@ const Task = ({
 
   const locationKeys = Object.keys(locations);
 
-  // Update minimized state when isInsideLocation changes
-  useEffect(() => {
-    setIsMinimized(!isInsideLocation);
-  }, [isInsideLocation]);
-
-  // Initialize tasks completion state or use external tasks if provided
   useEffect(() => {
     if (externalTasks) {
-      // Use external tasks if provided
       setTasks(externalTasks);
     } else {
-      // Initialize tasks locally if no external tasks
       const initialTaskState = {};
       Object.keys(locations).forEach((location) => {
         locations[location].tasks.forEach((task) => {
@@ -156,13 +138,11 @@ const Task = ({
   const toggleTaskCompletion = (taskId) => {
     const taskKey = `${selectedLocation}-${taskId}`;
 
-    // Use external handler if provided
     if (onTaskComplete) {
       onTaskComplete(taskId);
       return;
     }
 
-    // Otherwise use internal state
     setTasks((prevTasks) => ({
       ...prevTasks,
       [taskKey]: {
@@ -197,8 +177,7 @@ const Task = ({
 
   const currentLocationData = locations[selectedLocation];
   const filteredTasks = getFilteredTasks();
-
-  const fontSizeBase = Math.min(containerWidth, containerHeight) * 0.04;
+  const fontSizeBase = Math.min(containerWidth, containerHeight) * 0.045;
 
   const styles = {
     container: {
@@ -211,76 +190,60 @@ const Task = ({
     },
   };
 
-  return createPortal(
+  return (
     <div
-      className={`task-container ${isMinimized ? "minimized" : "expanded"} ${isInsideLocation ? "inside-location" : ""}`}
-      style={
-        customPosition
-          ? {
-              ...customPosition,
-            }
-          : {}
-      }
+      className={`task-container expanded ${isInsideLocation ? "inside-location" : ""}`}
+      style={{
+        ...(customPosition ? customPosition : {}),
+        marginTop: "10px",
+      }}
     >
-      {isMinimized ? (
-        <div className="task-minimized" onClick={() => setIsMinimized(false)}>
-          <div className="task-icon">📋</div>
-          <span className="task-label">Tasks</span>
+      <div className="task-window" style={styles.container}>
+        <div className="task-header">
+          <h2 className="task-title">QUEST LOG</h2>
         </div>
-      ) : (
-        <div className="task-window" style={styles.container}>
-          <div className="task-header">
-            <h2 className="task-title">QUEST LOG</h2>
-            {!isInsideLocation && ( // Hide close button if inside location
-              <button className="task-close" onClick={() => setIsMinimized(true)}>
-                −
-              </button>
+
+        <div className="task-location-selector">
+          <button className="location-arrow" onClick={handlePrevLocation}>
+            ◀
+          </button>
+          <div className="location-info">
+            <span className="location-icon">{currentLocationData?.icon}</span>
+            <span className="location-name">{currentLocationData?.title}</span>
+          </div>
+          <button className="location-arrow" onClick={handleNextLocation}>
+            ▶
+          </button>
+        </div>
+
+        <div className="task-categories">
+          <button className={`category-btn ${showDailyButton ? "active" : ""}`} onClick={() => toggleFilter("daily")}>
+            Daily
+          </button>
+          <button className={`category-btn ${showBonusButton ? "active" : ""}`} onClick={() => toggleFilter("bonus")}>
+            Bonus
+          </button>
+        </div>
+
+        <div className="task-list-container">
+          <div className="task-list">
+            {filteredTasks.length > 0 ? (
+              filteredTasks.map((task) => (
+                <div key={task.id} className={`task-item ${task.priority} ${task.completed ? "completed" : ""}`} onClick={() => toggleTaskCompletion(task.id)}>
+                  <div className="task-item-content">
+                    <span className="task-bullet">{task.completed ? "●" : "○"}</span>
+                    <span className="task-name">{task.name}</span>
+                  </div>
+                  <span className={`task-badge ${task.priority}`}>{task.priority.toUpperCase()}</span>
+                </div>
+              ))
+            ) : (
+              <div className="task-empty">No tasks available</div>
             )}
           </div>
-
-          <div className="task-location-selector">
-            <button className="location-arrow" onClick={handlePrevLocation}>
-              ◀
-            </button>
-            <div className="location-info">
-              <span className="location-icon">{currentLocationData?.icon}</span>
-              <span className="location-name">{currentLocationData?.title}</span>
-            </div>
-            <button className="location-arrow" onClick={handleNextLocation}>
-              ▶
-            </button>
-          </div>
-
-          <div className="task-categories">
-            <button className={`category-btn ${showDailyButton ? "active" : ""}`} onClick={() => toggleFilter("daily")}>
-              Daily
-            </button>
-            <button className={`category-btn ${showBonusButton ? "active" : ""}`} onClick={() => toggleFilter("bonus")}>
-              Bonus
-            </button>
-          </div>
-
-          <div className="task-list-container">
-            <div className="task-list">
-              {filteredTasks.length > 0 ? (
-                filteredTasks.map((task) => (
-                  <div key={task.id} className={`task-item ${task.priority} ${task.completed ? "completed" : ""}`} onClick={() => toggleTaskCompletion(task.id)}>
-                    <div className="task-item-content">
-                      <span className="task-bullet">{task.completed ? "●" : "○"}</span>
-                      <span className="task-name">{task.name}</span>
-                    </div>
-                    <span className={`task-badge ${task.priority}`}>{task.priority.toUpperCase()}</span>
-                  </div>
-                ))
-              ) : (
-                <div className="task-empty">No tasks available</div>
-              )}
-            </div>
-          </div>
         </div>
-      )}
-    </div>,
-    document.getElementById("task-portal") || document.body
+      </div>
+    </div>
   );
 };
 

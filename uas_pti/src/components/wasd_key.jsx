@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import "../wasd_key.css";
 
-const WASDKey = ({ onKeyPress }) => {
+const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
   // Store interval IDs for each direction
   const intervals = useRef({});
 
@@ -42,13 +42,19 @@ const WASDKey = ({ onKeyPress }) => {
     }
   };
 
+  // Generate class names based on isMapLocation prop
+  const containerClass = `wasd-key-container${isMapLocation ? " map-location" : ""}`;
+  const padClass = `wasd-key-pad${isMapLocation ? " map-location" : ""}`;
+  const middleRowClass = `wasd-key-middle-row${isMapLocation ? " map-location" : ""}`;
+  const keyClass = (key) => `wasd-key wasd-key-${key}${isMapLocation ? " map-location" : ""}`;
+
   return (
-    <div className="wasd-key-container">
-      <div className="wasd-key-pad">
+    <div className={containerClass}>
+      <div className={padClass}>
         {/* Top row with just W */}
         <div className="wasd-key-top-row">
           <button
-            className="wasd-key wasd-key-w"
+            className={keyClass("w")}
             aria-label="W key for up"
             onMouseDown={() => handleStartPress("up")}
             onMouseUp={() => handleEndPress("up")}
@@ -61,9 +67,9 @@ const WASDKey = ({ onKeyPress }) => {
         </div>
 
         {/* Bottom row with A S D */}
-        <div className="wasd-key-middle-row">
+        <div className={middleRowClass}>
           <button
-            className="wasd-key wasd-key-a"
+            className={keyClass("a")}
             aria-label="A key for left"
             onMouseDown={() => handleStartPress("left")}
             onMouseUp={() => handleEndPress("left")}
@@ -75,7 +81,7 @@ const WASDKey = ({ onKeyPress }) => {
           </button>
 
           <button
-            className="wasd-key wasd-key-s"
+            className={keyClass("s")}
             aria-label="S key for down"
             onMouseDown={() => handleStartPress("down")}
             onMouseUp={() => handleEndPress("down")}
@@ -87,7 +93,7 @@ const WASDKey = ({ onKeyPress }) => {
           </button>
 
           <button
-            className="wasd-key wasd-key-d"
+            className={keyClass("d")}
             aria-label="D key for right"
             onMouseDown={() => handleStartPress("right")}
             onMouseUp={() => handleEndPress("right")}

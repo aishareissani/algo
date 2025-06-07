@@ -309,7 +309,7 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 20;
+  z-index: 800 !important; /* Much lower than inventory */
   font-family: "Press Start 2P", system-ui;
 }
 
@@ -406,6 +406,7 @@ body {
   color: #4d4d4d;
   font-size: 8px;
   line-height: 1.5;
+  z-index: 900 !important; /* Much lower than inventory */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -435,6 +436,7 @@ body {
   border: 3px solid #79d959;
   z-index: 100;
   animation: fadeIn 0.3s ease-out;
+  width: 280px;
 }
 
 .dialog p {
