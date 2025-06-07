@@ -6,13 +6,104 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Map/General Colors */
+  --map-body-bg-1: #f7f2e7;
+  --map-body-bg-2: #d8e1c5;
+  --map-body-text: #4d4d4d;
+  --map-loading-title: #fff;
+  --map-loading-shadow: #3b5a30;
+  --map-button-bg-1: #8cb369;
+  --map-button-bg-2: #5a8c3b;
+  --map-button-text: #fff;
+  --map-button-shadow-1: rgba(0, 0, 0, 0.3);
+  --map-button-shadow-2: rgba(255, 255, 255, 0.1);
+  --map-button-hover-shadow-1: rgba(90, 140, 59, 0.6);
+  --map-button-hover-shadow-2: rgba(255, 255, 255, 0.3);
+  --map-chara-title: #fff;
+  --map-chara-shadow: #3b5a30;
+  --map-glass-bg: rgba(255, 255, 255, 0.15);
+  --map-glass-border: rgba(255, 255, 255, 0.15);
+  --map-glass-input-bg: rgba(255, 255, 255, 0.3);
+  --map-shadow-default: rgba(0, 0, 0, 0.3);
+  --map-shadow-hover: rgba(0, 255, 180, 0.5);
+  --map-arrow-bg: rgba(255, 255, 255, 0.2);
+  --map-arrow-border: rgba(255, 255, 255, 0.25);
+  --map-arrow-shadow: rgba(0, 0, 0, 0.2);
+  --map-arrow-hover-text: rgba(255, 255, 255);
+  --map-arrow-hover-shadow: rgba(255, 255, 255, 0.5);
+  --map-arrow-hover-border: rgba(255, 255, 255, 0.5);
+  --map-container-bg: #80664f;
+  --map-viewport-border: #78d658;
+  --map-viewport-bg: #f0f9e6;
+  --map-viewport-shadow-1: rgba(121, 216, 88, 0.3);
+  --map-viewport-shadow-2: rgba(255, 255, 255, 0.2);
+  --map-pointer-shadow-1: rgba(0, 0, 0, 0.4);
+  --map-pointer-shadow-2: rgba(0, 0, 0, 0.6);
+  --map-pointer-bg: rgba(0, 0, 0, 0.8);
+  --map-pointer-text: white;
+  --map-pointer-label-shadow: rgba(0, 0, 0, 0.3);
+  --map-mini-pointer-shadow: rgba(0, 0, 0, 0.4);
+  --map-player-shadow: rgba(0, 0, 0, 0.5);
+  --map-mini-map-bg: #f8f8ff;
+  --map-mini-map-border: #79d959;
+  --map-mini-map-shadow: rgba(0, 0, 0, 0.15);
+  --map-mini-map-player-bg: #d83232;
+  --map-mini-map-player-glow: #e9d669;
+  --map-mini-map-viewport-border: #f8f8ff;
+  --map-mini-map-viewport-bg: rgba(255, 255, 255, 0.2);
+  --map-player-info-bg: #f8f8ff;
+  --map-player-info-border: #79d959;
+  --map-player-info-text: #4d4d4d;
+  --map-player-info-shadow: rgba(0, 0, 0, 0.15);
+  --map-hud-avatar-border: #79d959;
+  --map-hud-avatar-bg: #f8f8ff;
+  --map-hud-avatar-glow: rgba(121, 216, 88, 0.3);
+  --map-controls-bg: #f8f8ff;
+  --map-controls-border: #51b3f0;
+  --map-controls-text: #4d4d4d;
+  --map-controls-shadow: rgba(0, 0, 0, 0.15);
+  --map-dialog-bg: rgba(255, 255, 255, 0.8);
+  --map-dialog-border: #79d959;
+  --map-dialog-shadow: rgba(0, 0, 0, 0.2);
+  --map-dialog-text: #4d4d4d;
+  --map-dialog-btn-shadow: rgba(0, 0, 0, 0.15);
+  --map-dialog-yes-bg: #51b3f0;
+  --map-dialog-yes-text: #f8f8ff;
+  --map-dialog-yes-shadow: rgba(0, 0, 0, 0.2);
+  --map-dialog-no-bg: #e74c3c;
+  --map-dialog-no-text: #f8f8ff;
+  --map-dialog-no-shadow: rgba(0, 0, 0, 0.2);
+  --map-back-btn-bg-1: #4facfe;
+  --map-back-btn-bg-2: #00f2fe;
+  --map-back-btn-border: #ffffff;
+  --map-back-btn-text: white;
+  --map-back-btn-shadow-1: rgba(79, 172, 254, 0.3);
+  --map-back-btn-shadow-2: rgba(0, 0, 0, 0.1);
+  --map-back-btn-shadow-3: rgba(255, 255, 255, 0.2);
+  --map-back-btn-shadow-4: rgba(0, 0, 0, 0.3);
+  --map-back-btn-hover-1: #667eea;
+  --map-back-btn-hover-2: #764ba2;
+  --map-back-btn-hover-shadow-1: rgba(79, 172, 254, 0.4);
+  --map-back-btn-hover-shadow-2: rgba(0, 0, 0, 0.15);
+  --map-back-btn-hover-shadow-3: rgba(255, 255, 255, 0.3);
+  --map-activity-bg: rgba(255, 255, 255, 0.8);
+  --map-activity-border: #79d959;
+  --map-activity-shadow: rgba(0, 0, 0, 0.2);
+  --map-activity-text: #4d4d4d;
+  --map-activity-progress-bg: rgba(224, 224, 224, 0.8);
+  --map-activity-progress-shadow: rgba(0, 0, 0, 0.1);
+  --map-activity-progress-fill: #79d959;
+  --map-activity-progress-fill-shadow: rgba(121, 217, 89, 0.3);
+}
+
 body {
   font-family: "Press Start 2P", system-ui;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  background: linear-gradient(to bottom, #f7f2e7, #d8e1c5);
-  color: #4d4d4d;
+  background: linear-gradient(to bottom, var(--map-body-bg-1), var(--map-body-bg-2));
+  color: var(--map-body-text);
 }
 
 /* loading screen */
@@ -24,23 +115,23 @@ body {
 }
 
 .judul_load {
-  color: #fff;
-  text-shadow: 3px 3px 5px #3b5a30;
+  color: var(--map-loading-title);
+  text-shadow: 3px 3px 5px var(--map-loading-shadow);
 }
 
 .nextButton,
 .button_start {
-  background: linear-gradient(45deg, #8cb369, #5a8c3b);
-  color: #fff;
+  background: linear-gradient(45deg, var(--map-button-bg-1), var(--map-button-bg-2));
+  color: var(--map-button-text);
   font-family: "Press Start 2P", system-ui;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.1);
+  box-shadow: 2px 2px 10px var(--map-button-shadow-1), inset -2px -2px 5px var(--map-button-shadow-2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   margin-top: 5px;
   margin-bottom: 15px;
 }
 
 .nextButton:hover {
-  box-shadow: 6px 6px 15px rgba(90, 140, 59, 0.6), inset -2px -2px 7px rgba(255, 255, 255, 0.3);
+  box-shadow: 6px 6px 15px var(--map-button-hover-shadow-1), inset -2px -2px 7px var(--map-button-hover-shadow-2);
 }
 
 /* animation load & chara */
@@ -113,20 +204,20 @@ body {
 }
 
 .judul_chara {
-  color: #fff;
-  text-shadow: 3px 3px 5px #3b5a30;
+  color: var(--map-chara-title);
+  text-shadow: 3px 3px 5px var(--map-chara-shadow);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--map-glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--map-glass-border);
 }
 
 .glass-input {
   font-family: "Dongle", system-ui;
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--map-glass-input-bg);
   border: none;
   outline: none;
   backdrop-filter: blur(10px);
@@ -135,31 +226,31 @@ body {
 }
 
 .shadow-btn-default {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 15px var(--map-shadow-default);
 }
 
 .shadow-btn-hover {
-  box-shadow: 0 6px 20px rgba(0, 255, 180, 0.5);
+  box-shadow: 0 6px 20px var(--map-shadow-hover);
 }
 
 .button_start:hover {
-  box-shadow: 6px 6px 15px rgba(90, 140, 59, 0.6), inset -2px -2px 7px rgba(255, 255, 255, 0.3);
+  box-shadow: 6px 6px 15px var(--map-button-hover-shadow-1), inset -2px -2px 7px var(--map-button-hover-shadow-2);
 }
 
 .arrow_button {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--map-arrow-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  border: 2px solid var(--map-arrow-border);
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px var(--map-arrow-shadow);
 }
 
 .arrow_button:hover {
   transform: scale(1);
-  color: rgba(255, 255, 255);
-  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.5);
-  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--map-arrow-hover-text);
+  box-shadow: 0 8px 20px var(--map-arrow-hover-shadow);
+  border-color: var(--map-arrow-hover-border);
 }
 
 /* map */
@@ -169,7 +260,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #80664f;
+  background: var(--map-container-bg);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -179,12 +270,12 @@ body {
 .game-viewport {
   width: 800px;
   height: 600px;
-  border: 4px solid #78d658;
+  border: 4px solid var(--map-viewport-border);
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 0 30px rgba(121, 216, 88, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2);
-  background: #f0f9e6;
+  box-shadow: 0 0 30px var(--map-viewport-shadow-1), inset 0 0 20px var(--map-viewport-shadow-2);
+  background: var(--map-viewport-bg);
 }
 
 .game-world {
@@ -219,14 +310,14 @@ body {
 .pointer-image {
   width: 120px; /* Larger size for big map */
   height: 120px; /* Larger size for big map */
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 4px 8px var(--map-pointer-shadow-1));
   image-rendering: pixelated;
   transition: all 0.3s ease;
 }
 
 .pointer-label {
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
+  background: var(--map-pointer-bg);
+  color: var(--map-pointer-text);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 8px;
@@ -235,7 +326,7 @@ body {
   white-space: nowrap;
   opacity: 0;
   transition: opacity 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px var(--map-pointer-label-shadow);
 }
 
 .location-pointer:hover .pointer-label {
@@ -244,7 +335,7 @@ body {
 
 .location-pointer:hover .pointer-image {
   transform: scale(1.1);
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 6px 12px var(--map-pointer-shadow-2));
 }
 
 /* Mini-map pointer styles - MINI MAP */
@@ -258,7 +349,7 @@ body {
 .mini-pointer-image {
   width: 30px; /* Much smaller size for mini-map */
   height: 30px; /* Much smaller size for mini-map */
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 1px 2px var(--map-mini-pointer-shadow));
   image-rendering: pixelated;
 }
 
@@ -299,7 +390,7 @@ body {
   height: 100%;
   object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 4px 8px var(--map-player-shadow));
 }
 
 .game-hud {
@@ -319,11 +410,11 @@ body {
   right: 75px;
   width: 270px;
   height: 140px;
-  background: #f8f8ff;
-  border: 3px solid #79d959;
+  background: var(--map-mini-map-bg);
+  border: 3px solid var(--map-mini-map-border);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--map-mini-map-shadow);
 }
 
 .mini-map-world {
@@ -340,10 +431,10 @@ body {
   position: absolute;
   width: 8px;
   height: 8px;
-  background: #d83232;
+  background: var(--map-mini-map-player-bg);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 8px #e9d669;
+  box-shadow: 0 0 8px var(--map-mini-map-player-glow);
   animation: pulse-map-marker 1.5s infinite ease-in-out;
   z-index: 4;
 }
@@ -352,18 +443,18 @@ body {
   0%,
   100% {
     transform: translate(-50%, -50%) scale(1);
-    box-shadow: 0 0 4px #e9d669;
+    box-shadow: 0 0 4px var(--map-mini-map-player-glow);
   }
   50% {
     transform: translate(-50%, -50%) scale(1.3);
-    box-shadow: 0 0 10px #e9d669;
+    box-shadow: 0 0 10px var(--map-mini-map-player-glow);
   }
 }
 
 .mini-map-viewport {
   position: absolute;
-  border: 2px solid #f8f8ff;
-  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid var(--map-mini-map-viewport-border);
+  background: var(--map-mini-map-viewport-bg);
 }
 
 .player-info {
@@ -373,24 +464,24 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #f8f8ff;
+  background: var(--map-player-info-bg);
   padding: 12px 18px;
   border-radius: 12px;
-  border: 3px solid #79d959;
+  border: 3px solid var(--map-player-info-border);
   font-family: "Press Start 2P", monospace;
-  color: #4d4d4d;
+  color: var(--map-player-info-text);
   font-size: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--map-player-info-shadow);
 }
 
 .hud-avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 2px solid #79d959;
-  background: #f8f8ff;
+  border: 2px solid var(--map-hud-avatar-border);
+  background: var(--map-hud-avatar-bg);
   padding: 2px;
-  box-shadow: 0 0 0 2px rgba(121, 216, 88, 0.3);
+  box-shadow: 0 0 0 2px var(--map-hud-avatar-glow);
 }
 
 .controls-hint {
@@ -398,16 +489,16 @@ body {
   bottom: 76px;
   right: 75px;
   width: 246px;
-  background: #f8f8ff;
+  background: var(--map-controls-bg);
   padding: 12px;
   border-radius: 12px;
-  border: 3px solid #51b3f0;
+  border: 3px solid var(--map-controls-border);
   font-family: "Press Start 2P", monospace;
-  color: #4d4d4d;
+  color: var(--map-controls-text);
   font-size: 8px;
   line-height: 1.5;
   z-index: 900 !important; /* Much lower than inventory */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--map-controls-shadow);
 }
 
 .controls-hint div {
@@ -426,14 +517,14 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--map-dialog-bg);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   border-radius: 16px;
   padding: 25px 35px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px var(--map-dialog-shadow);
   text-align: center;
-  border: 3px solid #79d959;
+  border: 3px solid var(--map-dialog-border);
   z-index: 100;
   animation: fadeIn 0.3s ease-out;
   width: 280px;
@@ -444,7 +535,7 @@ body {
   margin-bottom: 25px;
   font-weight: bold;
   letter-spacing: 0.5px;
-  color: #4d4d4d;
+  color: var(--map-dialog-text);
   line-height: 1.6;
   text-align: center;
 }
@@ -458,46 +549,46 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px var(--map-dialog-btn-shadow);
   font-family: "Press Start 2P", system-ui;
 }
 
 .dialog .yes-btn {
-  background: #51b3f0;
-  color: #f8f8ff;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+  background: var(--map-dialog-yes-bg);
+  color: var(--map-dialog-yes-text);
+  text-shadow: 1px 1px 0 var(--map-dialog-yes-shadow);
 }
 
 .dialog .no-btn {
-  background: #e74c3c;
-  color: #f8f8ff;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+  background: var(--map-dialog-no-bg);
+  color: var(--map-dialog-no-text);
+  text-shadow: 1px 1px 0 var(--map-dialog-no-shadow);
 }
 
 /* back to start */
 .back-to-start-button-inline {
   display: block;
   margin-top: 8px;
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  border: 2px solid #ffffff;
+  background: linear-gradient(135deg, var(--map-back-btn-bg-1) 0%, var(--map-back-btn-bg-2) 100%);
+  border: 2px solid var(--map-back-btn-border);
   border-radius: 6px;
-  color: white;
+  color: var(--map-back-btn-text);
   font-family: "Press Start 2P", system-ui;
   font-size: 8px;
   font-weight: bold;
   padding: 6px 10px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 3px 6px rgba(79, 172, 254, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 6px var(--map-back-btn-shadow-1), 0 1px 3px var(--map-back-btn-shadow-2), inset 0 1px 0 var(--map-back-btn-shadow-3);
+  text-shadow: 0 1px 2px var(--map-back-btn-shadow-4);
   pointer-events: auto;
   width: fit-content;
 }
 
 .back-to-start-button-inline:hover {
   transform: translateY(-2px) scale(1.05);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 5px 10px rgba(79, 172, 254, 0.4), 0 2px 5px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, var(--map-back-btn-hover-1) 0%, var(--map-back-btn-hover-2) 100%);
+  box-shadow: 0 5px 10px var(--map-back-btn-hover-shadow-1), 0 2px 5px var(--map-back-btn-hover-shadow-2), inset 0 1px 0 var(--map-back-btn-hover-shadow-3);
 }
 
 .back-to-start-button-inline:active {
@@ -518,14 +609,14 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--map-activity-bg);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   border-radius: 16px;
   padding: 25px 35px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px var(--map-activity-shadow);
   text-align: center;
-  border: 3px solid #79d959;
+  border: 3px solid var(--map-activity-border);
   z-index: 100;
   animation: fadeIn 0.3s ease-out;
   min-width: 300px;
@@ -533,7 +624,7 @@ body {
 
 .activity-info h3 {
   margin: 0 0 15px 0;
-  color: #4d4d4d;
+  color: var(--map-activity-text);
   font-size: 16px;
   font-weight: bold;
   letter-spacing: 0.5px;
@@ -544,7 +635,7 @@ body {
 .activity-info p {
   margin: 0;
   font-size: 14px;
-  color: #4d4d4d;
+  color: var(--map-activity-text);
   font-weight: bold;
 }
 
@@ -552,17 +643,17 @@ body {
 .activity-progress-bar {
   width: 100%;
   height: 20px;
-  background: rgba(224, 224, 224, 0.8);
+  background: var(--map-activity-progress-bg);
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 10px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 2px 4px var(--map-activity-progress-shadow);
 }
 
 .activity-progress-fill {
   height: 100%;
-  background: #79d959;
+  background: var(--map-activity-progress-fill);
   border-radius: 12px;
   transition: width 0.1s linear;
-  box-shadow: 0 2px 4px rgba(121, 217, 89, 0.3);
+  box-shadow: 0 2px 4px var(--map-activity-progress-fill-shadow);
 }

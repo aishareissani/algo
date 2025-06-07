@@ -1,6 +1,23 @@
 /* speed.css */
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 
+:root {
+  /* Speed Toggle Colors */
+  --speed-normal-bg-1: #3bab40;
+  --speed-normal-bg-2: #4caf50;
+  --speed-normal-text: white;
+  --speed-fast-bg-1: #f05123;
+  --speed-fast-bg-2: #ff5722;
+  --speed-fast-text: white;
+  --speed-border: rgba(255, 255, 255, 0.25);
+  --speed-shadow: rgba(0, 0, 0, 0.25);
+  --speed-hover-shadow: rgba(0, 0, 0, 0.3);
+  --speed-active-shadow: rgba(0, 0, 0, 0.3);
+  --speed-text-shadow: rgba(0, 0, 0, 0.2);
+  --speed-hover-overlay: rgba(255, 255, 255, 0.2);
+  --speed-active-overlay: rgba(255, 255, 255, 0.1);
+}
+
 .speed-toggle-button {
   position: fixed;
   top: 100px;
@@ -13,26 +30,26 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 1000;
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  border: 2px solid var(--speed-border);
   outline: none;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 15px var(--speed-shadow);
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 160px;
   justify-content: center;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 1px 1px 2px var(--speed-text-shadow);
   overflow: hidden;
 }
 
 .speed-toggle-button.normal {
-  background: linear-gradient(145deg, #3bab40, #4caf50);
-  color: white;
+  background: linear-gradient(145deg, var(--speed-normal-bg-1), var(--speed-normal-bg-2));
+  color: var(--speed-normal-text);
 }
 
 .speed-toggle-button.fast-forward {
-  background: linear-gradient(145deg, #f05123, #ff5722);
-  color: white;
+  background: linear-gradient(145deg, var(--speed-fast-bg-1), var(--speed-fast-bg-2));
+  color: var(--speed-fast-text);
 }
 
 .speed-toggle-button svg {
@@ -51,14 +68,14 @@
   right: 0;
   bottom: 0;
   border-radius: 30px;
-  background: linear-gradient(rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(var(--speed-hover-overlay), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .speed-toggle-button:hover {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 20px var(--speed-hover-shadow);
 }
 
 .speed-toggle-button:hover:before {
@@ -67,7 +84,7 @@
 
 .speed-toggle-button:active {
   transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px var(--speed-active-shadow);
 }
 
 .speed-toggle-button:after {
@@ -76,7 +93,7 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--speed-active-overlay);
   transform: scale(0);
   transition: transform 0.5s ease-out;
 }

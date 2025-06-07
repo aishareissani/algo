@@ -6,6 +6,29 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* House Colors */
+  --house-container-bg: #80664f;
+  --house-viewport-border: #78d658;
+  --house-viewport-bg: #f0f9e6;
+  --house-viewport-shadow-1: rgba(121, 216, 88, 0.3);
+  --house-viewport-shadow-2: rgba(255, 255, 255, 0.2);
+  --house-player-shadow: rgba(0, 0, 0, 0.5);
+  --house-button-bg-1: #4facfe;
+  --house-button-bg-2: #00f2fe;
+  --house-button-border: #ffffff;
+  --house-button-text: white;
+  --house-button-shadow-1: rgba(79, 172, 254, 0.3);
+  --house-button-shadow-2: rgba(0, 0, 0, 0.1);
+  --house-button-shadow-3: rgba(255, 255, 255, 0.2);
+  --house-button-shadow-4: rgba(0, 0, 0, 0.3);
+  --house-button-hover-1: #667eea;
+  --house-button-hover-2: #764ba2;
+  --house-button-hover-shadow-1: rgba(79, 172, 254, 0.4);
+  --house-button-hover-shadow-2: rgba(0, 0, 0, 0.15);
+  --house-button-hover-shadow-3: rgba(255, 255, 255, 0.3);
+}
+
 /* Main container */
 .house-game-container {
   position: fixed;
@@ -13,7 +36,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #80664f;
+  background: var(--house-container-bg);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -24,12 +47,12 @@
 .house-game-viewport {
   width: 800px;
   height: 600px;
-  border: 4px solid #78d658;
+  border: 4px solid var(--house-viewport-border);
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 0 30px rgba(121, 216, 88, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2);
-  background: #f0f9e6;
+  box-shadow: 0 0 30px var(--house-viewport-shadow-1), inset 0 0 20px var(--house-viewport-shadow-2);
+  background: var(--house-viewport-bg);
 }
 
 /* Game world */
@@ -65,7 +88,7 @@
   height: 100%;
   object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 4px 8px var(--house-player-shadow));
 }
 
 /* Back to Map Button at bottom */
@@ -73,26 +96,26 @@
 .back-to-map-button-inline {
   display: block;
   margin-top: 8px;
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  border: 2px solid #ffffff;
+  background: linear-gradient(135deg, var(--house-button-bg-1) 0%, var(--house-button-bg-2) 100%);
+  border: 2px solid var(--house-button-border);
   border-radius: 6px;
-  color: white;
+  color: var(--house-button-text);
   font-family: "Press Start 2P", system-ui;
   font-size: 8px;
   font-weight: bold;
   padding: 6px 10px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 3px 6px rgba(79, 172, 254, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 6px var(--house-button-shadow-1), 0 1px 3px var(--house-button-shadow-2), inset 0 1px 0 var(--house-button-shadow-3);
+  text-shadow: 0 1px 2px var(--house-button-shadow-4);
   pointer-events: auto;
   width: fit-content;
 }
 
 .back-to-map-button-inline:hover {
   transform: translateY(-2px) scale(1.05);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 5px 10px rgba(79, 172, 254, 0.4), 0 2px 5px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, var(--house-button-hover-1) 0%, var(--house-button-hover-2) 100%);
+  box-shadow: 0 5px 10px var(--house-button-hover-shadow-1), 0 2px 5px var(--house-button-hover-shadow-2), inset 0 1px 0 var(--house-button-hover-shadow-3);
 }
 
 .back-to-map-button-inline:active {

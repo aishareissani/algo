@@ -1,9 +1,33 @@
+/* field.css */
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Dongle&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Field Colors */
+  --field-container-bg: #80664f;
+  --field-viewport-border: #78d658;
+  --field-viewport-bg: #f0f9e6;
+  --field-viewport-shadow-1: rgba(121, 216, 88, 0.3);
+  --field-viewport-shadow-2: rgba(255, 255, 255, 0.2);
+  --field-player-shadow: rgba(0, 0, 0, 0.5);
+  --field-button-bg-1: #4facfe;
+  --field-button-bg-2: #00f2fe;
+  --field-button-border: #ffffff;
+  --field-button-text: white;
+  --field-button-shadow-1: rgba(79, 172, 254, 0.3);
+  --field-button-shadow-2: rgba(0, 0, 0, 0.1);
+  --field-button-shadow-3: rgba(255, 255, 255, 0.2);
+  --field-button-shadow-4: rgba(0, 0, 0, 0.3);
+  --field-button-hover-1: #667eea;
+  --field-button-hover-2: #764ba2;
+  --field-button-hover-shadow-1: rgba(79, 172, 254, 0.4);
+  --field-button-hover-shadow-2: rgba(0, 0, 0, 0.15);
+  --field-button-hover-shadow-3: rgba(255, 255, 255, 0.3);
+}
 
 /* Main container */
 .field-game-container {
@@ -12,7 +36,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #80664f;
+  background: var(--field-container-bg);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -23,12 +47,12 @@
 .field-game-viewport {
   width: 800px;
   height: 600px;
-  border: 4px solid #78d658;
+  border: 4px solid var(--field-viewport-border);
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 0 30px rgba(121, 216, 88, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2);
-  background: #f0f9e6;
+  box-shadow: 0 0 30px var(--field-viewport-shadow-1), inset 0 0 20px var(--field-viewport-shadow-2);
+  background: var(--field-viewport-bg);
 }
 
 /* Game world */
@@ -64,33 +88,33 @@
   height: 100%;
   object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 4px 8px var(--field-player-shadow));
 }
 
 /* Back to Map Button at bottom */
 .back-to-map-button-inline {
   display: block;
   margin-top: 8px;
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  border: 2px solid #ffffff;
+  background: linear-gradient(135deg, var(--field-button-bg-1) 0%, var(--field-button-bg-2) 100%);
+  border: 2px solid var(--field-button-border);
   border-radius: 6px;
-  color: white;
+  color: var(--field-button-text);
   font-family: "Press Start 2P", system-ui;
   font-size: 8px;
   font-weight: bold;
   padding: 6px 10px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 3px 6px rgba(79, 172, 254, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 6px var(--field-button-shadow-1), 0 1px 3px var(--field-button-shadow-2), inset 0 1px 0 var(--field-button-shadow-3);
+  text-shadow: 0 1px 2px var(--field-button-shadow-4);
   pointer-events: auto;
   width: fit-content;
 }
 
 .back-to-map-button-inline:hover {
   transform: translateY(-2px) scale(1.05);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 5px 10px rgba(79, 172, 254, 0.4), 0 2px 5px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, var(--field-button-hover-1) 0%, var(--field-button-hover-2) 100%);
+  box-shadow: 0 5px 10px var(--field-button-hover-shadow-1), 0 2px 5px var(--field-button-hover-shadow-2), inset 0 1px 0 var(--field-button-hover-shadow-3);
 }
 
 .back-to-map-button-inline:active {

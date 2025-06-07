@@ -7,15 +7,97 @@
 @tailwind utilities;
 
 :root {
-  --money-color: #bc8044;
-  --skill-color: #e67ad6;
-
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.15);
-
-  --border-radius: 12px;
-  --pixel-size: 3px;
+  /* Stats Colors */
+  --stats-money-color: #bc8044;
+  --stats-skill-color: #e67ad6;
+  --stats-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --stats-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --stats-shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.15);
+  --stats-border-radius: 12px;
+  --stats-pixel-size: 3px;
+  --stats-body-bg-1: #f7f2e7;
+  --stats-body-bg-2: #d8e1c5;
+  --stats-body-text: #4d4d4d;
+  --stats-card-bg: #ffffff;
+  --stats-card-border: #79d959;
+  --stats-header-border: #d8e1c5;
+  --stats-title-color: #79d959;
+  --stats-title-shadow: rgba(255, 255, 255, 0.8);
+  --stats-level-bg: #79d959;
+  --stats-level-text: white;
+  --stats-level-border: #9be686;
+  --stats-level-shadow: rgba(0, 0, 0, 0.1);
+  --stats-container-bg: #f8f8ff;
+  --stats-container-hover-bg: #f0f8f0;
+  --stats-border-good: #66f880;
+  --stats-border-warning: #ffce5a;
+  --stats-border-critical: #ff5a5a;
+  --stats-mood-bar-good: #66f880;
+  --stats-mood-bar-warning: #ffce5a;
+  --stats-mood-bar-critical: #6b7280;
+  --stats-bar-bg: #e0e0e0;
+  --stats-bar-shadow: rgba(0, 0, 0, 0.1);
+  --stats-bar-health: #ff5a5a;
+  --stats-bar-energy: #ffe74c;
+  --stats-bar-meal: #f89e20;
+  --stats-bar-sleep: #8a5cf5;
+  --stats-bar-mood: #66f880;
+  --stats-bar-clean: #38bdf8;
+  --stats-bar-shine: rgba(255, 255, 255, 0.4);
+  --stats-footer-border: #d8e1c5;
+  --stats-resource-text: #4d4d4d;
+  --stats-inventory-btn-bg-1: #79d959;
+  --stats-inventory-btn-bg-2: #6bc951;
+  --stats-inventory-btn-bg-3: #5bb849;
+  --stats-inventory-btn-border: #9be686;
+  --stats-inventory-btn-text: white;
+  --stats-inventory-btn-shadow-1: rgba(121, 217, 89, 0.3);
+  --stats-inventory-btn-shadow-2: rgba(0, 0, 0, 0.1);
+  --stats-inventory-btn-shadow-3: rgba(255, 255, 255, 0.2);
+  --stats-inventory-btn-shadow-4: rgba(0, 0, 0, 0.3);
+  --stats-inventory-btn-hover-bg-1: #8ae566;
+  --stats-inventory-btn-hover-bg-2: #7dd65e;
+  --stats-inventory-btn-hover-bg-3: #6bc951;
+  --stats-inventory-btn-hover-border: #b8f29a;
+  --stats-inventory-btn-hover-shadow-1: rgba(121, 217, 89, 0.4);
+  --stats-inventory-btn-hover-shadow-2: rgba(0, 0, 0, 0.15);
+  --stats-inventory-btn-hover-shadow-3: rgba(255, 255, 255, 0.3);
+  --stats-inventory-btn-hover-shadow-4: rgba(121, 217, 89, 0.3);
+  --stats-inventory-btn-hover-shadow-5: rgba(0, 0, 0, 0.4);
+  --stats-inventory-btn-active-shadow-1: rgba(121, 217, 89, 0.3);
+  --stats-inventory-btn-active-shadow-2: rgba(0, 0, 0, 0.1);
+  --stats-inventory-btn-active-shadow-3: rgba(255, 255, 255, 0.2);
+  --stats-inventory-btn-shimmer: rgba(255, 255, 255, 0.3);
+  --stats-inventory-btn-active-bg-1: #ff6b6b;
+  --stats-inventory-btn-active-bg-2: #e55a5a;
+  --stats-inventory-btn-active-bg-3: #d44848;
+  --stats-inventory-btn-active-border: #ff9999;
+  --stats-inventory-btn-pulse-1: rgba(255, 107, 107, 0.4);
+  --stats-inventory-btn-pulse-2: rgba(255, 107, 107, 0);
+  --stats-inventory-icon-text: #ffffff;
+  --stats-inventory-icon-shadow: rgba(0, 0, 0, 0.3);
+  --stats-inventory-icon-hover-shadow: rgba(0, 0, 0, 0.4);
+  --stats-item-icon-bg: #f0f8f0;
+  --stats-item-icon-color: #7a8a6f;
+  --stats-empty-inventory-color: #7a8a6f;
+  --stats-stat-increase-color: #34d399;
+  --stats-stat-decrease-color: #ef4444;
+  --stats-stat-decrease-shadow: rgba(239, 68, 68, 0.3);
+  --stats-level-up-bg-1: #ffd700;
+  --stats-level-up-bg-2: #fff9c4;
+  --stats-level-up-border: #fff;
+  --stats-level-up-shadow-1: rgba(255, 215, 0, 0.4);
+  --stats-level-up-shadow-2: rgba(255, 215, 0, 0.3);
+  --stats-level-up-shadow-3: rgba(255, 255, 255, 0.3);
+  --stats-level-up-text: #fff;
+  --stats-level-up-text-shadow-1: #a86d00;
+  --stats-level-up-text-shadow-2: #fff4c1;
+  --stats-level-up-details: #4b3b00;
+  --stats-tooltip-bg: rgba(255, 255, 255, 0.9);
+  --stats-tooltip-border: #79d959;
+  --stats-tooltip-shadow: rgba(0, 0, 0, 0.15);
+  --stats-tooltip-title: #4a90e2;
+  --stats-tooltip-text: #333;
 }
 
 body {
@@ -23,8 +105,8 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  background: linear-gradient(to bottom, #f7f2e7, #d8e1c5);
-  color: #4d4d4d;
+  background: linear-gradient(to bottom, var(--stats-body-bg-1), var(--stats-body-bg-2));
+  color: var(--stats-body-text);
 }
 
 .stats-card {
@@ -33,12 +115,12 @@ body {
   top: 160px;
   width: 280px;
   height: 486px;
-  background: #ffffff;
-  border: var(--pixel-size) solid #79d959;
-  border-radius: var(--border-radius);
+  background: var(--stats-card-bg);
+  border: var(--stats-pixel-size) solid var(--stats-card-border);
+  border-radius: var(--stats-border-radius);
   padding: 16px;
-  color: #4d4d4d;
-  box-shadow: var(--shadow-md);
+  color: var(--stats-body-text);
+  box-shadow: var(--stats-shadow-md);
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 1000;
   font-size: 14px;
@@ -49,8 +131,8 @@ body {
 
 .stats-card:hover {
   transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
-  border-color: #79d959;
+  box-shadow: var(--stats-shadow-lg);
+  border-color: var(--stats-card-border);
 }
 
 .stats-header {
@@ -59,26 +141,26 @@ body {
   align-items: center;
   margin-bottom: 18px;
   padding-bottom: 12px;
-  border-bottom: 2px solid #d8e1c5;
+  border-bottom: 2px solid var(--stats-header-border);
 }
 
 .stats-header h3 {
   font-size: 14px;
-  color: #79d959;
-  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+  color: var(--stats-title-color);
+  text-shadow: 1px 1px 0px var(--stats-title-shadow);
   margin: 0;
   letter-spacing: 1px;
 }
 
 .level-badge {
-  background: #79d959;
-  color: white;
+  background: var(--stats-level-bg);
+  color: var(--stats-level-text);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 10px;
   font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 2px solid #9be686;
+  box-shadow: 0 2px 4px var(--stats-level-shadow);
+  border: 2px solid var(--stats-level-border);
 }
 
 /* Stats Grid */
@@ -94,25 +176,25 @@ body {
   align-items: center;
   gap: 12px;
   padding: 8px 10px;
-  background: #f8f8ff;
+  background: var(--stats-container-bg);
   border-radius: 8px;
   border-left: 3px solid transparent;
   transition: all 0.2s ease;
 }
 
 .stat-container:hover {
-  background: #f0f8f0;
+  background: var(--stats-container-hover-bg);
   transform: translateX(2px);
 }
 
 .stat-container.good {
-  border-left-color: #66f880;
+  border-left-color: var(--stats-border-good);
 }
 .stat-container.warning {
-  border-left-color: #ffce5a;
+  border-left-color: var(--stats-border-warning);
 }
 .stat-container.critical {
-  border-left-color: #ff5a5a;
+  border-left-color: var(--stats-border-critical);
 }
 
 /* Mood-specific color styling */
@@ -122,17 +204,17 @@ body {
 
 /* Happy mood (> 50%) - Bright green */
 .stat-container.mood.good .mood-bar {
-  background: #66f880;
+  background: var(--stats-mood-bar-good);
 }
 
 /* Neutral mood (25-50%) - Yellow */
 .stat-container.mood.warning .mood-bar {
-  background: #ffce5a;
+  background: var(--stats-mood-bar-warning);
 }
 
 /* Sad mood (< 25%) - Blue/Gray */
 .stat-container.mood.critical .mood-bar {
-  background: #6b7280;
+  background: var(--stats-mood-bar-critical);
 }
 
 /* Update mood icon based on status */
@@ -194,11 +276,11 @@ body {
 
 .stat-bar {
   height: 8px;
-  background: #e0e0e0;
+  background: var(--stats-bar-bg);
   border-radius: 4px;
   overflow: hidden;
   position: relative;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 3px var(--stats-bar-shadow);
 }
 
 .stat-bar-fill {
@@ -211,22 +293,22 @@ body {
 
 /* Updated stat bar colors - more specific targeting */
 .stat-container:nth-child(1) .stat-bar-fill {
-  background: #ff5a5a;
+  background: var(--stats-bar-health);
 }
 .stat-container:nth-child(2) .stat-bar-fill {
-  background: #ffe74c;
+  background: var(--stats-bar-energy);
 }
 .stat-container:nth-child(3) .stat-bar-fill {
-  background: #f89e20;
+  background: var(--stats-bar-meal);
 }
 .stat-container:nth-child(4) .stat-bar-fill {
-  background: #8a5cf5;
+  background: var(--stats-bar-sleep);
 }
 .stat-container:nth-child(5) .stat-bar-fill {
-  background: #66f880;
+  background: var(--stats-bar-mood);
 }
 .stat-container:nth-child(6) .stat-bar-fill {
-  background: #38bdf8;
+  background: var(--stats-bar-clean);
 }
 
 .stat-bar-fill::after {
@@ -236,7 +318,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, var(--stats-bar-shine) 50%, rgba(255, 255, 255, 0) 100%);
   animation: shimmer 2s infinite;
 }
 
@@ -254,7 +336,7 @@ body {
   display: flex;
   flex-direction: column;
   padding-top: 20px;
-  border-top: 2px solid #d8e1c5;
+  border-top: 2px solid var(--stats-footer-border);
   margin-top: 10px;
 }
 
@@ -304,7 +386,7 @@ body {
 .resource-value {
   font-size: 10px;
   font-weight: bold;
-  color: #4d4d4d;
+  color: var(--stats-resource-text);
 }
 
 .inventory-button {
@@ -314,10 +396,10 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: linear-gradient(135deg, #79d959 0%, #6bc951 50%, #5bb849 100%);
-  border: 2px solid #9be686;
+  background: linear-gradient(135deg, var(--stats-inventory-btn-bg-1) 0%, var(--stats-inventory-btn-bg-2) 50%, var(--stats-inventory-btn-bg-3) 100%);
+  border: 2px solid var(--stats-inventory-btn-border);
   border-radius: 8px;
-  color: white;
+  color: var(--stats-inventory-btn-text);
   font-family: inherit;
   font-size: 10px;
   font-weight: bold;
@@ -325,8 +407,8 @@ body {
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 8px rgba(121, 217, 89, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px var(--stats-inventory-btn-shadow-1), 0 2px 4px var(--stats-inventory-btn-shadow-2), inset 0 1px 0 var(--stats-inventory-btn-shadow-3);
+  text-shadow: 0 1px 2px var(--stats-inventory-btn-shadow-4);
   overflow: hidden;
   width: 100%;
 }
@@ -339,7 +421,7 @@ body {
   left: 100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, var(--stats-inventory-btn-shimmer), transparent);
   transition: left 0.6s ease;
 }
 
@@ -349,16 +431,16 @@ body {
 
 .inventory-button:hover {
   transform: translateY(-3px) scale(1.02);
-  background: linear-gradient(135deg, #8ae566 0%, #7dd65e 50%, #6bc951 100%);
-  border-color: #b8f29a;
-  box-shadow: 0 8px 16px rgba(121, 217, 89, 0.4), 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 20px rgba(121, 217, 89, 0.3);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, var(--stats-inventory-btn-hover-bg-1) 0%, var(--stats-inventory-btn-hover-bg-2) 50%, var(--stats-inventory-btn-hover-bg-3) 100%);
+  border-color: var(--stats-inventory-btn-hover-border);
+  box-shadow: 0 8px 16px var(--stats-inventory-btn-hover-shadow-1), 0 4px 8px var(--stats-inventory-btn-hover-shadow-2), inset 0 1px 0 var(--stats-inventory-btn-hover-shadow-3), 0 0 20px var(--stats-inventory-btn-hover-shadow-4);
+  text-shadow: 0 1px 3px var(--stats-inventory-btn-hover-shadow-5);
 }
 
 .inventory-button:active {
   transform: translateY(-1px) scale(0.98);
   transition: all 0.1s ease;
-  box-shadow: 0 2px 4px rgba(121, 217, 89, 0.3), 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 4px var(--stats-inventory-btn-active-shadow-1), 0 1px 2px var(--stats-inventory-btn-active-shadow-2), inset 0 1px 0 var(--stats-inventory-btn-active-shadow-3);
 }
 
 /* Animasi untuk ikon */
@@ -370,30 +452,30 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   transition: all 0.3s ease;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 1px 2px var(--stats-inventory-icon-shadow));
 }
 
 .inventory-button:hover .inventory-icon {
   transform: scale(1.1) rotate(5deg);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 2px 4px var(--stats-inventory-icon-hover-shadow));
 }
 
 /* Efek pulse saat button dalam keadaan aktif (inventory terbuka) */
 .inventory-button.active {
-  background: linear-gradient(135deg, #ff6b6b 0%, #e55a5a 50%, #d44848 100%);
-  border-color: #ff9999;
+  background: linear-gradient(135deg, var(--stats-inventory-btn-active-bg-1) 0%, var(--stats-inventory-btn-active-bg-2) 50%, var(--stats-inventory-btn-active-bg-3) 100%);
+  border-color: var(--stats-inventory-btn-active-border);
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 0 rgba(255, 107, 107, 0.4);
+    box-shadow: 0 4px 8px var(--stats-inventory-btn-shadow-1), 0 2px 4px var(--stats-inventory-btn-shadow-2), inset 0 1px 0 var(--stats-inventory-btn-shadow-3), 0 0 0 0 var(--stats-inventory-btn-pulse-1);
   }
   70% {
-    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 8px rgba(255, 107, 107, 0);
+    box-shadow: 0 4px 8px var(--stats-inventory-btn-shadow-1), 0 2px 4px var(--stats-inventory-btn-shadow-2), inset 0 1px 0 var(--stats-inventory-btn-shadow-3), 0 0 0 8px var(--stats-inventory-btn-pulse-2);
   }
   100% {
-    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 0 rgba(255, 107, 107, 0);
+    box-shadow: 0 4px 8px var(--stats-inventory-btn-shadow-1), 0 2px 4px var(--stats-inventory-btn-shadow-2), inset 0 1px 0 var(--stats-inventory-btn-shadow-3), 0 0 0 0 var(--stats-inventory-btn-pulse-2);
   }
 }
 
@@ -433,18 +515,18 @@ body {
 /* Tambahan untuk accessibility */
 .inventory-button:focus {
   outline: none;
-  border-color: #b8f29a;
-  box-shadow: 0 4px 8px rgba(121, 217, 89, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 3px rgba(121, 217, 89, 0.4);
+  border-color: var(--stats-inventory-btn-hover-border);
+  box-shadow: 0 4px 8px var(--stats-inventory-btn-shadow-1), 0 2px 4px var(--stats-inventory-btn-shadow-2), inset 0 1px 0 var(--stats-inventory-btn-shadow-3), 0 0 0 3px var(--stats-inventory-btn-pulse-1);
 }
 
 .inventory-button:focus:not(:focus-visible) {
-  box-shadow: 0 4px 8px rgba(121, 217, 89, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 8px var(--stats-inventory-btn-shadow-1), 0 2px 4px var(--stats-inventory-btn-shadow-2), inset 0 1px 0 var(--stats-inventory-btn-shadow-3);
 }
 
 .item-icon {
   width: 20px;
   height: 20px;
-  background: #f0f8f0;
+  background: var(--stats-item-icon-bg);
   border-radius: 4px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237a8a6f'%3E%3Cpath d='M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z'/%3E%3C/svg%3E");
   background-size: 16px;
@@ -454,7 +536,7 @@ body {
 
 .empty-inventory {
   text-align: center;
-  color: #7a8a6f;
+  color: var(--stats-empty-inventory-color);
   font-size: 10px;
   grid-column: span 2;
   padding: 12px;
@@ -481,7 +563,7 @@ body {
 }
 
 .stat-increase-indicator {
-  color: #34d399; /* Green color for increase */
+  color: var(--stats-stat-increase-color); /* Green color for increase */
   font-weight: bold;
   margin-right: 3px; /* Space between + and the value */
   display: inline-block; /* Ensures proper spacing and potential animation */
@@ -515,12 +597,12 @@ body {
 }
 
 .stat-decrease-indicator {
-  color: #ef4444;
+  color: var(--stats-stat-decrease-color);
   font-weight: bold;
   margin-right: 4px;
   display: inline-block;
   font-size: 10px;
-  text-shadow: 0 1px 2px rgba(239, 68, 68, 0.3);
+  text-shadow: 0 1px 2px var(--stats-stat-decrease-shadow);
 }
 
 @keyframes indicatorBounce {
@@ -543,13 +625,13 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: linear-gradient(135deg, #ffd700, #fff9c4);
-  border: 2px solid #fff;
+  background: linear-gradient(135deg, var(--stats-level-up-bg-1), var(--stats-level-up-bg-2));
+  border: 2px solid var(--stats-level-up-border);
   border-radius: 20px;
   padding: 24px 48px;
   text-align: center;
   z-index: 10000;
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4), 0 0 24px rgba(255, 215, 0, 0.3), inset 0 0 8px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 12px var(--stats-level-up-shadow-1), 0 0 24px var(--stats-level-up-shadow-2), inset 0 0 8px var(--stats-level-up-shadow-3);
   animation: levelUpFade 7s ease-out forwards;
 }
 
@@ -557,14 +639,14 @@ body {
 .level-up-text {
   font-size: 26px;
   font-weight: bold;
-  color: #fff;
-  text-shadow: 0 1px 0 #a86d00, 0 0 6px #fff4c1;
+  color: var(--stats-level-up-text);
+  text-shadow: 0 1px 0 var(--stats-level-up-text-shadow-1), 0 0 6px var(--stats-level-up-text-shadow-2);
   margin-bottom: 10px;
 }
 
 .level-up-details {
   font-size: 16px;
-  color: #4b3b00;
+  color: var(--stats-level-up-details);
   font-weight: 500;
 }
 
@@ -594,12 +676,12 @@ body {
 /* Stat Tooltip */
 .stat-tooltip {
   position: fixed; /* Ubah ke fixed supaya lebih stabil */
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid #79d959;
+  background: var(--stats-tooltip-bg);
+  border: 2px solid var(--stats-tooltip-border);
   border-radius: 8px;
   padding: 12px;
   max-width: 200px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--stats-tooltip-shadow);
   z-index: 10001;
   pointer-events: none;
   font-size: 9px;
@@ -609,7 +691,7 @@ body {
 }
 
 .stat-tooltip h4 {
-  color: #4a90e2;
+  color: var(--stats-tooltip-title);
   margin: 0 0 8px 0;
   font-size: 10px;
   text-shadow: none;
@@ -617,7 +699,7 @@ body {
 
 .stat-tooltip p {
   margin: 0 0 8px 0;
-  color: #333;
+  color: var(--stats-tooltip-text);
 }
 
 @keyframes tooltipFadeIn {

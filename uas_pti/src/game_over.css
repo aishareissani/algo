@@ -4,9 +4,9 @@
 :root {
   --color-numbers: #000000; /* Gold - ALL numbers/scores */
   --color-labels: #0b5375; /* Teal - ALL labels/text */
-  --color-red: #a33a4d; /* Red - GAME OVER title */
-  --color-white: #ffffff; /* White - Background */
-  --color-green: #73841b; /* Green - New Game button */
+  --color-merah: #e53935; /* Red - GAME OVER title */
+  --color-putih: #fafafa; /* White - Background */
+  --color-green: #z3841b; /* Green - New Game button */
 }
 
 /* --- GAME OVER OVERLAY --- */

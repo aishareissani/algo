@@ -1,3 +1,65 @@
+/* inventory.css */
+:root {
+  /* Inventory Colors */
+  --inventory-overlay-bg: rgba(0, 0, 0, 0.7);
+  --inventory-window-bg: #fff;
+  --inventory-window-border: #79d959;
+  --inventory-window-shadow: rgba(121, 217, 89, 0.3);
+  --inventory-header-bg-1: #f8f8ff;
+  --inventory-header-bg-2: #f0f8f0;
+  --inventory-header-border: #d8e1c5;
+  --inventory-title-color: #79d959;
+  --inventory-title-shadow: rgba(255, 255, 255, 0.8);
+  --inventory-close-bg: #ff5a5a;
+  --inventory-close-border: #ff8080;
+  --inventory-close-text: white;
+  --inventory-close-shadow: rgba(255, 90, 90, 0.3);
+  --inventory-close-hover: #ff6b6b;
+  --inventory-categories-bg: #f8f8ff;
+  --inventory-categories-border: #e0e0e0;
+  --inventory-category-btn-bg: #ffffff;
+  --inventory-category-btn-color: #7a8a6f;
+  --inventory-category-btn-border: #d8e1c5;
+  --inventory-category-btn-hover-bg: #f0f8f0;
+  --inventory-category-btn-hover-color: #79d959;
+  --inventory-category-btn-active-bg-1: #79d959;
+  --inventory-category-btn-active-bg-2: #6bc951;
+  --inventory-category-btn-active-text: #ffffff;
+  --inventory-category-btn-active-shadow: rgba(121, 217, 89, 0.3);
+  --inventory-grid-bg: #fafafa;
+  --inventory-slot-bg: #ffffff;
+  --inventory-slot-border: #e0e0e0;
+  --inventory-slot-empty-bg: #f8f8f8;
+  --inventory-slot-empty-border: #e8e8e8;
+  --inventory-slot-filled-border: #d8e1c5;
+  --inventory-slot-hover-border: #79d959;
+  --inventory-slot-hover-shadow: rgba(121, 217, 89, 0.2);
+  --inventory-slot-shadow: rgba(0, 0, 0, 0.05);
+  --inventory-item-shadow: rgba(0, 0, 0, 0.1);
+  --inventory-quantity-bg-1: #79d959;
+  --inventory-quantity-bg-2: #6bc951;
+  --inventory-quantity-text: #ffffff;
+  --inventory-quantity-border: #9be686;
+  --inventory-tooltip-bg: #4d4d4d;
+  --inventory-tooltip-text: #ffffff;
+  --inventory-tooltip-border: #79d959;
+  --inventory-tooltip-shadow: rgba(0, 0, 0, 0.4);
+  --inventory-tooltip-text-shadow: rgba(0, 0, 0, 0.3);
+  --inventory-empty-text: #e0e0e0;
+  --inventory-eat-prompt-bg: #ffffff;
+  --inventory-eat-prompt-border: #ff9800;
+  --inventory-eat-prompt-shadow: rgba(0, 0, 0, 0.25);
+  --inventory-eat-prompt-text: #333;
+  --inventory-eat-yes-bg: #79d959;
+  --inventory-eat-yes-border: #6bc951;
+  --inventory-eat-yes-text: white;
+  --inventory-eat-yes-hover: #6bc951;
+  --inventory-eat-no-bg: #ff5a5a;
+  --inventory-eat-no-border: #ff8080;
+  --inventory-eat-no-text: white;
+  --inventory-eat-no-hover: #ff6b6b;
+}
+
 #inventory-portal {
   position: fixed;
   top: 0;
@@ -15,7 +77,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--inventory-overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,10 +89,10 @@
   z-index: 1001;
   width: 600px;
   height: 400px;
-  background: #fff;
-  border: 3px solid #79d959;
+  background: var(--inventory-window-bg);
+  border: 3px solid var(--inventory-window-border);
   border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(121, 217, 89, 0.3);
+  box-shadow: 0 8px 32px var(--inventory-window-shadow);
   display: flex;
   flex-direction: column;
   font-family: "Press Start 2P", system-ui;
@@ -42,8 +104,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 2px solid #d8e1c5;
-  background: linear-gradient(to bottom, #f8f8ff, #f0f8f0);
+  border-bottom: 2px solid var(--inventory-header-border);
+  background: linear-gradient(to bottom, var(--inventory-header-bg-1), var(--inventory-header-bg-2));
   border-radius: 15px 15px 0 0;
   z-index: 12501;
   position: relative;
@@ -53,16 +115,16 @@
   margin: 0;
   font-size: 16px;
   font-weight: bold;
-  color: #79d959;
-  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+  color: var(--inventory-title-color);
+  text-shadow: 1px 1px 0px var(--inventory-title-shadow);
   letter-spacing: 2px;
   text-transform: uppercase;
 }
 
 .inventory-close {
-  background: #ff5a5a;
-  border: 2px solid #ff8080;
-  color: white;
+  background: var(--inventory-close-bg);
+  border: 2px solid var(--inventory-close-border);
+  color: var(--inventory-close-text);
   width: 32px;
   height: 32px;
   border-radius: 8px;
@@ -72,7 +134,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(255, 90, 90, 0.3);
+  box-shadow: 0 2px 8px var(--inventory-close-shadow);
   font-family: inherit;
   font-weight: bold;
   z-index: 12502;
@@ -80,7 +142,7 @@
 }
 
 .inventory-close:hover {
-  background: #ff6b6b;
+  background: var(--inventory-close-hover);
   transform: scale(1.1);
 }
 
@@ -90,17 +152,17 @@
   justify-content: center;
   gap: 10px;
   padding: 15px;
-  background: #f8f8ff;
-  border-bottom: 2px solid #e0e0e0;
+  background: var(--inventory-categories-bg);
+  border-bottom: 2px solid var(--inventory-categories-border);
   z-index: 12501;
   position: relative;
 }
 
 .inventory-categories .category-btn {
   padding: 8px 16px;
-  border: 2px solid #d8e1c5;
-  background: #ffffff;
-  color: #7a8a6f;
+  border: 2px solid var(--inventory-category-btn-border);
+  background: var(--inventory-category-btn-bg);
+  color: var(--inventory-category-btn-color);
   border-radius: 20px;
   cursor: pointer;
   font-size: 10px;
@@ -114,24 +176,24 @@
 }
 
 .inventory-categories .category-btn:hover {
-  background: #f0f8f0;
-  color: #79d959;
-  border-color: #79d959;
+  background: var(--inventory-category-btn-hover-bg);
+  color: var(--inventory-category-btn-hover-color);
+  border-color: var(--inventory-category-btn-hover-color);
   transform: translateY(-2px);
 }
 
 .inventory-categories .category-btn.active {
-  background: linear-gradient(135deg, #79d959 0%, #6bc951 100%);
-  border-color: #79d959;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(121, 217, 89, 0.3);
+  background: linear-gradient(135deg, var(--inventory-category-btn-active-bg-1) 0%, var(--inventory-category-btn-active-bg-2) 100%);
+  border-color: var(--inventory-category-btn-active-bg-1);
+  color: var(--inventory-category-btn-active-text);
+  box-shadow: 0 4px 12px var(--inventory-category-btn-active-shadow);
 }
 
 /* Inventory Grid Container */
 .inventory-grid-container {
   flex: 1;
   position: relative;
-  background: #fafafa;
+  background: var(--inventory-grid-bg);
   border-radius: 0 0 15px 15px;
   overflow: visible;
   z-index: 12501;
@@ -148,13 +210,13 @@
   max-height: 232px;
   position: relative;
   z-index: 12502;
-  scrollbar-color: #79d959 #e8f0ff;
+  scrollbar-color: var(--inventory-window-border) #e8f0ff;
 }
 
 /* Inventory Slots */
 .inventory-slot {
-  background: #ffffff;
-  border: 2px solid #e0e0e0;
+  background: var(--inventory-slot-bg);
+  border: 2px solid var(--inventory-slot-border);
   border-radius: 12px;
   aspect-ratio: 1;
   display: flex;
@@ -164,27 +226,27 @@
   position: relative;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px var(--inventory-slot-shadow);
   overflow: visible;
   z-index: 12503;
 }
 
 .inventory-slot.empty {
-  background: #f8f8f8;
-  border-color: #e8e8e8;
+  background: var(--inventory-slot-empty-bg);
+  border-color: var(--inventory-slot-empty-border);
   border-style: dashed;
 }
 
 .inventory-slot.filled {
-  background: #ffffff;
-  border-color: #d8e1c5;
+  background: var(--inventory-slot-bg);
+  border-color: var(--inventory-slot-filled-border);
   border-style: solid;
 }
 
 .inventory-slot:hover {
   transform: scale(1.08);
-  border-color: #79d959;
-  box-shadow: 0 8px 16px rgba(121, 217, 89, 0.2);
+  border-color: var(--inventory-slot-hover-border);
+  box-shadow: 0 8px 16px var(--inventory-slot-hover-shadow);
   z-index: 12510; /* Higher when hovering */
 }
 
@@ -193,7 +255,7 @@
   width: 50px;
   height: 50px;
   margin-bottom: 8px;
-  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(2px 2px 4px var(--inventory-item-shadow));
   transition: all 0.2s ease;
   z-index: 12504;
   position: relative;
@@ -207,13 +269,13 @@
   position: absolute;
   bottom: 8px;
   right: 8px;
-  background: linear-gradient(135deg, #79d959, #6bc951);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--inventory-quantity-bg-1), var(--inventory-quantity-bg-2));
+  color: var(--inventory-quantity-text);
   padding: 3px 6px;
   border-radius: 12px;
   font-size: 10px;
   font-weight: bold;
-  border: 2px solid #9be686;
+  border: 2px solid var(--inventory-quantity-border);
   min-width: 20px;
   text-align: center;
   z-index: 12505;
@@ -225,8 +287,8 @@
   bottom: -35px;
   left: 50%;
   transform: translateX(-50%);
-  background: #4d4d4d;
-  color: #ffffff;
+  background: var(--inventory-tooltip-bg);
+  color: var(--inventory-tooltip-text);
   padding: 6px 12px;
   border-radius: 8px;
   font-size: 10px;
@@ -234,9 +296,9 @@
   opacity: 0;
   transition: all 0.2s ease;
   z-index: 90001; /* Very high for tooltips */
-  border: 2px solid #79d959;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--inventory-tooltip-border);
+  box-shadow: 0 4px 8px var(--inventory-tooltip-shadow);
+  text-shadow: 1px 1px 0px var(--inventory-tooltip-text-shadow);
   overflow: visible;
   text-overflow: clip;
   max-width: none;
@@ -253,7 +315,7 @@
 .inventory-slot.empty::after {
   content: "+";
   font-size: 24px;
-  color: #e0e0e0;
+  color: var(--inventory-empty-text);
   font-weight: bold;
   opacity: 0.5;
 }
@@ -266,12 +328,12 @@
 }
 
 .eat-prompt {
-  background: #ffffff;
-  border: 3px solid #ff9800;
+  background: var(--inventory-eat-prompt-bg);
+  border: 3px solid var(--inventory-eat-prompt-border);
   border-radius: 12px;
   padding: 12px 16px;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 20px var(--inventory-eat-prompt-shadow);
   min-width: 160px;
   animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
@@ -289,13 +351,13 @@
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-top: 10px solid #ff9800;
+  border-top: 10px solid var(--inventory-eat-prompt-border);
 }
 
 .eat-prompt p {
   margin: 0 0 10px 0;
   font-weight: bold;
-  color: #333;
+  color: var(--inventory-eat-prompt-text);
   font-size: 12px;
 }
 
@@ -320,24 +382,24 @@
 }
 
 .eat-prompt .yes-btn {
-  background: #79d959;
-  color: white;
-  border-color: #6bc951;
+  background: var(--inventory-eat-yes-bg);
+  color: var(--inventory-eat-yes-text);
+  border-color: var(--inventory-eat-yes-border);
 }
 
 .eat-prompt .no-btn {
-  background: #ff5a5a;
-  color: white;
-  border-color: #ff8080;
+  background: var(--inventory-eat-no-bg);
+  color: var(--inventory-eat-no-text);
+  border-color: var(--inventory-eat-no-border);
 }
 
 .eat-prompt .yes-btn:hover {
-  background: #6bc951;
+  background: var(--inventory-eat-yes-hover);
   transform: translateY(-2px);
 }
 
 .eat-prompt .no-btn:hover {
-  background: #ff6b6b;
+  background: var(--inventory-eat-no-hover);
   transform: translateY(-2px);
 }
 

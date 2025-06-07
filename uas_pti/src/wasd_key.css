@@ -1,12 +1,30 @@
+/* wasd.css */
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 
 :root {
-  --main: #79d959;
-  --hover: #8ded81;
-  --active: #5cb24e;
-  --shadow: 0 2px 8px rgba(121, 217, 89, 0.2);
-  --key-shadow: 0 4px 0 #5cb24e;
-  --key-pressed: 0 2px 0 #4a9e3e;
+  /* WASD Colors */
+  --wasd-main: #79d959;
+  --wasd-hover: #8ded81;
+  --wasd-active: #5cb24e;
+  --wasd-shadow: 0 2px 8px rgba(121, 217, 89, 0.2);
+  --wasd-key-shadow: 0 4px 0 #5cb24e;
+  --wasd-key-pressed: 0 2px 0 #4a9e3e;
+  --wasd-pad-bg: #f8f8fe;
+  --wasd-pad-border: #5cb24e;
+  --wasd-pad-shadow: 0 8px 0 #5cb24e;
+  --wasd-key-bg-1: #f9fff8;
+  --wasd-key-bg-2: #dcfada;
+  --wasd-key-text: #273a16;
+  --wasd-key-hover-text: #0b2106;
+  --wasd-key-hover-border: #5cb24e;
+  --wasd-key-hover-shadow: 0 6px 0 #5cb24e;
+  --wasd-key-active-text: #fff;
+  --wasd-key-active-border: #456c35;
+  --wasd-key-w-bg-1: #a4f78f;
+  --wasd-key-w-bg-2: #79d959;
+  --wasd-key-w-border: #5cb24e;
+  --wasd-key-shine: rgba(255, 255, 255, 0.3);
+  --wasd-text-shadow: rgba(255, 255, 255, 0.7);
 }
 
 .wasd-key-container {
@@ -27,21 +45,21 @@
   text-align: center;
   font-family: "Press Start 2P", system-ui;
   font-size: 11px;
-  color: var(--main);
+  color: var(--wasd-main);
   margin-bottom: 10px;
   letter-spacing: 1px;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
+  text-shadow: 1px 1px 0 var(--wasd-text-shadow);
 }
 
 .wasd-key-pad {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: #f8f8fe;
+  background: var(--wasd-pad-bg);
   border-radius: 18px;
   padding: 16px;
-  border: 3px solid var(--main);
-  box-shadow: var(--shadow), 0 8px 0 #5cb24e;
+  border: 3px solid var(--wasd-main);
+  box-shadow: var(--wasd-shadow), var(--wasd-pad-shadow);
   font-family: "Press Start 2P", system-ui;
   user-select: none;
 }
@@ -65,16 +83,16 @@
   font-family: inherit;
   font-size: 24px;
   font-weight: bold;
-  background: linear-gradient(135deg, #f9fff8 0%, #dcfada 100%);
-  color: #273a16;
-  border: 2px solid var(--main);
+  background: linear-gradient(135deg, var(--wasd-key-bg-1) 0%, var(--wasd-key-bg-2) 100%);
+  color: var(--wasd-key-text);
+  border: 2px solid var(--wasd-main);
   border-radius: 12px;
   height: 45px;
   width: 74px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--key-shadow);
+  box-shadow: var(--wasd-key-shadow);
   cursor: pointer;
   transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
@@ -88,43 +106,43 @@
   left: 0;
   right: 0;
   height: 50%;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(to bottom, var(--wasd-key-shine), transparent);
   border-radius: 10px 10px 0 0;
 }
 
 .wasd-key:hover,
 .wasd-key:focus-visible {
-  background: var(--hover);
-  color: #0b2106;
-  border-color: #5cb24e;
+  background: var(--wasd-hover);
+  color: var(--wasd-key-hover-text);
+  border-color: var(--wasd-key-hover-border);
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 #5cb24e;
+  box-shadow: var(--wasd-key-hover-shadow);
 }
 
 .wasd-key:active {
-  background: var(--active);
-  color: #fff;
-  border-color: #456c35;
+  background: var(--wasd-active);
+  color: var(--wasd-key-active-text);
+  border-color: var(--wasd-key-active-border);
   transform: translateY(2px);
-  box-shadow: var(--key-pressed);
+  box-shadow: var(--wasd-key-pressed);
 }
 
 /* Unique key styling */
 .wasd-key-w {
-  background: linear-gradient(135deg, #a4f78f 0%, #79d959 100%);
-  border-color: #5cb24e;
+  background: linear-gradient(135deg, var(--wasd-key-w-bg-1) 0%, var(--wasd-key-w-bg-2) 100%);
+  border-color: var(--wasd-key-w-border);
 }
 
 .wasd-key-a {
-  background: linear-gradient(135deg, #f9fff8 0%, #dcfada 100%);
+  background: linear-gradient(135deg, var(--wasd-key-bg-1) 0%, var(--wasd-key-bg-2) 100%);
 }
 
 .wasd-key-s {
-  background: linear-gradient(135deg, #f9fff8 0%, #dcfada 100%);
+  background: linear-gradient(135deg, var(--wasd-key-bg-1) 0%, var(--wasd-key-bg-2) 100%);
 }
 
 .wasd-key-d {
-  background: linear-gradient(135deg, #f9fff8 0%, #dcfada 100%);
+  background: linear-gradient(135deg, var(--wasd-key-bg-1) 0%, var(--wasd-key-bg-2) 100%);
 }
 
 /* Key press animation */
