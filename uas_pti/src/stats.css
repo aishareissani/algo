@@ -392,7 +392,7 @@ body {
 @media screen and (max-width: 768px) {
   .inventory-button-circular-container {
     top: 50%;
-    right: calc(40% - 170px);
+    right: calc(40% - 140px);
     transform: translateY(-50%);
   }
 
