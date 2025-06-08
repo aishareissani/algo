@@ -164,14 +164,20 @@
 /* Media queries for responsive design */
 @media (max-width: 76px) {
   .wasd-key-container {
-    bottom: 16px;
-    right: 16px;
+    top: 80.5% !important;
+    right: calc(40% - 140px) !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
+    z-index: 1500;
   }
 
   /* Map-specific mobile position */
   .wasd-key-container.map-location {
-    bottom: 16px;
-    left: 16px;
+    top: 80.5% !important;
+    right: calc(40% - 140px) !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
+    z-index: 1500;
   }
 
   .wasd-key-pad {
@@ -193,14 +199,11 @@
 /* WASD Component Responsive Design */
 @media screen and (max-width: 768px) {
   .wasd-key-container {
-    bottom: 35px;
-    right: calc(40% - 170px) !important;
+    top: 80.5% !important;
+    right: calc(40% - 140px) !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
     z-index: 1500;
-  }
-
-  .wasd-key-container.map-location {
-    bottom: 35px;
-    right: 35px;
   }
 
   .wasd-key-pad {
@@ -224,13 +227,19 @@
 
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .wasd-key-container {
-    bottom: 120px;
-    right: 50px;
+    top: 80.5% !important;
+    right: calc(40% - 140px) !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
+    z-index: 1500;
   }
 
   .wasd-key-container.map-location {
-    bottom: 80px;
-    right: 350px;
+    top: 80.5% !important;
+    right: calc(40% - 140px) !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
+    z-index: 1500;
   }
 
   .wasd-key-pad {

@@ -531,8 +531,8 @@
   }
 
   .task-container.minimized {
-    top: 58% !important;
-    right: calc(40% - 170px) !important;
+    top: 57% !important;
+    right: calc(40% - 140px) !important;
     transform: translateY(-50%);
     width: 50px;
     height: 50px;
@@ -540,7 +540,7 @@
 
   .task-container.inside-location.minimized {
     top: 58% !important;
-    right: calc(40% - 170px) !important;
+    right: calc(40% - 140px) !important;
     transform: translateY(-50%) !important;
   }
 
@@ -611,15 +611,15 @@
 
   .task-container.minimized {
     top: 62%;
-    right: calc(50% + 75px);
-    transform: translateY(-50%);
+    right: 80%;
+    transform: translateX(105px);
     width: 50px;
     height: 50px;
   }
 
   .task-container.inside-location.minimized {
     top: 62% !important;
-    right: calc(50% + 75px) !important;
+    right: calc(50% + 23px) !important;
     transform: translateY(-50%) !important;
   }
 }
