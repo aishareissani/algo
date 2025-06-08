@@ -1,0 +1,290 @@
+/* speed.css */
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+:root {
+  /* Speed Toggle Colors */
+  --speed-normal-bg-1: #3bab40;
+  --speed-normal-bg-2: #4caf50;
+  --speed-normal-text: white;
+  --speed-fast-bg-1: #f05123;
+  --speed-fast-bg-2: #ff5722;
+  --speed-fast-text: white;
+  --speed-border: rgba(255, 255, 255, 0.25);
+  --speed-shadow: rgba(0, 0, 0, 0.25);
+  --speed-hover-shadow: rgba(0, 0, 0, 0.3);
+  --speed-active-shadow: rgba(0, 0, 0, 0.3);
+  --speed-text-shadow: rgba(0, 0, 0, 0.2);
+  --speed-hover-overlay: rgba(255, 255, 255, 0.2);
+  --speed-active-overlay: rgba(255, 255, 255, 0.1);
+}
+
+.speed-toggle-button {
+  position: fixed;
+  top: 100px;
+  right: 420px;
+  padding: 10px 12px;
+  border-radius: 30px;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+  border: 2px solid var(--speed-border);
+  outline: none;
+  box-shadow: 0 4px 15px var(--speed-shadow);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 160px;
+  justify-content: center;
+  text-shadow: 1px 1px 2px var(--speed-text-shadow);
+  overflow: hidden;
+}
+
+/* Mini circular version for mobile/tablet */
+.speed-toggle-button.mini-circular {
+  width: 55px;
+  height: 55px;
+  min-width: 50px;
+  border-radius: 50%;
+  padding: 0;
+  gap: 0;
+  top: 60%;
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.speed-toggle-button.normal {
+  background: linear-gradient(145deg, var(--speed-normal-bg-1), var(--speed-normal-bg-2));
+  color: var(--speed-normal-text);
+}
+
+.speed-toggle-button.fast-forward {
+  background: linear-gradient(145deg, var(--speed-fast-bg-1), var(--speed-fast-bg-2));
+  color: var(--speed-fast-text);
+}
+
+.speed-toggle-button svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+/* Adjust icon size for mini circular */
+.speed-toggle-button.mini-circular svg {
+  width: 35px;
+  height: 35px;
+  margin-right: 0;
+}
+
+.speed-toggle-button:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(var(--speed-hover-overlay), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.speed-toggle-button:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 20px var(--speed-hover-shadow);
+}
+
+/* Hover for mini circular - maintain center position */
+.speed-toggle-button.mini-circular:hover {
+  transform: translate(-50%, -50%) translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 20px var(--speed-hover-shadow);
+}
+
+.speed-toggle-button:hover:before {
+  opacity: 1;
+}
+
+.speed-toggle-button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px var(--speed-active-shadow);
+}
+
+/* Active for mini circular - maintain center position */
+.speed-toggle-button.mini-circular:active {
+  transform: translate(-50%, -50%) translateY(1px) scale(0.95);
+  box-shadow: 0 2px 8px var(--speed-active-shadow);
+}
+
+.speed-toggle-button:after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--speed-active-overlay);
+  transform: scale(0);
+  transition: transform 0.5s ease-out;
+}
+
+.speed-toggle-button:active:after {
+  transform: scale(3);
+  opacity: 0;
+  transition: 0s;
+}
+
+/* Animation for speed change */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Pulse animation for fast forward */
+.speed-toggle-button.fast-forward {
+  animation: pulse 1.5s infinite;
+}
+
+/* Pulse animation for mini circular fast forward - maintain center position */
+.speed-toggle-button.mini-circular.fast-forward {
+  animation: pulseCircular 1.5s infinite;
+}
+
+@keyframes pulseCircular {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Smooth icon rotation for transition */
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.speed-toggle-button svg {
+  transition: transform 0.3s ease;
+}
+
+.speed-toggle-button:hover svg {
+  transform: scale(1.2);
+}
+
+.speed-toggle-button.fast-forward:hover svg {
+  animation: rotate 1s linear infinite;
+}
+
+/* Responsive positioning */
+@media screen and (max-width: 1024px) {
+  .speed-toggle-button {
+    /* Force mini circular positioning for mobile/tablet */
+    top: 60% !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translate(-50%, -50%) !important;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    border-radius: 50%;
+    padding: 0;
+    gap: 0;
+  }
+
+  .speed-toggle-button:hover {
+    transform: translate(-50%, -50%) translateY(-2px) scale(1.05) !important;
+  }
+
+  .speed-toggle-button:active {
+    transform: translate(-50%, -50%) translateY(1px) scale(0.95) !important;
+  }
+
+  .speed-toggle-button.fast-forward {
+    animation: pulseCircular 1.5s infinite;
+  }
+
+  .speed-toggle-button svg {
+    width: 24px;
+    height: 24px;
+    margin-right: 0;
+  }
+}
+
+/* Mobile specific adjustments */
+@media screen and (max-width: 768px) {
+  .speed-toggle-button {
+    top: 26% !important;
+    right: calc(40% - 170px) !important;
+    transform: translate(303%, -50%) !important;
+  }
+
+  .speed-toggle-button:hover {
+    transform: translate(-50%, -50%) translateY(-2px) scale(1.05) !important;
+  }
+
+  .speed-toggle-button:active {
+    transform: translate(-50%, -50%) translateY(1px) scale(0.95) !important;
+  }
+
+  .speed-toggle-button svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Desktop - normal rectangular button */
+@media screen and (min-width: 1025px) {
+  .speed-toggle-button {
+    /* Desktop positioning - back to original */
+    top: 100px;
+    right: 420px;
+    left: auto;
+    transform: none;
+    width: auto;
+    height: auto;
+    min-width: 160px;
+    border-radius: 30px;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .speed-toggle-button:hover {
+    transform: translateY(-2px) scale(1.03);
+  }
+
+  .speed-toggle-button:active {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  .speed-toggle-button.fast-forward {
+    animation: pulse 1.5s infinite;
+  }
+
+  .speed-toggle-button svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 2px;
+  }
+}

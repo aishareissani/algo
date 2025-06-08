@@ -1,0 +1,686 @@
+/* inventory.css */
+:root {
+  /* Inventory Colors */
+  --inventory-overlay-bg: rgba(0, 0, 0, 0.7);
+  --inventory-window-bg: #fff;
+  --inventory-window-border: #79d959;
+  --inventory-window-shadow: rgba(121, 217, 89, 0.3);
+  --inventory-header-bg-1: #f8f8ff;
+  --inventory-header-bg-2: #f0f8f0;
+  --inventory-header-border: #d8e1c5;
+  --inventory-title-color: #79d959;
+  --inventory-title-shadow: rgba(255, 255, 255, 0.8);
+  --inventory-close-bg: #ff5a5a;
+  --inventory-close-border: #ff8080;
+  --inventory-close-text: white;
+  --inventory-close-shadow: rgba(255, 90, 90, 0.3);
+  --inventory-close-hover: #ff6b6b;
+  --inventory-categories-bg: #f8f8ff;
+  --inventory-categories-border: #e0e0e0;
+  --inventory-category-btn-bg: #ffffff;
+  --inventory-category-btn-color: #7a8a6f;
+  --inventory-category-btn-border: #d8e1c5;
+  --inventory-category-btn-hover-bg: #f0f8f0;
+  --inventory-category-btn-hover-color: #79d959;
+  --inventory-category-btn-active-bg-1: #79d959;
+  --inventory-category-btn-active-bg-2: #6bc951;
+  --inventory-category-btn-active-text: #ffffff;
+  --inventory-category-btn-active-shadow: rgba(121, 217, 89, 0.3);
+  --inventory-grid-bg: #fafafa;
+  --inventory-slot-bg: #ffffff;
+  --inventory-slot-border: #e0e0e0;
+  --inventory-slot-empty-bg: #f8f8f8;
+  --inventory-slot-empty-border: #e8e8e8;
+  --inventory-slot-filled-border: #d8e1c5;
+  --inventory-slot-hover-border: #79d959;
+  --inventory-slot-hover-shadow: rgba(121, 217, 89, 0.2);
+  --inventory-slot-shadow: rgba(0, 0, 0, 0.05);
+  --inventory-item-shadow: rgba(0, 0, 0, 0.1);
+  --inventory-quantity-bg-1: #79d959;
+  --inventory-quantity-bg-2: #6bc951;
+  --inventory-quantity-text: #ffffff;
+  --inventory-quantity-border: #9be686;
+  --inventory-tooltip-bg: #4d4d4d;
+  --inventory-tooltip-text: #ffffff;
+  --inventory-tooltip-border: #79d959;
+  --inventory-tooltip-shadow: rgba(0, 0, 0, 0.4);
+  --inventory-tooltip-text-shadow: rgba(0, 0, 0, 0.3);
+  --inventory-empty-text: #e0e0e0;
+  --inventory-eat-prompt-bg: #ffffff;
+  --inventory-eat-prompt-border: #ff9800;
+  --inventory-eat-prompt-shadow: rgba(0, 0, 0, 0.25);
+  --inventory-eat-prompt-text: #333;
+  --inventory-eat-yes-bg: #79d959;
+  --inventory-eat-yes-border: #6bc951;
+  --inventory-eat-yes-text: white;
+  --inventory-eat-yes-hover: #6bc951;
+  --inventory-eat-no-bg: #ff5a5a;
+  --inventory-eat-no-border: #ff8080;
+  --inventory-eat-no-text: white;
+  --inventory-eat-no-hover: #ff6b6b;
+}
+
+#inventory-portal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3000; /* very high */
+}
+
+.inventory-overlay {
+  pointer-events: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--inventory-overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.inventory-window {
+  position: relative;
+  z-index: 1001;
+  width: 600px;
+  height: 400px;
+  background: var(--inventory-window-bg);
+  border: 3px solid var(--inventory-window-border);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px var(--inventory-window-shadow);
+  display: flex;
+  flex-direction: column;
+  font-family: "Press Start 2P", system-ui;
+}
+
+/* Compact width for mobile and tablet */
+.inventory-window.inventory-window-compact {
+  width: 350px;
+  height: 350px;
+}
+
+/* Inventory Header */
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--inventory-header-border);
+  background: linear-gradient(to bottom, var(--inventory-header-bg-1), var(--inventory-header-bg-2));
+  border-radius: 15px 15px 0 0;
+  z-index: 12501;
+  position: relative;
+}
+
+.inventory-window-compact .inventory-header {
+  padding: 12px 16px;
+}
+
+.inventory-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--inventory-title-color);
+  text-shadow: 1px 1px 0px var(--inventory-title-shadow);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.inventory-window-compact .inventory-title {
+  font-size: 14px;
+}
+
+.inventory-close {
+  background: var(--inventory-close-bg);
+  border: 2px solid var(--inventory-close-border);
+  color: var(--inventory-close-text);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px var(--inventory-close-shadow);
+  font-family: inherit;
+  font-weight: bold;
+  z-index: 12502;
+  position: relative;
+}
+
+.inventory-window-compact .inventory-close {
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+}
+
+.inventory-close:hover {
+  background: var(--inventory-close-hover);
+  transform: scale(1.1);
+}
+
+/* Category Buttons */
+.inventory-categories {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
+  background: var(--inventory-categories-bg);
+  border-bottom: 2px solid var(--inventory-categories-border);
+  z-index: 12501;
+  position: relative;
+}
+
+.inventory-window-compact .inventory-categories {
+  gap: 6px;
+  padding: 10px;
+}
+
+.inventory-categories .category-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--inventory-category-btn-border);
+  background: var(--inventory-category-btn-bg);
+  color: var(--inventory-category-btn-color);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: inherit;
+  z-index: 12502;
+  position: relative;
+}
+
+.inventory-window-compact .inventory-categories .category-btn {
+  padding: 6px 10px;
+  font-size: 7px;
+}
+
+.inventory-categories .category-btn:hover {
+  background: var(--inventory-category-btn-hover-bg);
+  color: var(--inventory-category-btn-hover-color);
+  border-color: var(--inventory-category-btn-hover-color);
+  transform: translateY(-2px);
+}
+
+.inventory-categories .category-btn.active {
+  background: linear-gradient(135deg, var(--inventory-category-btn-active-bg-1) 0%, var(--inventory-category-btn-active-bg-2) 100%);
+  border-color: var(--inventory-category-btn-active-bg-1);
+  color: var(--inventory-category-btn-active-text);
+  box-shadow: 0 4px 12px var(--inventory-category-btn-active-shadow);
+}
+
+/* Inventory Grid Container */
+.inventory-grid-container {
+  flex: 1;
+  position: relative;
+  background: var(--inventory-grid-bg);
+  border-radius: 0 0 15px 15px;
+  overflow: visible;
+  z-index: 12501;
+}
+
+/* Inventory Grid with Scrolling */
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 12px;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 232px;
+  position: relative;
+  z-index: 12502;
+  scrollbar-color: var(--inventory-window-border) #e8f0ff;
+}
+
+.inventory-window-compact .inventory-grid {
+  gap: 8px;
+  padding: 15px;
+  max-height: 200px;
+}
+
+/* Inventory Slots */
+.inventory-slot {
+  background: var(--inventory-slot-bg);
+  border: 2px solid var(--inventory-slot-border);
+  border-radius: 12px;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px var(--inventory-slot-shadow);
+  overflow: visible;
+  z-index: 12503;
+}
+
+.inventory-window-compact .inventory-slot {
+  border-radius: 8px;
+}
+
+.inventory-slot.empty {
+  background: var(--inventory-slot-empty-bg);
+  border-color: var(--inventory-slot-empty-border);
+  border-style: dashed;
+}
+
+.inventory-slot.filled {
+  background: var(--inventory-slot-bg);
+  border-color: var(--inventory-slot-filled-border);
+  border-style: solid;
+}
+
+.inventory-slot:hover {
+  transform: scale(1.08);
+  border-color: var(--inventory-slot-hover-border);
+  box-shadow: 0 8px 16px var(--inventory-slot-hover-shadow);
+  z-index: 12510; /* Higher when hovering */
+}
+
+/* Item Display */
+.item-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 8px;
+  filter: drop-shadow(2px 2px 4px var(--inventory-item-shadow));
+  transition: all 0.2s ease;
+  z-index: 12504;
+  position: relative;
+}
+
+.inventory-window-compact .item-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 6px;
+}
+
+.inventory-slot:hover .item-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.item-quantity {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: linear-gradient(135deg, var(--inventory-quantity-bg-1), var(--inventory-quantity-bg-2));
+  color: var(--inventory-quantity-text);
+  padding: 3px 6px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  border: 2px solid var(--inventory-quantity-border);
+  min-width: 20px;
+  text-align: center;
+  z-index: 12505;
+}
+
+.inventory-window-compact .item-quantity {
+  bottom: 4px;
+  right: 4px;
+  padding: 2px 4px;
+  font-size: 8px;
+  border-radius: 8px;
+}
+
+/* Item Tooltip */
+.item-tooltip {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--inventory-tooltip-bg);
+  color: var(--inventory-tooltip-text);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 90001; /* Very high for tooltips */
+  border: 2px solid var(--inventory-tooltip-border);
+  box-shadow: 0 4px 8px var(--inventory-tooltip-shadow);
+  text-shadow: 1px 1px 0px var(--inventory-tooltip-text-shadow);
+  overflow: visible;
+  text-overflow: clip;
+  max-width: none;
+  width: auto;
+  pointer-events: none;
+}
+
+.inventory-window-compact .item-tooltip {
+  font-size: 8px;
+  padding: 4px 8px;
+}
+
+.inventory-slot:hover .item-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+/* Empty slot styling */
+.inventory-slot.empty::after {
+  content: "+";
+  font-size: 24px;
+  color: var(--inventory-empty-text);
+  font-weight: bold;
+  opacity: 0.5;
+}
+
+.inventory-window-compact .inventory-slot.empty::after {
+  font-size: 18px;
+}
+
+/* Eat Prompt Container & Styling - HIGHEST Z-INDEX */
+.eat-prompt-container {
+  position: fixed;
+  z-index: 1000001;
+  pointer-events: auto;
+}
+
+.eat-prompt {
+  background: var(--inventory-eat-prompt-bg);
+  border: 3px solid var(--inventory-eat-prompt-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  text-align: center;
+  box-shadow: 0 8px 20px var(--inventory-eat-prompt-shadow);
+  min-width: 160px;
+  animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  bottom: 10px;
+  z-index: 16001;
+}
+
+.eat-prompt::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid var(--inventory-eat-prompt-border);
+}
+
+.eat-prompt p {
+  margin: 0 0 10px 0;
+  font-weight: bold;
+  color: var(--inventory-eat-prompt-text);
+  font-size: 12px;
+}
+
+.eat-prompt-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.eat-prompt .yes-btn,
+.eat-prompt .no-btn {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+  border: 2px solid;
+  font-family: "Press Start 2P", system-ui;
+  z-index: 16002;
+  position: relative;
+}
+
+.eat-prompt .yes-btn {
+  background: var(--inventory-eat-yes-bg);
+  color: var(--inventory-eat-yes-text);
+  border-color: var(--inventory-eat-yes-border);
+}
+
+.eat-prompt .no-btn {
+  background: var(--inventory-eat-no-bg);
+  color: var(--inventory-eat-no-text);
+  border-color: var(--inventory-eat-no-border);
+}
+
+.eat-prompt .yes-btn:hover {
+  background: var(--inventory-eat-yes-hover);
+  transform: translateY(-2px);
+}
+
+.eat-prompt .no-btn:hover {
+  background: var(--inventory-eat-no-hover);
+  transform: translateY(-2px);
+}
+
+/* Item icons - keep all your existing icon styles */
+.item-icon-rose {
+  background: url("/assets/icons/rose.png") center/contain no-repeat;
+  width: 50px;
+  height: 50px;
+}
+
+.inventory-window-compact .item-icon-rose {
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-daisy {
+  background: url("/assets/icons/daisy.png") center/contain no-repeat;
+  width: 50px;
+  height: 50px;
+}
+
+.inventory-window-compact .item-icon-daisy {
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-sunflower {
+  background: url("/assets/icons/sunflower.png") center/contain no-repeat;
+  width: 50px;
+  height: 50px;
+}
+
+.inventory-window-compact .item-icon-sunflower {
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-tulip {
+  background: url("/assets/icons/tulip.png") center/contain no-repeat;
+  width: 50px;
+  height: 50px;
+}
+
+.inventory-window-compact .item-icon-tulip {
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-conch-shell {
+  background: url("/assets/icons/conchShell.png") center/contain no-repeat;
+  width: 65px;
+  height: 65px;
+}
+
+.inventory-window-compact .item-icon-conch-shell {
+  width: 50px;
+  height: 50px;
+}
+
+.item-icon-starfish {
+  background: url("/assets/icons/starfish.png") center/contain no-repeat;
+  width: 60px;
+  height: 60px;
+}
+
+.inventory-window-compact .item-icon-starfish {
+  width: 45px;
+  height: 45px;
+}
+
+.item-icon-takeaway {
+  background: url("/assets/icons/takeaway.png") center/contain no-repeat;
+  width: 60px;
+  height: 60px;
+}
+
+.inventory-window-compact .item-icon-takeaway {
+  width: 45px;
+  height: 45px;
+}
+
+.item-icon-quartz {
+  background: url("/assets/icons/quartz.png") center/contain no-repeat;
+  width: 75px;
+  height: 75px;
+}
+
+.inventory-window-compact .item-icon-quartz {
+  width: 55px;
+  height: 55px;
+}
+
+.item-icon-granite {
+  background: url("/assets/icons/pebble.png") center/contain no-repeat;
+  width: 50px;
+  height: 50px;
+}
+
+.inventory-window-compact .item-icon-granite {
+  width: 40px;
+  height: 40px;
+}
+
+.item-icon-pencil {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='40' height='40'%3E%3Cpath d='M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z' fill='%23ffc107'/%3E%3C/svg%3E")
+    center/contain no-repeat;
+  width: 50px;
+  height: 50px;
+}
+
+.inventory-window-compact .item-icon-pencil {
+  width: 40px;
+  height: 40px;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Mobile specific adjustments */
+@media screen and (max-width: 768px) {
+  .inventory-window.inventory-window-compact {
+    width: 350px;
+    height: 300px;
+  }
+
+  .inventory-window-compact .inventory-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 12px;
+    max-height: 160px;
+  }
+}
+
+/* Tablet adjustments */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .inventory-window.inventory-window-compact {
+    width: 350px;
+    height: 320px;
+  }
+}
+
+/* Desktop - keep full width */
+@media screen and (min-width: 1025px) {
+  .inventory-window.inventory-window-compact {
+    width: 600px;
+    height: 400px;
+  }
+
+  .inventory-window-compact .inventory-header {
+    padding: 16px 20px;
+  }
+
+  .inventory-window-compact .inventory-title {
+    font-size: 16px;
+  }
+
+  .inventory-window-compact .inventory-close {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .inventory-window-compact .inventory-categories {
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .inventory-window-compact .inventory-categories .category-btn {
+    padding: 8px 16px;
+    font-size: 10px;
+  }
+
+  .inventory-window-compact .inventory-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    padding: 20px;
+    max-height: 232px;
+  }
+
+  .inventory-window-compact .item-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  /* Reset all icon sizes for desktop */
+  .inventory-window-compact .item-icon-conch-shell {
+    width: 65px;
+    height: 65px;
+  }
+
+  .inventory-window-compact .item-icon-starfish,
+  .inventory-window-compact .item-icon-takeaway {
+    width: 60px;
+    height: 60px;
+  }
+
+  .inventory-window-compact .item-icon-quartz {
+    width: 75px;
+    height: 75px;
+  }
+}

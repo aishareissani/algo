@@ -1,36 +1,35 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
-import "../mountain.css";
+import "../home.css";
 import ArrowKey from "./wasd_key";
 import Task from "./task";
 
-function Mountain() {
+function Home() {
   const { isFastForward } = useSpeedMode();
   const location = useLocation();
   const navigate = useNavigate();
 
   const { characterName = "claire", playerName = "Player", stats: initialStats = {} } = location.state || {};
   const [showDialog, setShowDialog] = useState(false);
-  const [currentLocationmountain, setCurrentLocationmountain] = useState(null);
+  const [currentLocationHouse, setCurrentLocationHouse] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
+
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(0.299);
-  const [actualViewportSize, setActualViewportSize] = useState({
-    width: 0,
-    height: 0,
-  });
+  const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
+  const [mobileZoom, setMobileZoom] = useState(0.299); // New state for mobile zoom
 
-  const mountainRef = useRef(null);
+  const houseRef = useRef(null);
   const playerRef = useRef(null);
   const activityIntervalRef = useRef(null);
 
@@ -54,7 +53,7 @@ function Mountain() {
     level: 1,
     skillPoints: 0,
     items: [],
-    tasks: {},
+    tasks: {}, // Make sure tasks is always included
   };
 
   const [playerStats, setPlayerStats] = useState(() => {
@@ -81,14 +80,15 @@ function Mountain() {
     return stats;
   });
 
-  // Initialize tasks
+  // Initialize tasks if they don't exist
   useEffect(() => {
     const taskLocations = {
-      mountain: [
-        { id: "hike", name: "Start a Hike", priority: "daily" },
-        { id: "stream", name: "Visit the Stream", priority: "daily" },
-        { id: "flower", name: "Collect Flower", priority: "bonus" },
-        { id: "rock", name: "Collect some Rock", priority: "bonus" },
+      home: [
+        { id: "bed", name: "Rest on Bed", priority: "daily" },
+        { id: "bath", name: "Take Bath", priority: "daily" },
+        { id: "kitchen", name: "Eat in the Kitchen", priority: "daily" },
+        { id: "cat", name: "Pet the Cat", priority: "bonus" },
+        { id: "table", name: "Work from Home", priority: "bonus" },
       ],
     };
 
@@ -121,7 +121,7 @@ function Mountain() {
       state: {
         characterName,
         playerName,
-        stats: playerStats,
+        stats: playerStats, // Pass the entire playerStats including tasks
       },
     });
   };
@@ -132,7 +132,7 @@ function Mountain() {
 
   // Function to mark a task as completed
   const completeTask = (taskId) => {
-    const taskKey = `mountain-${taskId}`;
+    const taskKey = `home-${taskId}`;
     setPlayerStats((prev) => ({
       ...prev,
       tasks: {
@@ -147,7 +147,7 @@ function Mountain() {
 
   // Function to toggle task completion (for manual toggling via UI)
   const toggleTaskCompletion = (taskId) => {
-    const taskKey = `mountain-${taskId}`;
+    const taskKey = `home-${taskId}`;
     setPlayerStats((prev) => ({
       ...prev,
       tasks: {
@@ -160,37 +160,7 @@ function Mountain() {
     }));
   };
 
-  const addItemToInventory = (itemName, category, icon, onStatsUpdate) => {
-    onStatsUpdate((prev) => {
-      const existingItemIndex = prev.items.findIndex((item) => item.name === itemName);
-      const updatedItems = [...prev.items];
-      const newExperience = prev.experience + 1;
-
-      if (existingItemIndex !== -1) {
-        updatedItems[existingItemIndex] = {
-          ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + 1,
-        };
-      } else {
-        const newItem = {
-          id: Date.now(),
-          name: itemName,
-          category: category,
-          icon: icon,
-          quantity: 1,
-        };
-        updatedItems.push(newItem);
-      }
-
-      return {
-        ...prev,
-        items: updatedItems,
-        experience: newExperience,
-      };
-    });
-  };
-
-  const performActivity = (activityName, statChanges, collectItem = null) => {
+  const performActivity = (activityName, statChanges) => {
     if (isPerformingActivity) return;
 
     setIsPerformingActivity(true);
@@ -199,14 +169,16 @@ function Mountain() {
     setShowDialog(false);
 
     // Mark corresponding task as completed
-    if (currentLocationmountain === "Hike") {
-      completeTask("hike");
-    } else if (currentLocationmountain === "Stream") {
-      completeTask("stream");
-    } else if (currentLocationmountain === "Flower") {
-      completeTask("flower");
-    } else if (currentLocationmountain === "Rock") {
-      completeTask("rock");
+    if (currentLocationHouse === "Bed") {
+      completeTask("bed");
+    } else if (currentLocationHouse === "Bath") {
+      completeTask("bath");
+    } else if (currentLocationHouse === "Kitchen") {
+      completeTask("kitchen");
+    } else if (currentLocationHouse === "Cat") {
+      completeTask("cat");
+    } else if (currentLocationHouse === "Table") {
+      completeTask("table");
     }
 
     if (isFastForward) {
@@ -227,12 +199,9 @@ function Mountain() {
         return newStats;
       });
 
-      if (collectItem) {
-        addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
-      }
-
       setTimeout(() => {
         setActivityProgress(100);
+
         setTimeout(() => {
           setIsPerformingActivity(false);
           setCurrentActivity("");
@@ -257,6 +226,7 @@ function Mountain() {
 
         setPlayerStats((prev) => {
           const newStats = { ...prev };
+
           Object.keys(incrementalChanges).forEach((stat) => {
             const increment = Number(incrementalChanges[stat]);
             if (isNaN(increment)) return;
@@ -269,13 +239,11 @@ function Mountain() {
               newStats[stat] = Math.min(100, Math.max(0, prevValue + increment));
             }
           });
+
           return newStats;
         });
 
         if (currentStep >= totalSteps) {
-          if (collectItem) {
-            addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
-          }
           clearInterval(activityIntervalRef.current);
           setIsPerformingActivity(false);
           setActivityProgress(0);
@@ -286,93 +254,43 @@ function Mountain() {
   };
 
   const handleEnterLocation = () => {
-    console.log(`Performing activity at ${currentLocationmountain}`);
+    console.log(`Performing activity at ${currentLocationHouse}`);
 
-    if (currentLocationmountain === "Hike") {
-      performActivity("Hiking up the mountain", {
-        energy: -30,
-        health: 15,
+    if (currentLocationHouse === "Bed") {
+      performActivity("Sleeping", {
+        sleep: 100,
+        energy: 25,
+        health: -40,
         happiness: 15,
-        meal: -25,
-        skillPoints: 1,
-      });
-    } else if (currentLocationmountain === "Stream") {
-      performActivity("Playing in the mountain stream", {
-        happiness: 35,
-        cleanliness: 20,
-        energy: -15,
         experience: 1,
       });
-    } else if (currentLocationmountain === "Flower") {
-      const mountainFlowers = [
-        { name: "Rose", icon: "rose" },
-        { name: "Daisy", icon: "daisy" },
-        { name: "Sunflower", icon: "sunflower" },
-        { name: "Tulip", icon: "tulip" },
-      ];
-      const randomFlower = mountainFlowers[Math.floor(Math.random() * mountainFlowers.length)];
-
-      performActivity(
-        "Picking a mountain flower",
-        {
-          happiness: 40,
-          energy: -20,
-          skillPoints: 1,
-        },
-        {
-          name: randomFlower.name,
-          category: "Flower",
-          icon: randomFlower.icon,
-        }
-      );
-    } else if (currentLocationmountain === "Rock") {
-      const rocks = [
-        { name: "Quartz", icon: "quartz" },
-        { name: "Granite", icon: "granite" },
-      ];
-      const randomRock = rocks[Math.floor(Math.random() * rocks.length)];
-
-      performActivity(
-        "Collecting a rock",
-        {
-          happiness: 20,
-          energy: -20,
-          skillPoints: 1,
-        },
-        {
-          name: randomRock.name,
-          category: "Rocks",
-          icon: randomRock.icon,
-        }
-      );
+    } else if (currentLocationHouse === "Bath") {
+      performActivity("Taking a bath", {
+        cleanliness: 100,
+        happiness: 20,
+        experience: 1,
+      });
+    } else if (currentLocationHouse === "Kitchen") {
+      performActivity("Eating", {
+        meal: 40,
+        happiness: 20,
+        experience: 1,
+      });
+    } else if (currentLocationHouse === "Cat") {
+      performActivity("Playing with cat", {
+        happiness: 50,
+        experience: 1,
+      });
+    } else if (currentLocationHouse === "Table") {
+      performActivity("Working from home", {
+        money: 100,
+        energy: -15,
+        sleep: -10,
+        meal: -10,
+        happiness: -10,
+        skillPoints: 1,
+      });
     }
-  };
-
-  const isNearHike = (x, y) => {
-    return x >= 2575 && x <= 3682 && y >= 142 && y <= 692;
-  };
-
-  const isNearStream = (x, y) => {
-    return x >= 225 && x <= 1775 && y >= 142 && y <= 917;
-  };
-
-  const isNearFlower = (x, y) => {
-    return x >= 1950 && x <= 2425 && y >= 142 && y <= 267;
-  };
-
-  const isNearRock = (x, y) => {
-    return x >= 1225 && x <= 1375 && y >= 1067 && y <= 1342;
-  };
-
-  const dialogMessages = {
-    Hike: "Do you want to go for a hike up the mountain?",
-    Stream: "Do you want to play in the mountain stream?",
-    Flower: "Do you want to pick a flower?",
-    Rock: "Do you want to collect a rock?",
-  };
-
-  const renderDialogMessage = (message) => {
-    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
 
   useEffect(() => {
@@ -383,12 +301,41 @@ function Mountain() {
     };
   }, []);
 
+  const isNearBed = (x, y) => {
+    return x >= 450 && x <= 700 && y >= 142 && y <= 617;
+  };
+  const isNearBath = (x, y) => {
+    return x >= 142 && x <= 1092 && y >= 1015 && y <= 1617;
+  };
+  const isNearKitchen = (x, y) => {
+    return x >= 3250 && x <= 3550 && y >= 650 && y <= 1000;
+  };
+  const isNearCat = (x, y) => {
+    return x >= 1992 && x <= 2242 && y >= 1342 && y <= 1642;
+  };
+  const isNearTable = (x, y) => {
+    return x >= 1875 && x <= 2125 && y >= 400 && y <= 750;
+  };
+
+  const dialogMessages = {
+    Bed: "Do you want to sleep?",
+    Bath: "Do you want to take a bath?",
+    Kitchen: "Do you want to eat?",
+    Cat: "Do you want to play with cat?",
+    Table: "Do you want to work from home?",
+  };
+
+  const renderDialogMessage = (message) => {
+    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
+  };
+
+  // Update viewport size when component mounts or window resizes
   useEffect(() => {
     const updateViewportSize = () => {
-      if (mountainRef.current) {
+      if (houseRef.current) {
         setActualViewportSize({
-          width: mountainRef.current.clientWidth,
-          height: mountainRef.current.clientHeight,
+          width: houseRef.current.clientWidth,
+          height: houseRef.current.clientHeight,
         });
       }
     };
@@ -398,11 +345,47 @@ function Mountain() {
     return () => window.removeEventListener("resize", updateViewportSize);
   }, []);
 
+  // NEW: Calculate optimal zoom for mobile to eliminate empty space
+  useEffect(() => {
+    const calculateMobileZoom = () => {
+      if (actualViewportSize.width === 0 || actualViewportSize.height === 0) return;
+
+      // Check if we're on mobile (you can adjust this breakpoint)
+      const isMobile = window.innerWidth <= 768;
+
+      if (isMobile) {
+        // Calculate zoom to fill the viewport optimally
+        const widthZoom = actualViewportSize.width / WORLD_WIDTH;
+        const heightZoom = actualViewportSize.height / WORLD_HEIGHT;
+
+        // Use the larger zoom value to ensure no empty space
+        const optimalZoom = Math.max(widthZoom, heightZoom);
+
+        // Set minimum and maximum zoom limits for better gameplay
+        const minZoom = 0.15;
+        const maxZoom = 0.8;
+        const finalZoom = Math.max(minZoom, Math.min(maxZoom, optimalZoom));
+
+        console.log(`Mobile zoom calculated: ${finalZoom} (width: ${widthZoom}, height: ${heightZoom})`);
+
+        setMobileZoom(finalZoom);
+        setZoomLevel(finalZoom);
+      } else {
+        // Desktop zoom - use original value
+        setZoomLevel(0.299);
+      }
+    };
+
+    calculateMobileZoom();
+
+    // Recalculate on window resize
+    window.addEventListener("resize", calculateMobileZoom);
+    return () => window.removeEventListener("resize", calculateMobileZoom);
+  }, [actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
+
+  // Camera position calculation - updated to work with mobile zoom
   useEffect(() => {
     if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
-
-    const scaledWorldWidth = WORLD_WIDTH * zoomLevel;
-    const scaledWorldHeight = WORLD_HEIGHT * zoomLevel;
 
     const viewportWidthInWorld = actualViewportSize.width / zoomLevel;
     const viewportHeightInWorld = actualViewportSize.height / zoomLevel;
@@ -410,17 +393,9 @@ function Mountain() {
     let targetCameraX = playerPos.x - viewportWidthInWorld / 2;
     let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
 
-    if (scaledWorldWidth < actualViewportSize.width) {
-      targetCameraX = (WORLD_WIDTH - viewportWidthInWorld) / 2;
-    } else {
-      targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
-    }
-
-    if (scaledWorldHeight < actualViewportSize.height) {
-      targetCameraY = (WORLD_HEIGHT - viewportHeightInWorld) / 2;
-    } else {
-      targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
-    }
+    // Constrain camera to world boundaries
+    targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
+    targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
 
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
@@ -494,34 +469,42 @@ function Mountain() {
   useEffect(() => {
     if (isPerformingActivity) return;
 
-    if (isNearHike(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Hike");
+    if (isNearBed(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Bed");
       setShowDialog(true);
-    } else if (isNearStream(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Stream");
+    } else if (isNearBath(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Bath");
       setShowDialog(true);
-    } else if (isNearFlower(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Flower");
+    } else if (isNearKitchen(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Kitchen");
       setShowDialog(true);
-    } else if (isNearRock(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Rock");
+    } else if (isNearCat(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Cat");
+      setShowDialog(true);
+    } else if (isNearTable(playerPos.x, playerPos.y)) {
+      setCurrentLocationHouse("Table");
       setShowDialog(true);
     } else {
-      setCurrentLocationmountain(null);
+      setCurrentLocationHouse(null);
       setShowDialog(false);
     }
   }, [playerPos, isPerformingActivity]);
 
+  useEffect(() => {
+    console.log("Current player stats:", playerStats);
+  }, [playerStats]);
+
   return (
-    <div className="mountain-game-container">
+    <div className="home-game-container">
       <div>
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
         <SpeedToggleButton />
       </div>
-      <div className="mountain-game-viewport" ref={mountainRef}>
-        {showDialog && currentLocationmountain && !isPerformingActivity && (
+
+      <div className="home-game-viewport" ref={houseRef}>
+        {showDialog && currentLocationHouse && !isPerformingActivity && (
           <div className="dialog fade-in-center">
-            {renderDialogMessage(dialogMessages[currentLocationmountain] || `Do you want to enter the ${currentLocationmountain}?`)}
+            {renderDialogMessage(dialogMessages[currentLocationHouse] || `Do you want to enter the ${currentLocationHouse}?`)}
             <button className="yes-btn" onClick={handleEnterLocation}>
               Yes
             </button>
@@ -530,6 +513,7 @@ function Mountain() {
             </button>
           </div>
         )}
+
         {isPerformingActivity && (
           <div className="activity-overlay">
             <div className="activity-info">
@@ -541,8 +525,9 @@ function Mountain() {
             </div>
           </div>
         )}
+
         <div
-          className="mountain-game-world mountain-background"
+          className="home-game-world home-background"
           style={{
             width: `${WORLD_WIDTH}px`,
             height: `${WORLD_HEIGHT}px`,
@@ -551,7 +536,7 @@ function Mountain() {
           }}
         >
           <div
-            className="mountain-player"
+            className="home-player"
             ref={playerRef}
             style={{
               left: `${playerPos.x}px`,
@@ -562,7 +547,7 @@ function Mountain() {
               position: "absolute",
             }}
           >
-            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="mountain-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
+            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="home-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
           </div>
         </div>
       </div>
@@ -579,17 +564,15 @@ function Mountain() {
         </div>
         <div className="controls-hint">
           <div>🎮 Arrow Keys / WASD to move</div>
-          <div>🗺️ Explore the mountain!</div>
+          <div>🗺️ Explore the home!</div>
         </div>
       </div>
 
-      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
-
       <ArrowKey onKeyPress={handleArrowPress} />
 
-      <Task currentLocation="mountain" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
+      <Task currentLocation="home" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
     </div>
   );
 }
 
-export default Mountain;
+export default Home;

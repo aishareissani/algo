@@ -1,36 +1,30 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
-import Inventory from "./inventory";
-import { handleUseItem } from "../utils/itemHandlers";
-import "../mountain.css";
+import "../field.css";
 import ArrowKey from "./wasd_key";
 import Task from "./task";
 
-function Mountain() {
+function Field() {
   const { isFastForward } = useSpeedMode();
   const location = useLocation();
   const navigate = useNavigate();
 
   const { characterName = "claire", playerName = "Player", stats: initialStats = {} } = location.state || {};
   const [showDialog, setShowDialog] = useState(false);
-  const [currentLocationmountain, setCurrentLocationmountain] = useState(null);
+  const [currentLocationfield, setCurrentLocationfield] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
-  const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(0.299);
-  const [actualViewportSize, setActualViewportSize] = useState({
-    width: 0,
-    height: 0,
-  });
+  const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
 
-  const mountainRef = useRef(null);
+  const fieldRef = useRef(null);
   const playerRef = useRef(null);
   const activityIntervalRef = useRef(null);
 
@@ -84,11 +78,11 @@ function Mountain() {
   // Initialize tasks
   useEffect(() => {
     const taskLocations = {
-      mountain: [
-        { id: "hike", name: "Start a Hike", priority: "daily" },
-        { id: "stream", name: "Visit the Stream", priority: "daily" },
-        { id: "flower", name: "Collect Flower", priority: "bonus" },
-        { id: "rock", name: "Collect some Rock", priority: "bonus" },
+      field: [
+        { id: "swing", name: "Sit on the Swing", priority: "daily" },
+        { id: "picnic", name: "Have a Picnic", priority: "daily" },
+        { id: "chair", name: "Rest on Chair", priority: "bonus" },
+        { id: "fountain", name: "Near Fountain", priority: "bonus" },
       ],
     };
 
@@ -126,13 +120,9 @@ function Mountain() {
     });
   };
 
-  const handleItemUse = (item) => {
-    handleUseItem(item, setPlayerStats);
-  };
-
   // Function to mark a task as completed
   const completeTask = (taskId) => {
-    const taskKey = `mountain-${taskId}`;
+    const taskKey = `field-${taskId}`;
     setPlayerStats((prev) => ({
       ...prev,
       tasks: {
@@ -147,7 +137,7 @@ function Mountain() {
 
   // Function to toggle task completion (for manual toggling via UI)
   const toggleTaskCompletion = (taskId) => {
-    const taskKey = `mountain-${taskId}`;
+    const taskKey = `field-${taskId}`;
     setPlayerStats((prev) => ({
       ...prev,
       tasks: {
@@ -160,37 +150,7 @@ function Mountain() {
     }));
   };
 
-  const addItemToInventory = (itemName, category, icon, onStatsUpdate) => {
-    onStatsUpdate((prev) => {
-      const existingItemIndex = prev.items.findIndex((item) => item.name === itemName);
-      const updatedItems = [...prev.items];
-      const newExperience = prev.experience + 1;
-
-      if (existingItemIndex !== -1) {
-        updatedItems[existingItemIndex] = {
-          ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + 1,
-        };
-      } else {
-        const newItem = {
-          id: Date.now(),
-          name: itemName,
-          category: category,
-          icon: icon,
-          quantity: 1,
-        };
-        updatedItems.push(newItem);
-      }
-
-      return {
-        ...prev,
-        items: updatedItems,
-        experience: newExperience,
-      };
-    });
-  };
-
-  const performActivity = (activityName, statChanges, collectItem = null) => {
+  const performActivity = (activityName, statChanges) => {
     if (isPerformingActivity) return;
 
     setIsPerformingActivity(true);
@@ -199,14 +159,14 @@ function Mountain() {
     setShowDialog(false);
 
     // Mark corresponding task as completed
-    if (currentLocationmountain === "Hike") {
-      completeTask("hike");
-    } else if (currentLocationmountain === "Stream") {
-      completeTask("stream");
-    } else if (currentLocationmountain === "Flower") {
-      completeTask("flower");
-    } else if (currentLocationmountain === "Rock") {
-      completeTask("rock");
+    if (currentLocationfield === "Swing") {
+      completeTask("swing");
+    } else if (currentLocationfield === "Picnic") {
+      completeTask("picnic");
+    } else if (currentLocationfield === "Chair") {
+      completeTask("chair");
+    } else if (currentLocationfield === "Fountain") {
+      completeTask("fountain");
     }
 
     if (isFastForward) {
@@ -226,10 +186,6 @@ function Mountain() {
         });
         return newStats;
       });
-
-      if (collectItem) {
-        addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
-      }
 
       setTimeout(() => {
         setActivityProgress(100);
@@ -257,6 +213,7 @@ function Mountain() {
 
         setPlayerStats((prev) => {
           const newStats = { ...prev };
+
           Object.keys(incrementalChanges).forEach((stat) => {
             const increment = Number(incrementalChanges[stat]);
             if (isNaN(increment)) return;
@@ -269,13 +226,11 @@ function Mountain() {
               newStats[stat] = Math.min(100, Math.max(0, prevValue + increment));
             }
           });
+
           return newStats;
         });
 
         if (currentStep >= totalSteps) {
-          if (collectItem) {
-            addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
-          }
           clearInterval(activityIntervalRef.current);
           setIsPerformingActivity(false);
           setActivityProgress(0);
@@ -286,93 +241,35 @@ function Mountain() {
   };
 
   const handleEnterLocation = () => {
-    console.log(`Performing activity at ${currentLocationmountain}`);
+    console.log(`Performing activity at ${currentLocationfield}`);
 
-    if (currentLocationmountain === "Hike") {
-      performActivity("Hiking up the mountain", {
-        energy: -30,
-        health: 15,
-        happiness: 15,
-        meal: -25,
-        skillPoints: 1,
-      });
-    } else if (currentLocationmountain === "Stream") {
-      performActivity("Playing in the mountain stream", {
-        happiness: 35,
-        cleanliness: 20,
-        energy: -15,
+    if (currentLocationfield === "Swing") {
+      performActivity("Swinging", {
+        sleep: -30,
+        energy: -25,
+        health: 20,
+        happiness: 40,
         experience: 1,
       });
-    } else if (currentLocationmountain === "Flower") {
-      const mountainFlowers = [
-        { name: "Rose", icon: "rose" },
-        { name: "Daisy", icon: "daisy" },
-        { name: "Sunflower", icon: "sunflower" },
-        { name: "Tulip", icon: "tulip" },
-      ];
-      const randomFlower = mountainFlowers[Math.floor(Math.random() * mountainFlowers.length)];
-
-      performActivity(
-        "Picking a mountain flower",
-        {
-          happiness: 40,
-          energy: -20,
-          skillPoints: 1,
-        },
-        {
-          name: randomFlower.name,
-          category: "Flower",
-          icon: randomFlower.icon,
-        }
-      );
-    } else if (currentLocationmountain === "Rock") {
-      const rocks = [
-        { name: "Quartz", icon: "quartz" },
-        { name: "Granite", icon: "granite" },
-      ];
-      const randomRock = rocks[Math.floor(Math.random() * rocks.length)];
-
-      performActivity(
-        "Collecting a rock",
-        {
-          happiness: 20,
-          energy: -20,
-          skillPoints: 1,
-        },
-        {
-          name: randomRock.name,
-          category: "Rocks",
-          icon: randomRock.icon,
-        }
-      );
+    } else if (currentLocationfield === "Picnic") {
+      performActivity("Taking a Picnic", {
+        happiness: 30,
+        meal: 50,
+        experience: 1,
+      });
+    } else if (currentLocationfield === "Chair") {
+      performActivity("Sit", {
+        happiness: 20,
+        energy: 20,
+        experience: 1,
+      });
+    } else if (currentLocationfield === "Fountain") {
+      performActivity("Making a wish", {
+        happiness: 40,
+        money: -5,
+        experience: 1,
+      });
     }
-  };
-
-  const isNearHike = (x, y) => {
-    return x >= 2575 && x <= 3682 && y >= 142 && y <= 692;
-  };
-
-  const isNearStream = (x, y) => {
-    return x >= 225 && x <= 1775 && y >= 142 && y <= 917;
-  };
-
-  const isNearFlower = (x, y) => {
-    return x >= 1950 && x <= 2425 && y >= 142 && y <= 267;
-  };
-
-  const isNearRock = (x, y) => {
-    return x >= 1225 && x <= 1375 && y >= 1067 && y <= 1342;
-  };
-
-  const dialogMessages = {
-    Hike: "Do you want to go for a hike up the mountain?",
-    Stream: "Do you want to play in the mountain stream?",
-    Flower: "Do you want to pick a flower?",
-    Rock: "Do you want to collect a rock?",
-  };
-
-  const renderDialogMessage = (message) => {
-    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
 
   useEffect(() => {
@@ -383,12 +280,39 @@ function Mountain() {
     };
   }, []);
 
+  const isNearSwing = (x, y) => {
+    return x >= 2450 && x <= 2825 && y >= 142 && y <= 475;
+  };
+
+  const isNearPicnic = (x, y) => {
+    return x >= 750 && x <= 1150 && y >= 975 && y <= 1575;
+  };
+
+  const isNearChair = (x, y) => {
+    return x >= 725 && x <= 1075 && y >= 200 && y <= 450;
+  };
+
+  const isNearFountain = (x, y) => {
+    return x >= 1750 && x <= 2175 && y >= 700 && y <= 1175;
+  };
+
+  const dialogMessages = {
+    Swing: "Do you want to use the swing?",
+    Picnic: "Do you want to have a picnic?",
+    Chair: "Do you want to sit on the chair?",
+    Fountain: "Do you want to throw a coin and make a wish?",
+  };
+
+  const renderDialogMessage = (message) => {
+    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
+  };
+
   useEffect(() => {
     const updateViewportSize = () => {
-      if (mountainRef.current) {
+      if (fieldRef.current) {
         setActualViewportSize({
-          width: mountainRef.current.clientWidth,
-          height: mountainRef.current.clientHeight,
+          width: fieldRef.current.clientWidth,
+          height: fieldRef.current.clientHeight,
         });
       }
     };
@@ -494,34 +418,35 @@ function Mountain() {
   useEffect(() => {
     if (isPerformingActivity) return;
 
-    if (isNearHike(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Hike");
+    if (isNearSwing(playerPos.x, playerPos.y)) {
+      setCurrentLocationfield("Swing");
       setShowDialog(true);
-    } else if (isNearStream(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Stream");
+    } else if (isNearPicnic(playerPos.x, playerPos.y)) {
+      setCurrentLocationfield("Picnic");
       setShowDialog(true);
-    } else if (isNearFlower(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Flower");
+    } else if (isNearChair(playerPos.x, playerPos.y)) {
+      setCurrentLocationfield("Chair");
       setShowDialog(true);
-    } else if (isNearRock(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Rock");
+    } else if (isNearFountain(playerPos.x, playerPos.y)) {
+      setCurrentLocationfield("Fountain");
       setShowDialog(true);
     } else {
-      setCurrentLocationmountain(null);
+      setCurrentLocationfield(null);
       setShowDialog(false);
     }
   }, [playerPos, isPerformingActivity]);
 
   return (
-    <div className="mountain-game-container">
+    <div className="field-game-container">
       <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
         <SpeedToggleButton />
       </div>
-      <div className="mountain-game-viewport" ref={mountainRef}>
-        {showDialog && currentLocationmountain && !isPerformingActivity && (
+
+      <div className="field-game-viewport" ref={fieldRef}>
+        {showDialog && currentLocationfield && !isPerformingActivity && (
           <div className="dialog fade-in-center">
-            {renderDialogMessage(dialogMessages[currentLocationmountain] || `Do you want to enter the ${currentLocationmountain}?`)}
+            {renderDialogMessage(dialogMessages[currentLocationfield] || `Do you want to enter the ${currentLocationfield}?`)}
             <button className="yes-btn" onClick={handleEnterLocation}>
               Yes
             </button>
@@ -530,6 +455,7 @@ function Mountain() {
             </button>
           </div>
         )}
+
         {isPerformingActivity && (
           <div className="activity-overlay">
             <div className="activity-info">
@@ -541,8 +467,9 @@ function Mountain() {
             </div>
           </div>
         )}
+
         <div
-          className="mountain-game-world mountain-background"
+          className="field-game-world field-background"
           style={{
             width: `${WORLD_WIDTH}px`,
             height: `${WORLD_HEIGHT}px`,
@@ -551,7 +478,7 @@ function Mountain() {
           }}
         >
           <div
-            className="mountain-player"
+            className="field-player"
             ref={playerRef}
             style={{
               left: `${playerPos.x}px`,
@@ -562,7 +489,7 @@ function Mountain() {
               position: "absolute",
             }}
           >
-            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="mountain-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
+            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="field-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
           </div>
         </div>
       </div>
@@ -579,17 +506,14 @@ function Mountain() {
         </div>
         <div className="controls-hint">
           <div>🎮 Arrow Keys / WASD to move</div>
-          <div>🗺️ Explore the mountain!</div>
+          <div>🗺️ Explore the field!</div>
         </div>
       </div>
-
-      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
-
       <ArrowKey onKeyPress={handleArrowPress} />
 
-      <Task currentLocation="mountain" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
+      <Task currentLocation="field" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
     </div>
   );
 }
 
-export default Mountain;
+export default Field;

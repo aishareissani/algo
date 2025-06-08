@@ -1,0 +1,263 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+:root {
+  /* WASD Colors */
+  --wasd-main: #795548;
+  --wasd-hover: #795548;
+  --wasd-active: #795548;
+  --wasd-key-shadow: 0 4px 0 #795548;
+  --wasd-key-pressed: 0 2px 0 #795548;
+  --wasd-pad-bg: #f8f8fe;
+  --wasd-pad-border: #795548;
+  --wasd-key-bg-1: #f9fff8;
+  --wasd-key-bg-2: #dcfada;
+  --wasd-key-text: #273a16;
+  --wasd-key-hover-text: #0b2106;
+  --wasd-key-hover-border: #795548;
+  --wasd-key-hover-shadow: 0 6px 0 #795548;
+  --wasd-key-active-text: #fff;
+  --wasd-key-active-border: #456c35;
+  --wasd-key-w-bg-1: #a4f78f;
+  --wasd-key-w-bg-2: #79d959;
+  --wasd-key-w-border: #795548;
+  --wasd-key-shine: rgba(255, 255, 255, 0.3);
+  --wasd-text-shadow: rgba(255, 255, 255, 0.7);
+}
+
+.wasd-key-container {
+  position: fixed;
+  bottom: 155px;
+  right: 74px;
+  z-index: 2000;
+}
+
+/* Map-specific position ONLY - same size, different position */
+.wasd-key-container.map-location {
+  bottom: 102px;
+  right: 410px;
+}
+
+.wasd-key-container::before {
+  display: block;
+  text-align: center;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 8px; /* Reduced from 11px */
+  color: var(--wasd-main);
+  margin-bottom: 6px; /* Reduced from 10px */
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 0 var(--wasd-text-shadow);
+}
+
+.wasd-key-pad {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: var(--wasd-pad-bg);
+  border-radius: 12px;
+  padding: 10px;
+  border: 2px solid var(--wasd-main);
+  font-family: "Press Start 2P", system-ui;
+  user-select: none;
+  justify-content: center; /* Center the content vertically */
+  align-items: center; /* Center the content horizontally */
+}
+
+/* Top row with just W */
+.wasd-key-top-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2px; /* Reduced from 4px */
+}
+
+/* Bottom row with A S D */
+.wasd-key-middle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px; /* Reduced from 8px */
+  justify-items: center;
+  margin-bottom: 5px;
+}
+
+.wasd-key {
+  font-family: inherit;
+  font-size: 16px; /* Reduced from 24px */
+  font-weight: bold;
+  background: linear-gradient(135deg, var(--wasd-key-bg-1) 0%, var(--wasd-key-bg-2) 100%);
+  color: var(--wasd-key-text);
+  border: 2px solid var(--wasd-main);
+  border-radius: 8px; /* Reduced from 12px */
+  height: 32px; /* Reduced from 45px */
+  width: 50px; /* Reduced from 74px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--wasd-key-shadow);
+  cursor: pointer;
+  transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.wasd-key::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, var(--wasd-key-shine), transparent);
+  border-radius: 6px 6px 0 0; /* Reduced from 10px */
+}
+
+.wasd-key:hover,
+.wasd-key:focus-visible {
+  background: var(--wasd-hover);
+  color: var(--wasd-key-hover-text);
+  border-color: var(--wasd-key-hover-border);
+  transform: translateY(-2px);
+  box-shadow: var(--wasd-key-hover-shadow);
+}
+
+.wasd-key:active {
+  background: var(--wasd-active);
+  color: var(--wasd-key-active-text);
+  border-color: var(--wasd-key-active-border);
+  transform: translateY(2px);
+  box-shadow: var(--wasd-key-pressed);
+}
+
+/* Unique key styling */
+.wasd-key-w {
+  background: linear-gradient(135deg, var(--wasd-key-w-bg-1) 0%, var(--wasd-key-w-bg-2) 100%);
+  border-color: var(--wasd-key-w-border);
+}
+
+.wasd-key-a {
+  background: linear-gradient(135deg, var(--wasd-key-bg-1) 0%, var(--wasd-key-bg-2) 100%);
+}
+
+.wasd-key-s {
+  background: linear-gradient(135deg, var(--wasd-key-bg-1) 0%, var(--wasd-key-bg-2) 100%);
+}
+
+.wasd-key-d {
+  background: linear-gradient(135deg, var(--wasd-key-bg-1) 0%, var(--wasd-key-bg-2) 100%);
+}
+
+/* Key press animation */
+@keyframes keyPress {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.wasd-key:active {
+  animation: keyPress 0.2s ease;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 76px) {
+  .wasd-key-container {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  /* Map-specific mobile position */
+  .wasd-key-container.map-location {
+    bottom: 16px;
+    left: 16px;
+  }
+
+  .wasd-key-pad {
+    padding: 8px; /* Reduced from 12px */
+    gap: 4px; /* Reduced from 6px */
+  }
+
+  .wasd-key {
+    font-size: 12px; /* Reduced from 18px */
+    width: 32px; /* Reduced from 48px */
+    height: 32px; /* Reduced from 48px */
+  }
+
+  .wasd-key-container::before {
+    font-size: 6px; /* Reduced from 9px */
+  }
+}
+
+/* WASD Component Responsive Design */
+@media screen and (max-width: 768px) {
+  .wasd-key-container {
+    bottom: 35px;
+    right: calc(40% - 170px) !important;
+    z-index: 1500;
+  }
+
+  .wasd-key-container.map-location {
+    bottom: 35px;
+    right: 35px;
+  }
+
+  .wasd-key-pad {
+    padding: 8px; /* Reduced from 12px */
+    gap: 4px; /* Reduced from 6px */
+    border-radius: 8px; /* Reduced from 12px */
+  }
+
+  .wasd-key {
+    font-size: 12px; /* Reduced from 18px */
+    width: 35px; /* Reduced from 50px */
+    height: 28px; /* Reduced from 38px */
+    border-radius: 6px; /* Reduced from 8px */
+  }
+
+  .wasd-key-container::before {
+    font-size: 6px; /* Reduced from 9px */
+    margin-bottom: 4px; /* Reduced from 6px */
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .wasd-key-container {
+    bottom: 120px;
+    right: 50px;
+  }
+
+  .wasd-key-container.map-location {
+    bottom: 80px;
+    right: 350px;
+  }
+
+  .wasd-key-pad {
+    padding: 10px; /* Reduced from 14px */
+  }
+
+  .wasd-key {
+    font-size: 14px; /* Reduced from 20px */
+    width: 42px; /* Reduced from 60px */
+    height: 30px; /* Reduced from 40px */
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  .wasd-key-container {
+    bottom: 157px;
+    right: 74px;
+  }
+
+  .wasd-key-container.map-location {
+    bottom: 100px;
+    right: 410px;
+  }
+
+  .wasd-key {
+    font-size: 24px; /* Reduced from 24px */
+    width: 82px; /* Reduced from 74px */
+    height: 45px; /* Reduced from 45px */
+  }
+}

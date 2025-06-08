@@ -1,18 +1,33 @@
-// map.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
+import Inventory from "./inventory";
+import { useSpeedMode, SpeedToggleButton } from "./speed";
+import { handleUseItem } from "../utils/itemHandlers";
+import WASDKey from "./wasd_key";
+import Task from "./task";
 
 function Map() {
+  const { isFastForward } = useSpeedMode();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { characterName = "claire", playerName = "Player" } = location.state || {};
+  const { characterName = "claire", playerName = "Player", stats: passedStats } = location.state || {};
 
   const [playerPos, setPlayerPos] = useState({ x: 2110, y: 730 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
+  const [viewportSize, setViewportSize] = useState({ width: 800, height: 600 });
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [showInventory, setShowInventory] = useState(false);
+  const [showTasks, setShowTasks] = useState(true);
+  const [isPlayerInfoExpanded, setIsPlayerInfoExpanded] = useState(false);
+
+  // Add tracking for GameOver data
+  const [visitedLocations, setVisitedLocations] = useState(new Set(["home"]));
+  const [usedItems, setUsedItems] = useState(new Set());
+  const [gameStartTime] = useState(Date.now());
+
   const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
   const mapRef = useRef(null);
@@ -20,154 +35,329 @@ function Map() {
 
   const WORLD_WIDTH = 3700;
   const WORLD_HEIGHT = 1954;
-  const VIEWPORT_WIDTH = 800;
-  const VIEWPORT_HEIGHT = 600;
   const PLAYER_SIZE = 40;
   const MOVE_SPEED = 8;
 
-  const isNearHouseDoor = (x, y) => {
-    return x >= 1918 && x <= 2262 && y >= 430 && y <= 660;
-  };
-  const isNearField = (x, y) => {
-    return x >= 2894 && x <= 3160 && y >= 762 && y <= 1026;
-  };
-  const isNearBeach = (x, y) => {
-    return x >= 3238 && x <= 3575 && y >= 626 && y <= 1186;
-  };
-  const isNearResto = (x, y) => {
-    return x >= 1526 && x <= 1718 && y >= 898 && y <= 1058;
-  };
-  const isNearGunung = (x, y) => {
-    return x >= 176 && x <= 848 && y >= 40 && y <= 1034;
-  };
+  // Location coordinates for pointers
+  const mainMapLocationPointers = [
+    { name: "home", x: 2150, y: 545, label: "Home" },
+    { name: "field", x: 3045, y: 960, label: "Field" },
+    { name: "beach", x: 3407, y: 906, label: "Beach" },
+    { name: "restaurant", x: 1622, y: 990, label: "Restaurant" },
+    { name: "mountain", x: 512, y: 537, label: "Mountain" },
+  ];
 
-  const [playerStats, setPlayerStats] = useState({
-    meal: 50,
-    sleep: 50,
-    health: 80,
-    energy: 80,
-    happiness: 50,
-    cleanliness: 50,
-    money: 100,
-    experience: 0,
-    level: 1,
-    skillPoints: 0,
-    items: [],
-  });
+  const miniMapLocationPointers = [
+    { name: "home", x: 2150, y: 390, label: "Home" },
+    { name: "field", x: 3045, y: 800, label: "Field" },
+    { name: "beach", x: 3407, y: 750, label: "Beach" },
+    { name: "restaurant", x: 1622, y: 870, label: "Restaurant" },
+    { name: "mountain", x: 512, y: 420, label: "Mountain" },
+  ];
 
-  useEffect(() => {
-    if (isNearHouseDoor(playerPos.x, playerPos.y)) {
-      setCurrentLocation("house");
-      setShowDialog(true);
-    } else if (isNearField(playerPos.x, playerPos.y)) {
-      setCurrentLocation("field");
-      setShowDialog(true);
-    } else if (isNearBeach(playerPos.x, playerPos.y)) {
-      setCurrentLocation("beach");
-      setShowDialog(true);
-    } else if (isNearResto(playerPos.x, playerPos.y)) {
-      setCurrentLocation("restaurant");
-      setShowDialog(true);
-    } else if (isNearGunung(playerPos.x, playerPos.y)) {
-      setCurrentLocation("mountain");
-      setShowDialog(true);
-    } else {
-      setCurrentLocation(null);
-      setShowDialog(false);
+  // Location Detection Functions
+  const isNearHouse = (x, y) => x >= 1918 && x <= 2262 && y >= 430 && y <= 660;
+  const isNearField = (x, y) => x >= 2894 && x <= 3160 && y >= 762 && y <= 1026;
+  const isNearBeach = (x, y) => x >= 3238 && x <= 3575 && y >= 626 && y <= 1186;
+  const isNearResto = (x, y) => x >= 1526 && x <= 1718 && y >= 898 && y <= 1058;
+  const isNearGunung = (x, y) => x >= 176 && x <= 848 && y >= 40 && y <= 1034;
+
+  const [playerStats, setPlayerStats] = useState(
+    passedStats || {
+      meal: 50,
+      sleep: 50,
+      health: 80,
+      energy: 80,
+      happiness: 50,
+      cleanliness: 50,
+      money: 100,
+      experience: 0,
+      level: 1,
+      skillPoints: 0,
+      items: [],
+      tasks: {},
+      lastVisitedLocation: "home",
     }
-  }, [playerPos]);
+  );
 
+  const [lastVisitedLocation, setLastVisitedLocation] = useState(passedStats?.lastVisitedLocation || "home");
+
+  // Check if current screen size should use minimized behavior
+  const shouldUseMinimizedBehavior = () => {
+    return window.innerWidth <= 1024;
+  };
+
+  // Update viewport size on resize and initial load
   useEffect(() => {
-    const cameraCenterX = playerPos.x - VIEWPORT_WIDTH / 2;
-    const cameraCenterY = playerPos.y - VIEWPORT_HEIGHT / 2;
+    const updateViewportSize = () => {
+      if (mapRef.current) {
+        const rect = mapRef.current.getBoundingClientRect();
+        setViewportSize({
+          width: rect.width,
+          height: rect.height,
+        });
+      }
+    };
 
-    const clampedX = Math.max(0, Math.min(WORLD_WIDTH - VIEWPORT_WIDTH, cameraCenterX));
-    const clampedY = Math.max(0, Math.min(WORLD_HEIGHT - VIEWPORT_HEIGHT, cameraCenterY));
+    // Initial size
+    updateViewportSize();
 
-    setCameraPos({ x: clampedX, y: clampedY });
-  }, [playerPos]);
+    // Listen for window resize
+    window.addEventListener("resize", updateViewportSize);
+
+    // Use ResizeObserver for more precise tracking of viewport changes
+    const resizeObserver = new ResizeObserver(updateViewportSize);
+    if (mapRef.current) {
+      resizeObserver.observe(mapRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", updateViewportSize);
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  const handleBackToStart = () => {
+    navigate("/", {
+      state: {
+        characterName,
+        playerName,
+        stats: {
+          ...playerStats,
+          lastVisitedLocation,
+        },
+      },
+    });
+  };
+
+  const handleItemUse = (item) => {
+    // Track used items
+    setUsedItems((prev) => new Set([...prev, item.name]));
+    handleUseItem(item, setPlayerStats);
+  };
+
+  const handleLocationClick = (locationName) => {
+    // Track visited locations
+    setVisitedLocations((prev) => new Set([...prev, locationName]));
+
+    const routes = {
+      home: "/home",
+      beach: "/beach",
+      field: "/field",
+      mountain: "/mountain",
+      restaurant: "/restaurant",
+    };
+
+    if (routes[locationName]) {
+      navigate(routes[locationName], {
+        state: {
+          characterName,
+          playerName,
+          stats: {
+            ...playerStats,
+            lastVisitedLocation,
+          },
+        },
+      });
+    }
+  };
+
+  const toggleTaskCompletion = (taskId) => {
+    const taskLocation = lastVisitedLocation || "home";
+    const taskKey = `${taskLocation}-${taskId}`;
+
+    setPlayerStats((prev) => ({
+      ...prev,
+      tasks: {
+        ...prev.tasks,
+        [taskKey]: {
+          ...(prev.tasks?.[taskKey] || {}),
+          completed: !(prev.tasks?.[taskKey]?.completed || false),
+        },
+      },
+    }));
+  };
+
+  // Calculate playtime
+  const getPlaytime = () => {
+    return Math.floor((Date.now() - gameStartTime) / 1000);
+  };
+
+  // Reset stats function for new game
+  const handleResetStats = () => {
+    const defaultStats = {
+      meal: 50,
+      sleep: 50,
+      health: 80,
+      energy: 80,
+      happiness: 50,
+      cleanliness: 50,
+      money: 100,
+      experience: 0,
+      level: 1,
+      skillPoints: 0,
+      items: [],
+      tasks: {},
+      lastVisitedLocation: "home",
+    };
+    setPlayerStats(defaultStats);
+    setVisitedLocations(new Set(["home"]));
+    setUsedItems(new Set());
+  };
+
+  const handleMainMenu = () => {
+    navigate("/");
+  };
+
+  const handleArrowPress = (direction) => {
+    setPlayerPos((prev) => {
+      let newX = prev.x;
+      let newY = prev.y;
+
+      switch (direction) {
+        case "up":
+          newY = Math.max(0, prev.y - MOVE_SPEED);
+          break;
+        case "down":
+          newY = Math.min(WORLD_HEIGHT - PLAYER_SIZE, prev.y + MOVE_SPEED);
+          break;
+        case "left":
+          newX = Math.max(0, prev.x - MOVE_SPEED);
+          break;
+        case "right":
+          newX = Math.min(WORLD_WIDTH - PLAYER_SIZE, prev.x + MOVE_SPEED);
+          break;
+        default:
+          break;
+      }
+
+      return { x: newX, y: newY };
+    });
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      setPlayerPos((prev) => {
-        let newX = prev.x;
-        let newY = prev.y;
+      let direction = null;
+      switch (e.key) {
+        case "ArrowUp":
+        case "w":
+        case "W":
+          direction = "up";
+          break;
+        case "ArrowDown":
+        case "s":
+        case "S":
+          direction = "down";
+          break;
+        case "ArrowLeft":
+        case "a":
+        case "A":
+          direction = "left";
+          break;
+        case "ArrowRight":
+        case "d":
+        case "D":
+          direction = "right";
+          break;
+        default:
+          break;
+      }
 
-        switch (e.key) {
-          case "ArrowUp":
-          case "w":
-          case "W":
-            newY = Math.max(0, prev.y - MOVE_SPEED);
-            break;
-          case "ArrowDown":
-          case "s":
-          case "S":
-            newY = Math.min(1745, prev.y + MOVE_SPEED);
-            break;
-          case "ArrowLeft":
-          case "a":
-          case "A":
-            newX = Math.max(0, prev.x - MOVE_SPEED);
-            break;
-          case "ArrowRight":
-          case "d":
-          case "D":
-            newX = Math.min(3575, prev.x + MOVE_SPEED);
-            break;
-          default:
-            return prev;
-        }
-
-        return { x: newX, y: newY };
-      });
+      if (direction) {
+        e.preventDefault();
+        handleArrowPress(direction);
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Updated camera centering logic using dynamic viewport size
   useEffect(() => {
-    if (
-      // house
-      (playerPos.x >= 1918 && playerPos.x <= 2262 && playerPos.y >= 430 && playerPos.y <= 660) ||
-      // field
-      (playerPos.x >= 2894 && playerPos.x <= 3160 && playerPos.y >= 762 && playerPos.y <= 1026) ||
-      // beach
-      (playerPos.x >= 3238 && playerPos.x <= 3575 && playerPos.y >= 626 && playerPos.y <= 1186) ||
-      // resto
-      (playerPos.x >= 1526 && playerPos.x <= 1718 && playerPos.y >= 898 && playerPos.y <= 1058) ||
-      // gunung
-      (playerPos.x >= 176 && playerPos.x <= 848 && playerPos.y >= 40 && playerPos.y <= 1034)
-    ) {
+    const cameraCenterX = playerPos.x - viewportSize.width / 2;
+    const cameraCenterY = playerPos.y - viewportSize.height / 2;
+
+    const clampedX = Math.max(0, Math.min(WORLD_WIDTH - viewportSize.width, cameraCenterX));
+    const clampedY = Math.max(0, Math.min(WORLD_HEIGHT - viewportSize.height, cameraCenterY));
+
+    setCameraPos({ x: clampedX, y: clampedY });
+  }, [playerPos, viewportSize]);
+
+  useEffect(() => {
+    if (isNearHouse(playerPos.x, playerPos.y) || isNearField(playerPos.x, playerPos.y) || isNearBeach(playerPos.x, playerPos.y) || isNearResto(playerPos.x, playerPos.y) || isNearGunung(playerPos.x, playerPos.y)) {
+      if (isNearHouse(playerPos.x, playerPos.y)) {
+        setCurrentLocation("home");
+        setLastVisitedLocation("home");
+        setVisitedLocations((prev) => new Set([...prev, "home"]));
+      }
+      if (isNearField(playerPos.x, playerPos.y)) {
+        setCurrentLocation("field");
+        setLastVisitedLocation("field");
+        setVisitedLocations((prev) => new Set([...prev, "field"]));
+      }
+      if (isNearBeach(playerPos.x, playerPos.y)) {
+        setCurrentLocation("beach");
+        setLastVisitedLocation("beach");
+        setVisitedLocations((prev) => new Set([...prev, "beach"]));
+      }
+      if (isNearResto(playerPos.x, playerPos.y)) {
+        setCurrentLocation("restaurant");
+        setLastVisitedLocation("restaurant");
+        setVisitedLocations((prev) => new Set([...prev, "restaurant"]));
+      }
+      if (isNearGunung(playerPos.x, playerPos.y)) {
+        setCurrentLocation("mountain");
+        setLastVisitedLocation("mountain");
+        setVisitedLocations((prev) => new Set([...prev, "mountain"]));
+      }
       setShowDialog(true);
     } else {
+      setCurrentLocation("map");
       setShowDialog(false);
     }
   }, [playerPos]);
 
   const handleEnterLocation = () => {
-    if (!currentLocation) return;
+    if (!currentLocation || currentLocation === "map") return;
 
-    navigate(`/${currentLocation}`, {
+    const locationRoute = currentLocation === "home" ? "home" : currentLocation;
+
+    navigate(`/${locationRoute}`, {
       state: {
         characterName,
         playerName,
-        stats: playerStats,
+        stats: {
+          ...playerStats,
+          lastVisitedLocation,
+        },
       },
     });
   };
 
+  const toggleTaskPanel = () => setShowTasks(!showTasks);
+
+  // Toggle player info expansion (only works on mobile/tablet)
+  const togglePlayerInfo = () => {
+    if (shouldUseMinimizedBehavior()) {
+      setIsPlayerInfoExpanded(!isPlayerInfoExpanded);
+    }
+  };
+
   return (
     <div className="game-container">
-      {showDialog && currentLocation && (
+      {/* Task component with lowest z-index (below everything except map background) */}
+      {showTasks && <Task currentLocation={lastVisitedLocation || "home"} isInsideLocation={false} externalTasks={playerStats.tasks || {}} onTaskComplete={toggleTaskCompletion} />}
+
+      <div>
+        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onResetStats={handleResetStats} onUseItem={handleItemUse} visitedLocations={visitedLocations} usedItems={usedItems} playtime={getPlaytime()} onMainMenu={handleMainMenu} />
+        <SpeedToggleButton />
+      </div>
+
+      {showDialog && currentLocation && currentLocation !== "map" && (
         <div className="dialog fade-in-center">
-          <p>
-            Do you want
-            <br />
-            to enter
-            <br />
-            the {capitalize(currentLocation)}?
-          </p>
+          <p>{currentLocation === "home" ? "Do you want to go home?" : `Do you want to enter the ${capitalize(currentLocation)}?`}</p>
+
           <button className="yes-btn" onClick={handleEnterLocation}>
             Yes
           </button>
@@ -178,9 +368,26 @@ function Map() {
       )}
 
       <div className="game-viewport" ref={mapRef}>
-        <div className="game-world map-background" style={{ transform: "translate(-" + cameraPos.x + "px, -" + cameraPos.y + "px)" }}>
+        <SpeedToggleButton />
+        <div className="game-world map-background" style={{ transform: `translate(-${cameraPos.x}px, -${cameraPos.y}px)` }}>
+          {/* Main Map Location Pointers */}
+          {mainMapLocationPointers.map((pointer) => (
+            <div
+              key={pointer.name}
+              className="location-pointer"
+              style={{
+                left: pointer.x,
+                top: pointer.y,
+              }}
+              onClick={() => handleLocationClick(pointer.name)}
+            >
+              <img src={`/assets/icons/${pointer.name}_pin.png`} alt={`${pointer.label} pointer`} className="pointer-image" />
+              <div className="pointer-label">{pointer.label}</div>
+            </div>
+          ))}
+
           <div className="player" ref={playerRef} style={{ left: playerPos.x, top: playerPos.y }}>
-            <img src={"/assets/avatar/" + characterName + ".png"} alt={characterName} className="player-sprite" draggable={false} />
+            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="player-sprite" draggable={false} />
             <div />
           </div>
         </div>
@@ -189,35 +396,56 @@ function Map() {
       <div className="game-hud">
         <div className="mini-map">
           <div className="mini-map-world">
+            {/* Mini-map Location Pointers */}
+            {miniMapLocationPointers.map((pointer) => (
+              <div
+                key={`mini-${pointer.name}`}
+                className="mini-map-pointer"
+                style={{
+                  left: `${(pointer.x / WORLD_WIDTH) * 100}%`,
+                  top: `${(pointer.y / WORLD_HEIGHT) * 100}%`,
+                }}
+              >
+                <img src={`/assets/icons/${pointer.name}_pin.png`} alt={`${pointer.label} pointer`} className="mini-pointer-image" />
+              </div>
+            ))}
             <div
               className="mini-map-player"
               style={{
-                left: ((playerPos.x + PLAYER_SIZE / 2) / WORLD_WIDTH) * 100 + "%",
-                top: ((playerPos.y + 60 / 2) / WORLD_HEIGHT) * 100 + "%",
+                left: `${((playerPos.x + PLAYER_SIZE / 2) / WORLD_WIDTH) * 100}%`,
+                top: `${((playerPos.y + PLAYER_SIZE / 2) / WORLD_HEIGHT) * 100}%`,
               }}
             />
-
             <div
               className="mini-map-viewport"
               style={{
-                left: (cameraPos.x / WORLD_WIDTH) * 100 + "%",
-                top: (cameraPos.y / WORLD_HEIGHT) * 100 + "%",
-                width: (VIEWPORT_WIDTH / WORLD_WIDTH) * 100 + "%",
-                height: (VIEWPORT_HEIGHT / WORLD_HEIGHT) * 100 + "%",
+                left: `${(cameraPos.x / WORLD_WIDTH) * 100}%`,
+                top: `${(cameraPos.y / WORLD_HEIGHT) * 100}%`,
+                width: `${(viewportSize.width / WORLD_WIDTH) * 100}%`,
+                height: `${(viewportSize.height / WORLD_HEIGHT) * 100}%`,
               }}
             />
           </div>
         </div>
 
-        <div className="player-info">
-          <img src={"/assets/avatar/" + characterName + ".png"} alt={characterName} className="hud-avatar" />
-          <div className="player-coords">
-            {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-          </div>
-        </div>
-
-        <div className="stats-container">
-          <StatsPlayer playerName={playerName} characterName={characterName} />
+        {/* Updated player-info with conditional rendering and click handler */}
+        <div className={`player-info ${shouldUseMinimizedBehavior() ? (isPlayerInfoExpanded ? "expanded" : "minimized") : ""}`} onClick={togglePlayerInfo}>
+          <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
+          {/* Show player coords if expanded on mobile/tablet OR always on desktop */}
+          {(shouldUseMinimizedBehavior() ? isPlayerInfoExpanded : true) && (
+            <div className="player-coords">
+              {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
+              <button
+                className="back-to-start-button-inline"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent triggering the parent onClick
+                  handleBackToStart();
+                }}
+              >
+                Back to Start
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="controls-hint">
@@ -225,6 +453,9 @@ function Map() {
           <div>🗺️ Explore the village!</div>
         </div>
       </div>
+
+      <WASDKey onKeyPress={handleArrowPress} isMapLocation={true} />
+      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
     </div>
   );
 }

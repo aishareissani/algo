@@ -1,0 +1,398 @@
+/* game_over.css */
+
+:root {
+  /* Game Over Colors */
+  --game-over-numbers: #000000; /* Gold - ALL numbers/scores */
+  --game-over-labels: #366363; /* Teal - ALL labels/text */
+  --game-over-red: #a33a4d; /* Red - GAME OVER title */
+  --game-over-white: #ffffff; /* White - Background */
+  --game-over-green: #73841b; /* Green - New Game button */
+
+  /* Additional colors extracted from rgba values */
+  --game-over-overlay-bg-1: rgba(54, 99, 99, 0.6);
+  --game-over-overlay-bg-2: rgba(163, 58, 77, 0.8);
+  --game-over-container-shadow: rgba(0, 0, 0, 0.2);
+  --game-over-score-circle-shadow: rgba(196, 180, 65, 0.3);
+  --game-over-breakdown-shadow: rgba(54, 99, 99, 0.15);
+  --game-over-summary-shadow: rgba(54, 99, 99, 0.1);
+  --game-over-button-shadow: rgba(0, 0, 0, 0.1);
+  --game-over-new-game-hover: #5a6916;
+  --game-over-new-game-hover-shadow: rgba(115, 132, 27, 0.3);
+  --game-over-main-menu-hover: #8a2f3c;
+  --game-over-main-menu-hover-shadow: rgba(163, 58, 77, 0.3);
+}
+
+/* --- GAME OVER OVERLAY --- */
+.game-over-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--game-over-overlay-bg-1), var(--game-over-overlay-bg-2));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  font-family: "Press Start 2P", system-ui;
+  backdrop-filter: blur(10px);
+}
+
+/* --- MAIN CONTAINER --- */
+.game-over-container {
+  background: var(--game-over-white);
+  border: 3px solid var(--game-over-labels);
+  border-radius: 20px;
+  box-shadow: 0 15px 40px var(--game-over-container-shadow);
+  max-width: 380px;
+  height: 85vh;
+  overflow: hidden;
+  padding: 20px;
+  text-align: center;
+  animation: gameOverEnter 0.7s ease-out;
+  z-index: 9991;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* --- HEADER SECTION --- */
+.game-over-header {
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+
+.game-over-title {
+  font-size: 22px;
+  color: var(--game-over-red);
+  margin: 0 0 8px 0;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.game-over-cause {
+  font-size: 10px;
+  color: var(--game-over-labels);
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+/* --- LIFE SATISFACTION SECTION --- */
+.life-satisfaction-section {
+  background: var(--game-over-white);
+  border: 2px solid var(--game-over-labels);
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 11px;
+  color: var(--game-over-labels);
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: bold;
+}
+
+/* --- SCORE DISPLAY --- */
+.score-display-main {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+  justify-content: center;
+}
+
+.score-circle-large {
+  width: 100px;
+  height: 100px;
+  border: 3px solid var(--game-over-numbers);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--game-over-white);
+  box-shadow: 0 5px 15px var(--game-over-score-circle-shadow);
+  flex-shrink: 0;
+}
+
+.score-number-large {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+  color: var(--game-over-numbers);
+}
+
+.score-max-large {
+  font-size: 8px;
+  color: var(--game-over-labels);
+  margin-top: 3px;
+}
+
+.score-expression-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-text-main {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--game-over-labels);
+}
+
+/* --- BREAKDOWN SECTION (2x2 GRID) --- */
+.score-breakdown-detailed {
+  margin-top: 12px;
+}
+
+.breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.breakdown-card {
+  background: var(--game-over-white);
+  border: 2px solid var(--game-over-labels);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  box-shadow: 0 3px 8px var(--game-over-breakdown-shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+}
+
+.breakdown-card h4 {
+  font-size: 7px;
+  color: var(--game-over-labels);
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.breakdown-score {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--game-over-numbers);
+}
+
+/* --- FINAL STATS SECTION --- */
+.final-stats-section {
+  background: var(--game-over-white);
+  border: 2px solid var(--game-over-labels);
+  border-radius: 15px;
+  padding: 12px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.stats-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  background: var(--game-over-white);
+  border-radius: 6px;
+  border: 1px solid var(--game-over-labels);
+  box-shadow: 0 1px 3px var(--game-over-summary-shadow);
+}
+
+.summary-label {
+  font-size: 6px;
+  color: var(--game-over-labels);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+  flex-grow: 1;
+  font-weight: 600;
+}
+
+.summary-value {
+  font-size: 8px;
+  color: var(--game-over-numbers);
+  font-weight: bold;
+  text-align: right;
+  flex-shrink: 0;
+  margin-left: 5px;
+}
+
+/* --- ACTION BUTTONS --- */
+.game-over-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 2px solid;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  justify-content: center;
+  box-shadow: 0 4px 12px var(--game-over-button-shadow);
+}
+
+.new-game-btn {
+  background: var(--game-over-green);
+  border-color: var(--game-over-green);
+  color: var(--game-over-white);
+}
+
+.new-game-btn:hover {
+  background: var(--game-over-new-game-hover);
+  border-color: var(--game-over-new-game-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--game-over-new-game-hover-shadow);
+}
+
+.main-menu-btn {
+  background: var(--game-over-red);
+  border-color: var(--game-over-red);
+  color: var(--game-over-white);
+}
+
+.main-menu-btn:hover {
+  background: var(--game-over-main-menu-hover);
+  border-color: var(--game-over-main-menu-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--game-over-main-menu-hover-shadow);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes gameOverEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 768px) {
+  .game-over-container {
+    width: 95%;
+    padding: 15px;
+    height: 90vh;
+  }
+
+  .game-over-title {
+    font-size: 18px;
+  }
+
+  .score-circle-large {
+    width: 85px;
+    height: 85px;
+  }
+
+  .score-number-large {
+    font-size: 20px;
+  }
+
+  .breakdown-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .breakdown-card {
+    min-height: 50px;
+    padding: 8px 6px;
+  }
+
+  .stats-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-button {
+    min-width: 110px;
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-over-title {
+    font-size: 16px;
+  }
+
+  .section-title {
+    font-size: 9px;
+  }
+
+  .breakdown-card h4 {
+    font-size: 6px;
+  }
+
+  .breakdown-score {
+    font-size: 12px;
+  }
+
+  .summary-label {
+    font-size: 5px;
+  }
+
+  .summary-value {
+    font-size: 7px;
+  }
+
+  .action-button {
+    min-width: 100px;
+    padding: 8px 12px;
+  }
+}
+
+/* Processing state for buttons */
+.action-button.processing {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Remove hover transforms on mobile */
+@media (hover: none) {
+  .breakdown-card:hover,
+  .action-button:hover {
+    transform: none;
+  }
+}
