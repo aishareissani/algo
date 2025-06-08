@@ -222,7 +222,7 @@ const Task = ({ currentLocation, containerWidth = 250, containerHeight = 350, is
         }}
         onClick={toggleExpanded}
       >
-        {shouldUseMinimizedBehavior() && !isExpanded && <div className="task-minimized-view">📋</div>}
+        {shouldUseMinimizedBehavior() && !isExpanded && <div className="task-minimized-view"></div>}
 
         {/* Desktop expanded view */}
         {!shouldUseMinimizedBehavior() && (

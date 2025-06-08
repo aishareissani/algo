@@ -1,4 +1,3 @@
-/* styles.css (map) */
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Dongle&display=swap");
 
@@ -663,6 +662,13 @@ body {
   }
 }
 
+/* Hide controls hint on mobile */
+@media screen and (max-width: 768px) {
+  .controls-hint {
+    display: none !important; /* Hide player hints on mobile */
+  }
+}
+
 /* Mobile specific adjustments */
 @media screen and (max-width: 768px) {
   .game-container {
@@ -689,14 +695,6 @@ body {
     right: 20px;
     width: 200px;
     height: 100px;
-  }
-
-  .controls-hint {
-    bottom: 20px;
-    right: 20px;
-    width: 200px;
-    padding: 8px;
-    font-size: 6px;
   }
 
   /* Adjust dialog for mobile */

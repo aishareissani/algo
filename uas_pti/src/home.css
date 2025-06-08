@@ -91,41 +91,19 @@
   filter: drop-shadow(0 4px 8px var(--home-player-shadow));
 }
 
-/* Back to Map Button at bottom */
-/* Back to Map Button inline with coordinates */
-.back-to-map-button-inline {
-  display: block;
-  margin-top: 8px;
-  background: linear-gradient(135deg, var(--home-button-bg-1) 0%, var(--home-button-bg-2) 100%);
-  border: 2px solid var(--home-button-border);
-  border-radius: 6px;
-  color: var(--home-button-text);
-  font-family: "Press Start 2P", system-ui;
-  font-size: 8px;
-  font-weight: bold;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 3px 6px var(--home-button-shadow-1), 0 1px 3px var(--home-button-shadow-2), inset 0 1px 0 var(--home-button-shadow-3);
-  text-shadow: 0 1px 2px var(--home-button-shadow-4);
-  pointer-events: auto;
-  width: fit-content;
-}
+/* Mobile specific adjustments */
+@media screen and (max-width: 768px) {
+  .home-game-container {
+    display: flex;
+    align-items: flex-start; /* Align to top instead of center */
+    justify-content: center;
+  }
 
-.back-to-map-button-inline:hover {
-  transform: translateY(-2px) scale(1.05);
-  background: linear-gradient(135deg, var(--home-button-hover-1) 0%, var(--home-button-hover-2) 100%);
-  box-shadow: 0 5px 10px var(--home-button-hover-shadow-1), 0 2px 5px var(--home-button-hover-shadow-2), inset 0 1px 0 var(--home-button-hover-shadow-3);
-}
-
-.back-to-map-button-inline:active {
-  transform: translateY(-1px) scale(1.02);
-  transition: all 0.1s ease;
-}
-
-/* Update player coords to allow for button */
-.home-player-coords {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  .home-game-viewport {
+    width: calc(100vw - 30px); /* 20px gaps on sides */
+    height: calc(100vh - 165px); /* Fill remaining height */
+    margin: auto;
+    min-height: 400px; /* Minimum height to prevent too small */
+    margin-top: 145px;
+  }
 }

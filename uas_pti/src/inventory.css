@@ -100,7 +100,7 @@
 
 /* Compact width for mobile and tablet */
 .inventory-window.inventory-window-compact {
-  width: 400px;
+  width: 350px;
   height: 350px;
 }
 
@@ -201,8 +201,8 @@
 }
 
 .inventory-window-compact .inventory-categories .category-btn {
-  padding: 6px 12px;
-  font-size: 9px;
+  padding: 6px 10px;
+  font-size: 7px;
 }
 
 .inventory-categories .category-btn:hover {
@@ -604,7 +604,7 @@
 /* Mobile specific adjustments */
 @media screen and (max-width: 768px) {
   .inventory-window.inventory-window-compact {
-    width: 320px;
+    width: 350px;
     height: 300px;
   }
 
@@ -619,7 +619,7 @@
 /* Tablet adjustments */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .inventory-window.inventory-window-compact {
-    width: 380px;
+    width: 350px;
     height: 320px;
   }
 }

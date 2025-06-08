@@ -27,6 +27,7 @@ function Home() {
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(0.299);
   const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
+  const [mobileZoom, setMobileZoom] = useState(0.299); // New state for mobile zoom
 
   const houseRef = useRef(null);
   const playerRef = useRef(null);
@@ -328,6 +329,7 @@ function Home() {
     return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
 
+  // Update viewport size when component mounts or window resizes
   useEffect(() => {
     const updateViewportSize = () => {
       if (houseRef.current) {
@@ -343,11 +345,47 @@ function Home() {
     return () => window.removeEventListener("resize", updateViewportSize);
   }, []);
 
+  // NEW: Calculate optimal zoom for mobile to eliminate empty space
+  useEffect(() => {
+    const calculateMobileZoom = () => {
+      if (actualViewportSize.width === 0 || actualViewportSize.height === 0) return;
+
+      // Check if we're on mobile (you can adjust this breakpoint)
+      const isMobile = window.innerWidth <= 768;
+
+      if (isMobile) {
+        // Calculate zoom to fill the viewport optimally
+        const widthZoom = actualViewportSize.width / WORLD_WIDTH;
+        const heightZoom = actualViewportSize.height / WORLD_HEIGHT;
+
+        // Use the larger zoom value to ensure no empty space
+        const optimalZoom = Math.max(widthZoom, heightZoom);
+
+        // Set minimum and maximum zoom limits for better gameplay
+        const minZoom = 0.15;
+        const maxZoom = 0.8;
+        const finalZoom = Math.max(minZoom, Math.min(maxZoom, optimalZoom));
+
+        console.log(`Mobile zoom calculated: ${finalZoom} (width: ${widthZoom}, height: ${heightZoom})`);
+
+        setMobileZoom(finalZoom);
+        setZoomLevel(finalZoom);
+      } else {
+        // Desktop zoom - use original value
+        setZoomLevel(0.299);
+      }
+    };
+
+    calculateMobileZoom();
+
+    // Recalculate on window resize
+    window.addEventListener("resize", calculateMobileZoom);
+    return () => window.removeEventListener("resize", calculateMobileZoom);
+  }, [actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
+
+  // Camera position calculation - updated to work with mobile zoom
   useEffect(() => {
     if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
-
-    const scaledWorldWidth = WORLD_WIDTH * zoomLevel;
-    const scaledWorldHeight = WORLD_HEIGHT * zoomLevel;
 
     const viewportWidthInWorld = actualViewportSize.width / zoomLevel;
     const viewportHeightInWorld = actualViewportSize.height / zoomLevel;
@@ -355,17 +393,9 @@ function Home() {
     let targetCameraX = playerPos.x - viewportWidthInWorld / 2;
     let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
 
-    if (scaledWorldWidth < actualViewportSize.width) {
-      targetCameraX = (WORLD_WIDTH - viewportWidthInWorld) / 2;
-    } else {
-      targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
-    }
-
-    if (scaledWorldHeight < actualViewportSize.height) {
-      targetCameraY = (WORLD_HEIGHT - viewportHeightInWorld) / 2;
-    } else {
-      targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
-    }
+    // Constrain camera to world boundaries
+    targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
+    targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
 
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);

@@ -359,7 +359,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visit
       {shouldUseCircularBehavior() && (
         <div className="inventory-button-circular-container">
           <button onClick={handleInventoryClick} className="inventory-button-circular">
-            <div className="inventory-icon-circular">🎒</div>
+            <div className="inventory-icon-circular"></div>
           </button>
         </div>
       )}

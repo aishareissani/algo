@@ -44,8 +44,8 @@
 
 /* Mini circular version for mobile/tablet */
 .speed-toggle-button.mini-circular {
-  width: 75px;
-  height: 75px;
+  width: 55px;
+  height: 55px;
   min-width: 50px;
   border-radius: 50%;
   padding: 0;
@@ -79,8 +79,8 @@
 
 /* Adjust icon size for mini circular */
 .speed-toggle-button.mini-circular svg {
-  width: 45px;
-  height: 45px;
+  width: 35px;
+  height: 35px;
   margin-right: 0;
 }
 
@@ -235,12 +235,9 @@
 /* Mobile specific adjustments */
 @media screen and (max-width: 768px) {
   .speed-toggle-button {
-    top: 80% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: 45px;
-    height: 45px;
-    min-width: 45px;
+    top: 26% !important;
+    right: calc(40% - 170px) !important;
+    transform: translate(303%, -50%) !important;
   }
 
   .speed-toggle-button:hover {
@@ -254,15 +251,6 @@
   .speed-toggle-button svg {
     width: 22px;
     height: 22px;
-  }
-}
-
-/* Tablet adjustments */
-@media screen and (min-width: 769px) and (max-width: 1024px) {
-  .speed-toggle-button {
-    top: 62% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
   }
 }
 
