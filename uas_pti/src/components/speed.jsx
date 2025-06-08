@@ -41,19 +41,32 @@ const FastForwardIcon = () => (
 export function SpeedToggleButton() {
   const { isFastForward, toggleSpeedMode } = useSpeedMode();
 
+  // Check if current screen size should use mini circular behavior
+  const shouldUseMiniCircular = () => {
+    return window.innerWidth <= 1024;
+  };
+
   return (
-    <button onClick={toggleSpeedMode} className={`speed-toggle-button ${isFastForward ? "fast-forward" : "normal"}`}>
-      {isFastForward ? (
+    <button onClick={toggleSpeedMode} className={`speed-toggle-button ${isFastForward ? "fast-forward" : "normal"} ${shouldUseMiniCircular() ? "mini-circular" : ""}`}>
+      {/* Desktop version - shows icon + text */}
+      {!shouldUseMiniCircular() && (
         <>
-          <FastForwardIcon />
-          <span>Fast Forward</span>
-        </>
-      ) : (
-        <>
-          <PlayIcon />
-          <span>Normal Speed</span>
+          {isFastForward ? (
+            <>
+              <FastForwardIcon />
+              <span>Fast Forward</span>
+            </>
+          ) : (
+            <>
+              <PlayIcon />
+              <span>Normal Speed</span>
+            </>
+          )}
         </>
       )}
+
+      {/* Mobile/Tablet version - shows only icon */}
+      {shouldUseMiniCircular() && <>{isFastForward ? <FastForwardIcon /> : <PlayIcon />}</>}
     </button>
   );
 }

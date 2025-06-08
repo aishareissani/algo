@@ -1,28 +1,22 @@
-/* task.css */
 :root {
   /* Task Colors */
   --task-icon-shadow: rgba(0, 0, 0, 0.2);
   --task-label-color: white;
   --task-label-shadow: rgba(0, 0, 0, 0.3);
   --task-window-bg: #ffffff;
-  --task-window-border: #4a90e2;
+  --task-window-border: #795548;
   --task-window-shadow: rgba(74, 144, 226, 0.3);
   --task-header-border: #e8f0ff;
   --task-header-bg-1: #f8fbff;
   --task-header-bg-2: #e8f0ff;
-  --task-title-color: #4a90e2;
+  --task-title-color: #795548;
   --task-title-shadow: rgba(255, 255, 255, 0.8);
-  --task-close-bg: #ff5a5a;
-  --task-close-border: #ff8080;
-  --task-close-text: white;
-  --task-close-shadow: rgba(255, 90, 90, 0.3);
-  --task-close-hover: #ff6b6b;
   --task-location-bg: #f8fbff;
   --task-location-border: #e8f0ff;
-  --task-location-arrow-bg: #4a90e2;
-  --task-location-arrow-border: #5ba0f2;
+  --task-location-arrow-bg: #795548;
+  --task-location-arrow-border: #795548;
   --task-location-arrow-text: white;
-  --task-location-arrow-hover: #5ba0f2;
+  --task-location-arrow-hover: #795548;
   --task-location-icon-shadow: rgba(0, 0, 0, 0.1);
   --task-location-name-color: #2c5aa0;
   --task-categories-bg: #f8fbff;
@@ -31,33 +25,39 @@
   --task-category-btn-bg: #ffffff;
   --task-category-btn-text: #7a9cc0;
   --task-category-btn-hover-bg: #e8f0ff;
-  --task-category-btn-hover-text: #4a90e2;
-  --task-category-btn-active-bg-1: #4a90e2;
-  --task-category-btn-active-bg-2: #3a7bd5;
-  --task-category-btn-active-border: #4a90e2;
+  --task-category-btn-hover-text: #795548;
+  --task-category-btn-active-bg-1: #795548;
+  --task-category-btn-active-bg-2: #795548;
+  --task-category-btn-active-border: #795548;
   --task-category-btn-active-text: #ffffff;
   --task-category-btn-active-shadow: rgba(74, 144, 226, 0.3);
   --task-list-container-bg: #fafbff;
-  --task-list-scroll-thumb: #4a90e2;
+  --task-list-scroll-thumb: #795548;
   --task-list-scroll-track: #e8f0ff;
   --task-item-bg: #ffffff;
   --task-item-border: #e0e8f0;
-  --task-item-hover-border: #4a90e2;
+  --task-item-hover-border: #795548;
   --task-item-hover-shadow: rgba(74, 144, 226, 0.2);
   --task-item-daily-border: #79d959;
-  --task-item-bonus-border: #ffc107;
-  --task-bullet-color: #4a90e2;
+  --task-item-bonus-border: #ffe74c;
+  --task-bullet-color: #795548;
   --task-name-color: #333;
   --task-badge-daily-bg: #e8f7e2;
   --task-badge-daily-text: #79d959;
   --task-badge-daily-border: #79d959;
   --task-badge-bonus-bg: #fff8e1;
-  --task-badge-bonus-text: #ff9800;
-  --task-badge-bonus-border: #ffc107;
+  --task-badge-bonus-text: #795548;
+  --task-badge-bonus-border: #ffe74c;
   --task-empty-color: #a0a0a0;
   --task-completed-bg: #f8f8f8;
   --task-completed-text: #888;
   --task-completed-bullet: #888;
+  --task-minimized-bg: #795548;
+  --task-minimized-border: #795548;
+  --task-minimized-shadow: rgba(121, 85, 72, 0.3);
+  --task-close-btn-bg: #ff5757;
+  --task-close-btn-text: white;
+  --task-close-btn-hover-bg: #ff3333;
 }
 
 #task-portal {
@@ -67,58 +67,123 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 100; /* Much lower than inventory */
+  z-index: 100;
 }
 
+/* Floating button container */
 .task-container {
   position: fixed;
   top: 226px;
   right: 80px;
   pointer-events: auto;
-  z-index: 101 !important; /* Much lower than inventory */
+  z-index: 101 !important;
   display: flex;
   flex-direction: column;
   width: 270px;
   align-items: flex-start;
+  transition: all 0.3s ease;
 }
 
-.task-icon {
-  font-size: 20px;
+/* Minimized floating button */
+.task-container.minimized {
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--task-minimized-bg);
+  border: 3px solid var(--task-minimized-border);
+  box-shadow: 0 4px 12px var(--task-minimized-shadow);
+}
+
+.task-container.minimized:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px var(--task-minimized-shadow);
+}
+
+.task-container.expanded {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Minimized view */
+.task-minimized-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: white;
+  font-size: 24px;
   filter: drop-shadow(1px 1px 2px var(--task-icon-shadow));
 }
 
-.task-label {
-  font-family: "Press Start 2P", system-ui;
-  font-size: 12px;
-  color: var(--task-label-color);
-  text-shadow: 1px 1px 2px var(--task-label-shadow);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+/* Fullscreen modal for mobile/tablet - HIGHEST Z-INDEX */
+.task-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2147483647 !important; /* Maximum z-index value */
+  padding: 20px;
+  box-sizing: border-box;
 }
 
+.task-modal-content {
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2147483647 !important; /* Maximum z-index value */
+}
+
+.task-window-modal {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 80vh !important;
+  animation: modalSlideIn 0.3s ease-out;
+  z-index: 2147483647 !important; /* Maximum z-index value */
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Task window styling */
 .task-window {
   background: var(--task-window-bg);
   border: 3px solid var(--task-window-border);
   border-radius: 15px;
   box-shadow: 0 8px 32px var(--task-window-shadow);
   width: 275px !important;
-  height: 375px !important;
+  height: 390px !important;
   display: flex;
   flex-direction: column;
   animation: slideDown 0.3s ease-out;
   font-family: "Press Start 2P", system-ui;
   box-sizing: border-box;
   position: relative;
-  z-index: 102 !important; /* Still much lower than inventory */
-}
-
-.task-header,
-.task-location-selector,
-.task-categories,
-.task-list-container,
-.task-list,
-.task-item {
-  z-index: inherit !important; /* Inherit from parent, don't override */
+  z-index: 102 !important;
 }
 
 @keyframes slideDown {
@@ -128,20 +193,6 @@
   }
   to {
     transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes bounceIn {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  60% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
     opacity: 1;
   }
 }
@@ -166,27 +217,25 @@
   letter-spacing: 2px;
 }
 
-.task-close {
-  background: var(--task-close-bg);
-  border: 2px solid var(--task-close-border);
-  color: var(--task-close-text);
-  width: calc(var(--font-size-large, 16px) * 2);
-  height: calc(var(--font-size-large, 16px) * 2);
-  border-radius: 8px;
-  font-size: calc(var(--font-size-large, 16px) * 1.5);
+/* Close button */
+.task-close-btn {
+  background: var(--task-close-btn-bg);
+  color: var(--task-close-btn-text);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px var(--task-close-shadow);
   font-family: inherit;
-  font-weight: bold;
-  line-height: 1;
+  transition: all 0.2s ease;
 }
 
-.task-close:hover {
-  background: var(--task-close-hover);
+.task-close-btn:hover {
+  background: var(--task-close-btn-hover-bg);
   transform: scale(1.1);
 }
 
@@ -294,8 +343,8 @@
 .task-list {
   padding: var(--padding-base, 20px);
   overflow-y: auto;
-  height: 100%;
-  max-height: 215px;
+  height: 85%;
+  max-height: 240px;
   scrollbar-color: var(--task-list-scroll-thumb) var(--task-list-scroll-track);
 }
 
@@ -399,4 +448,212 @@
 
 .task-item.completed:hover {
   opacity: 0.8;
+}
+
+/* Responsive Design - MOBILE AND TABLET Z-INDEX OVERRIDES */
+@media screen and (max-width: 1024px) {
+  /* Maximum z-index for mobile/tablet expanded task */
+  .task-modal-overlay {
+    z-index: 2147483647 !important; /* Maximum possible z-index */
+  }
+
+  .task-modal-content {
+    z-index: 2147483647 !important;
+  }
+
+  .task-window-modal {
+    z-index: 2147483647 !important;
+  }
+
+  .task-window-modal * {
+    z-index: inherit !important;
+  }
+
+  .task-container.minimized {
+    top: 60%;
+    right: calc(50% + 80px);
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+  }
+
+  .task-container.inside-location.minimized {
+    top: 60% !important;
+    right: calc(50% + 80px) !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .task-minimized-view {
+    font-size: 20px;
+  }
+
+  .task-window-modal {
+    font-size: 14px;
+  }
+
+  .task-window-modal .task-title {
+    font-size: 14px;
+  }
+
+  .task-window-modal .location-name {
+    font-size: 11px;
+  }
+
+  .task-window-modal .task-name {
+    font-size: 9px;
+  }
+
+  .task-window-modal .task-list {
+    max-height: 300px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /* Maximum z-index for mobile expanded task */
+  .task-modal-overlay {
+    z-index: 2147483647 !important; /* Maximum possible z-index */
+    padding: 15px;
+  }
+
+  .task-modal-content {
+    z-index: 2147483647 !important;
+  }
+
+  .task-window-modal {
+    z-index: 2147483647 !important;
+  }
+
+  .task-container.minimized {
+    top: 80%;
+    right: calc(40% - 70px);
+    transform: translateY(-50%);
+    width: 45px;
+    height: 45px;
+  }
+
+  .task-container.inside-location.minimized {
+    top: 80% !important;
+    right: calc(40% - 70px);
+    transform: translateY(-50%) !important;
+  }
+
+  .task-minimized-view {
+    font-size: 18px;
+  }
+
+  .task-window-modal .task-title {
+    font-size: 12px;
+  }
+
+  .task-window-modal .location-arrow {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+
+  .task-window-modal .location-name {
+    font-size: 9px;
+  }
+
+  .task-window-modal .category-btn {
+    padding: 6px 12px;
+    font-size: 8px;
+  }
+
+  .task-window-modal .task-item {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+  }
+
+  .task-window-modal .task-name {
+    font-size: 8px;
+  }
+
+  .task-window-modal .task-badge {
+    padding: 2px 6px;
+    font-size: 6px;
+  }
+
+  .task-window-modal .task-close-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  /* Maximum z-index for tablet expanded task */
+  .task-modal-overlay {
+    z-index: 2147483647 !important; /* Maximum possible z-index */
+  }
+
+  .task-modal-content {
+    z-index: 2147483647 !important;
+  }
+
+  .task-window-modal {
+    z-index: 2147483647 !important;
+  }
+
+  .task-container.minimized {
+    top: 62%;
+    right: calc(50% + 75px);
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+  }
+
+  .task-container.inside-location.minimized {
+    top: 62% !important;
+    right: calc(50% + 75px) !important;
+    transform: translateY(-50%) !important;
+  }
+}
+
+/* Desktop - Always expanded (normal z-index) */
+@media screen and (min-width: 1025px) {
+  .task-container {
+    top: 226px;
+    right: 80px;
+    width: 270px;
+    transform: none;
+  }
+
+  .task-container.expanded {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    cursor: default;
+  }
+
+  .task-window {
+    width: 275px !important;
+    height: 375px !important;
+    z-index: 102 !important; /* Normal z-index for desktop */
+  }
+
+  .task-close-btn {
+    display: none;
+  }
+}
+
+/* Scrollbar styling */
+.task-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-list::-webkit-scrollbar-track {
+  background: var(--task-list-scroll-track);
+}
+
+.task-list::-webkit-scrollbar-thumb {
+  background: var(--task-list-scroll-thumb);
+  border-radius: 3px;
+}
+
+.task-list::-webkit-scrollbar-thumb:hover {
+  background: #5d4037;
 }

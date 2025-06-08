@@ -465,13 +465,13 @@ function Home() {
   }, [playerStats]);
 
   return (
-    <div className="house-game-container">
+    <div className="home-game-container">
       <div>
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
         <SpeedToggleButton />
       </div>
 
-      <div className="house-game-viewport" ref={houseRef}>
+      <div className="home-game-viewport" ref={houseRef}>
         {showDialog && currentLocationHouse && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationHouse] || `Do you want to enter the ${currentLocationHouse}?`)}
@@ -497,7 +497,7 @@ function Home() {
         )}
 
         <div
-          className="house-game-world house-background"
+          className="home-game-world home-background"
           style={{
             width: `${WORLD_WIDTH}px`,
             height: `${WORLD_HEIGHT}px`,
@@ -506,7 +506,7 @@ function Home() {
           }}
         >
           <div
-            className="house-player"
+            className="home-player"
             ref={playerRef}
             style={{
               left: `${playerPos.x}px`,
@@ -517,7 +517,7 @@ function Home() {
               position: "absolute",
             }}
           >
-            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="house-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
+            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="home-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
           </div>
         </div>
       </div>
@@ -534,7 +534,7 @@ function Home() {
         </div>
         <div className="controls-hint">
           <div>🎮 Arrow Keys / WASD to move</div>
-          <div>🗺️ Explore the house!</div>
+          <div>🗺️ Explore the home!</div>
         </div>
       </div>
 

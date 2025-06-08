@@ -4,7 +4,6 @@ import "../game_over.css";
 
 const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedItems = new Set(), playtime = 0, characterName = "claire", playerName = "Player", onClose }) => {
   const [animationPhase, setAnimationPhase] = useState("enter");
-  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
   // Score Calculations
@@ -63,43 +62,47 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
   };
 
   const handleNewGame = () => {
-    if (isProcessing) return;
-    setIsProcessing(true);
-    try {
-      const freshStats = {
-        meal: 50,
-        sleep: 50,
-        health: 80,
-        energy: 80,
-        happiness: 50,
-        cleanliness: 50,
-        money: 100,
-        experience: 0,
-        level: 1,
-        skillPoints: 0,
-        items: [],
-        tasks: {},
-        lastVisitedLocation: "home",
-      };
-      navigate("/map", {
-        state: { characterName, playerName, stats: freshStats },
-        replace: true,
-      });
-    } catch (error) {
-      console.error("Error starting new game:", error);
-      setIsProcessing(false);
-    }
+    // Clear any existing game data
+    localStorage.removeItem("gameState");
+    localStorage.removeItem("playerStats");
+    localStorage.removeItem("gameProgress");
+
+    // Create fresh stats for new game
+    const freshStats = {
+      meal: 50,
+      sleep: 50,
+      health: 80,
+      energy: 80,
+      happiness: 50,
+      cleanliness: 50,
+      money: 100,
+      experience: 0,
+      level: 1,
+      skillPoints: 0,
+      items: [],
+      tasks: {},
+      lastVisitedLocation: "home",
+    };
+
+    // Navigate immediately to map with fresh state
+    navigate("/map", {
+      state: {
+        characterName,
+        playerName,
+        stats: freshStats,
+      },
+      replace: true,
+    });
   };
 
   const handleMainMenu = () => {
-    if (isProcessing) return;
-    setIsProcessing(true);
-    try {
-      navigate("/", { replace: true });
-    } catch (error) {
-      console.error("Error returning to main menu:", error);
-      window.location.href = "/";
-    }
+    // Clear any existing game data
+    localStorage.removeItem("gameState");
+    localStorage.removeItem("playerStats");
+    localStorage.removeItem("gameProgress");
+
+    // Navigate immediately to main menu
+    navigate("/", { replace: true });
   };
 
   const finalScore = calculateFinalScore();
@@ -192,11 +195,11 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
         </div>
 
         <div className="game-over-actions">
-          <button className={`action-button new-game-btn ${isProcessing ? "processing" : ""}`} onClick={handleNewGame} disabled={isProcessing}>
-            {isProcessing ? "Loading..." : "New Game"}
+          <button className="action-button new-game-btn" onClick={handleNewGame}>
+            New Game
           </button>
-          <button className={`action-button main-menu-btn ${isProcessing ? "processing" : ""}`} onClick={handleMainMenu} disabled={isProcessing}>
-            {isProcessing ? "Loading..." : "Main Menu"}
+          <button className="action-button main-menu-btn" onClick={handleMainMenu}>
+            Main Menu
           </button>
         </div>
       </div>

@@ -1,4 +1,4 @@
-/* house.css */
+/* home.css */
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Dongle&display=swap");
 
@@ -8,35 +8,35 @@
 
 :root {
   /* House Colors */
-  --house-container-bg: #80664f;
-  --house-viewport-border: #78d658;
-  --house-viewport-bg: #f0f9e6;
-  --house-viewport-shadow-1: rgba(121, 216, 88, 0.3);
-  --house-viewport-shadow-2: rgba(255, 255, 255, 0.2);
-  --house-player-shadow: rgba(0, 0, 0, 0.5);
-  --house-button-bg-1: #4facfe;
-  --house-button-bg-2: #00f2fe;
-  --house-button-border: #ffffff;
-  --house-button-text: white;
-  --house-button-shadow-1: rgba(79, 172, 254, 0.3);
-  --house-button-shadow-2: rgba(0, 0, 0, 0.1);
-  --house-button-shadow-3: rgba(255, 255, 255, 0.2);
-  --house-button-shadow-4: rgba(0, 0, 0, 0.3);
-  --house-button-hover-1: #667eea;
-  --house-button-hover-2: #764ba2;
-  --house-button-hover-shadow-1: rgba(79, 172, 254, 0.4);
-  --house-button-hover-shadow-2: rgba(0, 0, 0, 0.15);
-  --house-button-hover-shadow-3: rgba(255, 255, 255, 0.3);
+  --home-container-bg: #e3f2fd;
+  --home-viewport-border: #78d658;
+  --home-viewport-bg: #f0f9e6;
+  --home-viewport-shadow-1: rgba(121, 216, 88, 0.3);
+  --home-viewport-shadow-2: rgba(255, 255, 255, 0.2);
+  --home-player-shadow: rgba(0, 0, 0, 0.5);
+  --home-button-bg-1: #4facfe;
+  --home-button-bg-2: #00f2fe;
+  --home-button-border: #ffffff;
+  --home-button-text: white;
+  --home-button-shadow-1: rgba(79, 172, 254, 0.3);
+  --home-button-shadow-2: rgba(0, 0, 0, 0.1);
+  --home-button-shadow-3: rgba(255, 255, 255, 0.2);
+  --home-button-shadow-4: rgba(0, 0, 0, 0.3);
+  --home-button-hover-1: #667eea;
+  --home-button-hover-2: #764ba2;
+  --home-button-hover-shadow-1: rgba(79, 172, 254, 0.4);
+  --home-button-hover-shadow-2: rgba(0, 0, 0, 0.15);
+  --home-button-hover-shadow-3: rgba(255, 255, 255, 0.3);
 }
 
 /* Main container */
-.house-game-container {
+.home-game-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: var(--house-container-bg);
+  background: var(--home-container-bg);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -44,19 +44,19 @@
 }
 
 /* Game viewport - SINGLE DEFINITION ONLY */
-.house-game-viewport {
+.home-game-viewport {
   width: 800px;
   height: 600px;
-  border: 4px solid var(--house-viewport-border);
+  border: 4px solid var(--home-viewport-border);
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 0 30px var(--house-viewport-shadow-1), inset 0 0 20px var(--house-viewport-shadow-2);
-  background: var(--house-viewport-bg);
+  box-shadow: 0 0 30px var(--home-viewport-shadow-1), inset 0 0 20px var(--home-viewport-shadow-2);
+  background: var(--home-viewport-bg);
 }
 
 /* Game world */
-.house-game-world {
+.home-game-world {
   position: absolute;
   width: 3825px;
   height: 2008px;
@@ -67,7 +67,7 @@
 }
 
 /* House background applied to the game world */
-.house-background {
+.home-background {
   background-image: url("/assets/locations/house_inside.png");
   background-size: cover;
   background-repeat: no-repeat;
@@ -75,7 +75,7 @@
 }
 
 /* Player */
-.house-player {
+.home-player {
   position: absolute;
   width: 40px;
   height: 60px;
@@ -83,12 +83,12 @@
   transition: none;
 }
 
-.house-player-sprite {
+.home-player-sprite {
   width: 100%;
   height: 100%;
   object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 4px 8px var(--house-player-shadow));
+  filter: drop-shadow(0 4px 8px var(--home-player-shadow));
 }
 
 /* Back to Map Button at bottom */
@@ -96,26 +96,26 @@
 .back-to-map-button-inline {
   display: block;
   margin-top: 8px;
-  background: linear-gradient(135deg, var(--house-button-bg-1) 0%, var(--house-button-bg-2) 100%);
-  border: 2px solid var(--house-button-border);
+  background: linear-gradient(135deg, var(--home-button-bg-1) 0%, var(--home-button-bg-2) 100%);
+  border: 2px solid var(--home-button-border);
   border-radius: 6px;
-  color: var(--house-button-text);
+  color: var(--home-button-text);
   font-family: "Press Start 2P", system-ui;
   font-size: 8px;
   font-weight: bold;
   padding: 6px 10px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 3px 6px var(--house-button-shadow-1), 0 1px 3px var(--house-button-shadow-2), inset 0 1px 0 var(--house-button-shadow-3);
-  text-shadow: 0 1px 2px var(--house-button-shadow-4);
+  box-shadow: 0 3px 6px var(--home-button-shadow-1), 0 1px 3px var(--home-button-shadow-2), inset 0 1px 0 var(--home-button-shadow-3);
+  text-shadow: 0 1px 2px var(--home-button-shadow-4);
   pointer-events: auto;
   width: fit-content;
 }
 
 .back-to-map-button-inline:hover {
   transform: translateY(-2px) scale(1.05);
-  background: linear-gradient(135deg, var(--house-button-hover-1) 0%, var(--house-button-hover-2) 100%);
-  box-shadow: 0 5px 10px var(--house-button-hover-shadow-1), 0 2px 5px var(--house-button-hover-shadow-2), inset 0 1px 0 var(--house-button-hover-shadow-3);
+  background: linear-gradient(135deg, var(--home-button-hover-1) 0%, var(--home-button-hover-2) 100%);
+  box-shadow: 0 5px 10px var(--home-button-hover-shadow-1), 0 2px 5px var(--home-button-hover-shadow-2), inset 0 1px 0 var(--home-button-hover-shadow-3);
 }
 
 .back-to-map-button-inline:active {
@@ -124,7 +124,7 @@
 }
 
 /* Update player coords to allow for button */
-.house-player-coords {
+.home-player-coords {
   display: flex;
   flex-direction: column;
   align-items: flex-start;

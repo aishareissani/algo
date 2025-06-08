@@ -16,10 +16,12 @@ function Map() {
 
   const [playerPos, setPlayerPos] = useState({ x: 2110, y: 730 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
+  const [viewportSize, setViewportSize] = useState({ width: 800, height: 600 });
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
+  const [isPlayerInfoExpanded, setIsPlayerInfoExpanded] = useState(false);
 
   // Add tracking for GameOver data
   const [visitedLocations, setVisitedLocations] = useState(new Set(["home"]));
@@ -33,8 +35,6 @@ function Map() {
 
   const WORLD_WIDTH = 3700;
   const WORLD_HEIGHT = 1954;
-  const VIEWPORT_WIDTH = 800;
-  const VIEWPORT_HEIGHT = 600;
   const PLAYER_SIZE = 40;
   const MOVE_SPEED = 8;
 
@@ -81,6 +81,41 @@ function Map() {
   );
 
   const [lastVisitedLocation, setLastVisitedLocation] = useState(passedStats?.lastVisitedLocation || "home");
+
+  // Check if current screen size should use minimized behavior
+  const shouldUseMinimizedBehavior = () => {
+    return window.innerWidth <= 1024;
+  };
+
+  // Update viewport size on resize and initial load
+  useEffect(() => {
+    const updateViewportSize = () => {
+      if (mapRef.current) {
+        const rect = mapRef.current.getBoundingClientRect();
+        setViewportSize({
+          width: rect.width,
+          height: rect.height,
+        });
+      }
+    };
+
+    // Initial size
+    updateViewportSize();
+
+    // Listen for window resize
+    window.addEventListener("resize", updateViewportSize);
+
+    // Use ResizeObserver for more precise tracking of viewport changes
+    const resizeObserver = new ResizeObserver(updateViewportSize);
+    if (mapRef.current) {
+      resizeObserver.observe(mapRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", updateViewportSize);
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const handleBackToStart = () => {
     navigate("/", {
@@ -238,15 +273,16 @@ function Map() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Updated camera centering logic using dynamic viewport size
   useEffect(() => {
-    const cameraCenterX = playerPos.x - VIEWPORT_WIDTH / 2;
-    const cameraCenterY = playerPos.y - VIEWPORT_HEIGHT / 2;
+    const cameraCenterX = playerPos.x - viewportSize.width / 2;
+    const cameraCenterY = playerPos.y - viewportSize.height / 2;
 
-    const clampedX = Math.max(0, Math.min(WORLD_WIDTH - VIEWPORT_WIDTH, cameraCenterX));
-    const clampedY = Math.max(0, Math.min(WORLD_HEIGHT - VIEWPORT_HEIGHT, cameraCenterY));
+    const clampedX = Math.max(0, Math.min(WORLD_WIDTH - viewportSize.width, cameraCenterX));
+    const clampedY = Math.max(0, Math.min(WORLD_HEIGHT - viewportSize.height, cameraCenterY));
 
     setCameraPos({ x: clampedX, y: clampedY });
-  }, [playerPos]);
+  }, [playerPos, viewportSize]);
 
   useEffect(() => {
     if (isNearHouse(playerPos.x, playerPos.y) || isNearField(playerPos.x, playerPos.y) || isNearBeach(playerPos.x, playerPos.y) || isNearResto(playerPos.x, playerPos.y) || isNearGunung(playerPos.x, playerPos.y)) {
@@ -300,6 +336,13 @@ function Map() {
   };
 
   const toggleTaskPanel = () => setShowTasks(!showTasks);
+
+  // Toggle player info expansion (only works on mobile/tablet)
+  const togglePlayerInfo = () => {
+    if (shouldUseMinimizedBehavior()) {
+      setIsPlayerInfoExpanded(!isPlayerInfoExpanded);
+    }
+  };
 
   return (
     <div className="game-container">
@@ -378,21 +421,33 @@ function Map() {
               style={{
                 left: `${(cameraPos.x / WORLD_WIDTH) * 100}%`,
                 top: `${(cameraPos.y / WORLD_HEIGHT) * 100}%`,
-                width: `${(VIEWPORT_WIDTH / WORLD_WIDTH) * 100}%`,
-                height: `${(VIEWPORT_HEIGHT / WORLD_HEIGHT) * 100}%`,
+                width: `${(viewportSize.width / WORLD_WIDTH) * 100}%`,
+                height: `${(viewportSize.height / WORLD_HEIGHT) * 100}%`,
               }}
             />
           </div>
         </div>
-        <div className="player-info">
+
+        {/* Updated player-info with conditional rendering and click handler */}
+        <div className={`player-info ${shouldUseMinimizedBehavior() ? (isPlayerInfoExpanded ? "expanded" : "minimized") : ""}`} onClick={togglePlayerInfo}>
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
-          <div className="player-coords">
-            {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            <button className="back-to-start-button-inline" onClick={handleBackToStart}>
-              Back to Start
-            </button>
-          </div>
+          {/* Show player coords if expanded on mobile/tablet OR always on desktop */}
+          {(shouldUseMinimizedBehavior() ? isPlayerInfoExpanded : true) && (
+            <div className="player-coords">
+              {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
+              <button
+                className="back-to-start-button-inline"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent triggering the parent onClick
+                  handleBackToStart();
+                }}
+              >
+                Back to Start
+              </button>
+            </div>
+          )}
         </div>
+
         <div className="controls-hint">
           <div>🎮 Arrow Keys / WASD to move</div>
           <div>🗺️ Explore the village!</div>

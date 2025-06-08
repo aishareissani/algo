@@ -2,7 +2,7 @@
 
 :root {
   /* Game Over Colors */
-  --game-over-numbers: #c4b441; /* Gold - ALL numbers/scores */
+  --game-over-numbers: #000000; /* Gold - ALL numbers/scores */
   --game-over-labels: #366363; /* Teal - ALL labels/text */
   --game-over-red: #a33a4d; /* Red - GAME OVER title */
   --game-over-white: #ffffff; /* White - Background */

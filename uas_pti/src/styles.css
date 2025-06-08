@@ -2,10 +2,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Dongle&display=swap");
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 :root {
   /* Map/General Colors */
   --map-body-bg-1: #f7f2e7;
@@ -33,8 +29,8 @@
   --map-arrow-hover-text: rgba(255, 255, 255);
   --map-arrow-hover-shadow: rgba(255, 255, 255, 0.5);
   --map-arrow-hover-border: rgba(255, 255, 255, 0.5);
-  --map-container-bg: #80664f;
-  --map-viewport-border: #78d658;
+  --map-container-bg: #e3f2fd;
+  --map-viewport-border: #795548;
   --map-viewport-bg: #f0f9e6;
   --map-viewport-shadow-1: rgba(121, 216, 88, 0.3);
   --map-viewport-shadow-2: rgba(255, 255, 255, 0.2);
@@ -46,17 +42,17 @@
   --map-mini-pointer-shadow: rgba(0, 0, 0, 0.4);
   --map-player-shadow: rgba(0, 0, 0, 0.5);
   --map-mini-map-bg: #f8f8ff;
-  --map-mini-map-border: #79d959;
+  --map-mini-map-border: #795548;
   --map-mini-map-shadow: rgba(0, 0, 0, 0.15);
   --map-mini-map-player-bg: #d83232;
   --map-mini-map-player-glow: #e9d669;
   --map-mini-map-viewport-border: #f8f8ff;
   --map-mini-map-viewport-bg: rgba(255, 255, 255, 0.2);
   --map-player-info-bg: #f8f8ff;
-  --map-player-info-border: #79d959;
+  --map-player-info-border: #795548;
   --map-player-info-text: #4d4d4d;
   --map-player-info-shadow: rgba(0, 0, 0, 0.15);
-  --map-hud-avatar-border: #79d959;
+  --map-hud-avatar-border: #795548;
   --map-hud-avatar-bg: #f8f8ff;
   --map-hud-avatar-glow: rgba(121, 216, 88, 0.3);
   --map-controls-bg: #f8f8ff;
@@ -64,7 +60,7 @@
   --map-controls-text: #4d4d4d;
   --map-controls-shadow: rgba(0, 0, 0, 0.15);
   --map-dialog-bg: rgba(255, 255, 255, 0.8);
-  --map-dialog-border: #79d959;
+  --map-dialog-border: #795548;
   --map-dialog-shadow: rgba(0, 0, 0, 0.2);
   --map-dialog-text: #4d4d4d;
   --map-dialog-btn-shadow: rgba(0, 0, 0, 0.15);
@@ -88,12 +84,12 @@
   --map-back-btn-hover-shadow-2: rgba(0, 0, 0, 0.15);
   --map-back-btn-hover-shadow-3: rgba(255, 255, 255, 0.3);
   --map-activity-bg: rgba(255, 255, 255, 0.8);
-  --map-activity-border: #79d959;
+  --map-activity-border: #795548;
   --map-activity-shadow: rgba(0, 0, 0, 0.2);
   --map-activity-text: #4d4d4d;
   --map-activity-progress-bg: rgba(224, 224, 224, 0.8);
   --map-activity-progress-shadow: rgba(0, 0, 0, 0.1);
-  --map-activity-progress-fill: #79d959;
+  --map-activity-progress-fill: #795548;
   --map-activity-progress-fill-shadow: rgba(121, 217, 89, 0.3);
 }
 
@@ -267,6 +263,7 @@ body {
   justify-content: center;
 }
 
+/* Default styles for desktop */
 .game-viewport {
   width: 800px;
   height: 600px;
@@ -308,8 +305,8 @@ body {
 }
 
 .pointer-image {
-  width: 120px; /* Larger size for big map */
-  height: 120px; /* Larger size for big map */
+  width: 120px;
+  height: 120px;
   filter: drop-shadow(0 4px 8px var(--map-pointer-shadow-1));
   image-rendering: pixelated;
   transition: all 0.3s ease;
@@ -347,8 +344,8 @@ body {
 }
 
 .mini-pointer-image {
-  width: 30px; /* Much smaller size for mini-map */
-  height: 30px; /* Much smaller size for mini-map */
+  width: 30px;
+  height: 30px;
   filter: drop-shadow(0 1px 2px var(--map-mini-pointer-shadow));
   image-rendering: pixelated;
 }
@@ -400,7 +397,7 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 800 !important; /* Much lower than inventory */
+  z-index: 800 !important;
   font-family: "Press Start 2P", system-ui;
 }
 
@@ -472,6 +469,7 @@ body {
   color: var(--map-player-info-text);
   font-size: 10px;
   box-shadow: 0 4px 12px var(--map-player-info-shadow);
+  pointer-events: auto;
 }
 
 .hud-avatar {
@@ -497,7 +495,7 @@ body {
   color: var(--map-controls-text);
   font-size: 8px;
   line-height: 1.5;
-  z-index: 900 !important; /* Much lower than inventory */
+  z-index: 900 !important;
   box-shadow: 0 4px 12px var(--map-controls-shadow);
 }
 
@@ -656,4 +654,144 @@ body {
   border-radius: 12px;
   transition: width 0.1s linear;
   box-shadow: 0 2px 4px var(--map-activity-progress-fill-shadow);
+}
+
+/* Responsive Player Info Styles - Hide on Mobile and Tablet */
+@media screen and (max-width: 1024px) {
+  .player-info {
+    display: none !important; /* Completely hide player info on mobile and tablet */
+  }
+}
+
+/* Mobile specific adjustments */
+@media screen and (max-width: 768px) {
+  .game-container {
+    padding: 0;
+    display: block;
+    align-items: unset;
+    justify-content: unset;
+  }
+
+  .game-viewport {
+    width: 100vw;
+    height: 100vh;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  /* Adjust HUD elements for mobile */
+  .mini-map {
+    top: 20px;
+    right: 20px;
+    width: 200px;
+    height: 100px;
+  }
+
+  .controls-hint {
+    bottom: 20px;
+    right: 20px;
+    width: 200px;
+    padding: 8px;
+    font-size: 6px;
+  }
+
+  /* Adjust dialog for mobile */
+  .dialog {
+    width: 90vw;
+    max-width: 320px;
+    padding: 20px 25px;
+  }
+
+  .dialog p {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .dialog button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  /* Adjust activity overlay for mobile */
+  .activity-overlay {
+    width: 90vw;
+    max-width: 320px;
+    padding: 20px 25px;
+  }
+
+  .activity-info h3 {
+    font-size: 14px;
+  }
+
+  .activity-info p {
+    font-size: 12px;
+  }
+}
+
+/* Tablet adjustments */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .game-viewport {
+    width: 90vw;
+    height: 90vh;
+    max-width: 900px;
+    max-height: 675px;
+  }
+
+  .mini-map {
+    top: 40px;
+    right: 40px;
+    width: 240px;
+    height: 120px;
+  }
+
+  .controls-hint {
+    bottom: 40px;
+    right: 40px;
+    width: 220px;
+  }
+}
+
+/* Desktop - Always show player info */
+@media screen and (min-width: 1025px) {
+  .game-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .game-viewport {
+    width: 800px;
+    height: 600px;
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: auto;
+  }
+
+  .player-info {
+    /* Always visible and expanded on desktop */
+    display: flex !important;
+    cursor: default !important;
+    width: auto;
+    height: auto;
+    border-radius: 12px;
+    padding: 12px 18px;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .player-info .player-coords {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .player-info .hud-avatar {
+    width: 36px;
+    height: 36px;
+  }
 }

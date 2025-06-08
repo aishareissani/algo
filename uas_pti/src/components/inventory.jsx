@@ -120,6 +120,11 @@ function Inventory({ items = [], onClose, onUseItem }) {
   const displayItems = items.length > 0 ? items : [];
   const filteredItems = selectedCategory === "All" ? displayItems : displayItems.filter((item) => item.category === selectedCategory);
 
+  // Check if current screen size should use smaller width
+  const shouldUseCompactWidth = () => {
+    return window.innerWidth <= 1024;
+  };
+
   // Render eat prompt using portal - FIXED: Only for Takeaway Meal
   const renderEatPrompt = () => {
     if (!hoveredItem || hoveredItem.name !== "Takeaway Meal") return null;
@@ -176,7 +181,7 @@ function Inventory({ items = [], onClose, onUseItem }) {
 
   return (
     <div className="inventory-overlay">
-      <div className="inventory-window">
+      <div className={`inventory-window ${shouldUseCompactWidth() ? "inventory-window-compact" : ""}`}>
         <div className="inventory-header">
           <h2 className="inventory-title">INVENTORY</h2>
           <button className="inventory-close" onClick={onClose}>

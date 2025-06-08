@@ -3,26 +3,26 @@
 
 :root {
   /* WASD Colors */
-  --wasd-main: #79d959;
-  --wasd-hover: #8ded81;
-  --wasd-active: #5cb24e;
+  --wasd-main: #795548;
+  --wasd-hover: #795548;
+  --wasd-active: #795548;
   --wasd-shadow: 0 2px 8px rgba(121, 217, 89, 0.2);
-  --wasd-key-shadow: 0 4px 0 #5cb24e;
-  --wasd-key-pressed: 0 2px 0 #4a9e3e;
+  --wasd-key-shadow: 0 4px 0 #795548;
+  --wasd-key-pressed: 0 2px 0 #795548;
   --wasd-pad-bg: #f8f8fe;
-  --wasd-pad-border: #5cb24e;
-  --wasd-pad-shadow: 0 8px 0 #5cb24e;
+  --wasd-pad-border: #795548;
+  --wasd-pad-shadow: 0 8px 0 #795548;
   --wasd-key-bg-1: #f9fff8;
   --wasd-key-bg-2: #dcfada;
   --wasd-key-text: #273a16;
   --wasd-key-hover-text: #0b2106;
-  --wasd-key-hover-border: #5cb24e;
-  --wasd-key-hover-shadow: 0 6px 0 #5cb24e;
+  --wasd-key-hover-border: #795548;
+  --wasd-key-hover-shadow: 0 6px 0 #795548;
   --wasd-key-active-text: #fff;
   --wasd-key-active-border: #456c35;
   --wasd-key-w-bg-1: #a4f78f;
   --wasd-key-w-bg-2: #79d959;
-  --wasd-key-w-border: #5cb24e;
+  --wasd-key-w-border: #795548;
   --wasd-key-shine: rgba(255, 255, 255, 0.3);
   --wasd-text-shadow: rgba(255, 255, 255, 0.7);
 }
@@ -188,5 +188,78 @@
 
   .wasd-key-container::before {
     font-size: 9px;
+  }
+}
+
+/* WASD Component Responsive Design */
+@media screen and (max-width: 768px) {
+  .wasd-key-container {
+    bottom: 300px;
+    right: 20px;
+    z-index: 1500;
+  }
+
+  .wasd-key-container.map-location {
+    bottom: 20px;
+    left: 20px;
+    right: auto;
+  }
+
+  .wasd-key-pad {
+    padding: 12px;
+    gap: 6px;
+    border-radius: 12px;
+  }
+
+  .wasd-key {
+    font-size: 18px;
+    width: 50px;
+    height: 38px;
+    border-radius: 8px;
+  }
+
+  .wasd-key-container::before {
+    font-size: 9px;
+    margin-bottom: 6px;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .wasd-key-container {
+    bottom: 120px;
+    right: 50px;
+  }
+
+  .wasd-key-container.map-location {
+    bottom: 80px;
+    right: 350px;
+  }
+
+  .wasd-key-pad {
+    padding: 14px;
+  }
+
+  .wasd-key {
+    font-size: 20px;
+    width: 60px;
+    height: 40px;
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  .wasd-key-container {
+    bottom: 155px;
+    right: 74px;
+  }
+
+  .wasd-key-container.map-location {
+    bottom: 102px;
+    right: 410px;
+  }
+
+  .wasd-key {
+    font-size: 24px;
+    width: 74px;
+    height: 45px;
   }
 }

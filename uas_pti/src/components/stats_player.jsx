@@ -4,17 +4,7 @@ import { useSpeedMode } from "./speed";
 import Inventory from "./inventory";
 import GameOver from "./game_over";
 
-function StatsPlayer({
-  stats = {},
-  onStatsUpdate,
-  onResetStats,
-  onUseItem,
-  // Add these new props for GameOver
-  visitedLocations = new Set(["home"]),
-  usedItems = new Set(),
-  playtime = 0,
-  onMainMenu,
-}) {
+function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visitedLocations = new Set(["home"]), usedItems = new Set(), playtime = 0, onMainMenu }) {
   // Destructure stats object
   const { meal = 50, sleep = 50, health = 80, energy = 80, happiness = 50, cleanliness = 50, money = 100, experience = 0, level = 1, skillPoints = 0, items = [] } = stats;
 
@@ -44,6 +34,10 @@ function StatsPlayer({
   );
 
   const STAT_DESCRIPTIONS = {
+    level: {
+      title: "Level",
+      description: "Your character level. Increases every 5 XP or SP gained.",
+    },
     health: {
       title: "Health",
       description: "Your overall physical well-being. Maintain it by resting and avoiding harmful activities.",
@@ -193,10 +187,6 @@ function StatsPlayer({
     setShowInventory(false);
   };
 
-  // Calculate XP progress to next level
-  const xpForNextLevel = 5;
-  const currentLevelXP = (level - 1) * 5;
-
   const handleStatHover = (statKey, event) => {
     const rect = event.currentTarget.getBoundingClientRect();
     setTooltipPosition({
@@ -204,6 +194,11 @@ function StatsPlayer({
       y: rect.top + window.scrollY - 10,
     });
     setHoveredStat(statKey);
+  };
+
+  // Check if current screen size should use circular behavior
+  const shouldUseCircularBehavior = () => {
+    return window.innerWidth <= 1024;
   };
 
   return (
@@ -233,7 +228,144 @@ function StatsPlayer({
         />
       )}
 
-      <div className="stats-card" role="region" aria-label="Player status">
+      {/* Mobile/Tablet Top Stats Panel */}
+      <div className="stats-top-mobile-tablet mobile-tablet-only">
+        <div className="stats-top-grid">
+          {/* Row 1 */}
+          {/* Level - spans 3 columns */}
+          <div className="stats-tile info level">
+            <div className="tile-label">Level</div>
+            <div className="tile-value">
+              {level}
+              <Indicator statKey="level" />
+            </div>
+          </div>
+
+          {/* Health - progress bar */}
+          <div className="stats-bar-tile health">
+            <div className="tile-label">Health</div>
+            <div className="tile-bar-row">
+              <div className="progress-bar-sm">
+                <div className="progress-bar-fill" style={{ width: `${health}%` }}></div>
+              </div>
+              <span className="tile-value">
+                {Math.round(health)}%
+                <Indicator statKey="health" />
+              </span>
+            </div>
+          </div>
+
+          {/* Energy - progress bar */}
+          <div className="stats-bar-tile energy">
+            <div className="tile-label">Energy</div>
+            <div className="tile-bar-row">
+              <div className="progress-bar-sm">
+                <div className="progress-bar-fill" style={{ width: `${energy}%` }}></div>
+              </div>
+              <span className="tile-value">
+                {Math.round(energy)}%
+                <Indicator statKey="energy" />
+              </span>
+            </div>
+          </div>
+
+          {/* Hunger - progress bar */}
+          <div className="stats-bar-tile hunger">
+            <div className="tile-label">Hunger</div>
+            <div className="tile-bar-row">
+              <div className="progress-bar-sm">
+                <div className="progress-bar-fill" style={{ width: `${meal}%` }}></div>
+              </div>
+              <span className="tile-value">
+                {Math.round(meal)}%
+                <Indicator statKey="meal" />
+              </span>
+            </div>
+          </div>
+
+          {/* Row 2 */}
+          {/* Money - info tile */}
+          <div className="stats-tile info money">
+            <div className="tile-label">Money</div>
+            <div className="tile-value">
+              ${money}
+              <Indicator statKey="money" />
+            </div>
+          </div>
+
+          {/* XP - info tile */}
+          <div className="stats-tile info xp">
+            <div className="tile-label">XP</div>
+            <div className="tile-value">
+              {experience.toFixed(1)}
+              <Indicator statKey="experience" />
+            </div>
+          </div>
+
+          {/* SP - info tile */}
+          <div className="stats-tile info sp">
+            <div className="tile-label">SP</div>
+            <div className="tile-value">
+              {skillPoints.toFixed(1)}
+              <Indicator statKey="skillPoints" />
+            </div>
+          </div>
+
+          {/* Sleep - progress bar */}
+          <div className="stats-bar-tile sleep">
+            <div className="tile-label">Sleep</div>
+            <div className="tile-bar-row">
+              <div className="progress-bar-sm">
+                <div className="progress-bar-fill" style={{ width: `${sleep}%` }}></div>
+              </div>
+              <span className="tile-value">
+                {Math.round(sleep)}%
+                <Indicator statKey="sleep" />
+              </span>
+            </div>
+          </div>
+
+          {/* Mood - progress bar */}
+          <div className="stats-bar-tile mood">
+            <div className="tile-label">Mood</div>
+            <div className="tile-bar-row">
+              <div className="progress-bar-sm">
+                <div className="progress-bar-fill" style={{ width: `${happiness}%` }}></div>
+              </div>
+              <span className="tile-value">
+                {Math.round(happiness)}%
+                <Indicator statKey="happiness" />
+              </span>
+            </div>
+          </div>
+
+          {/* Clean - progress bar */}
+          <div className="stats-bar-tile clean">
+            <div className="tile-label">Clean</div>
+            <div className="tile-bar-row">
+              <div className="progress-bar-sm">
+                <div className="progress-bar-fill" style={{ width: `${cleanliness}%` }}></div>
+              </div>
+              <span className="tile-value">
+                {Math.round(cleanliness)}%
+                <Indicator statKey="cleanliness" />
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Circular Items Button for Mobile/Tablet */}
+      {shouldUseCircularBehavior() && (
+        <div className="inventory-button-circular-container">
+          <button onClick={handleInventoryClick} className="inventory-button-circular">
+            <div className="inventory-icon-circular">🎒</div>
+          </button>
+        </div>
+      )}
+
+      {/* Desktop Version - Original Design */}
+      <div className="stats-card desktop-only" role="region" aria-label="Player status">
         <div className="stats-header">
           <h3>PLAYER STATUS</h3>
           <div className={`level-badge ${levelUpAnimation ? "level-up-animation" : ""}`}>
