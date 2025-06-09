@@ -201,6 +201,7 @@ body {
 .judul_chara {
   color: var(--map-chara-title);
   text-shadow: 3px 3px 5px var(--map-chara-shadow);
+  line-height: 40px;
 }
 
 .glass-card {

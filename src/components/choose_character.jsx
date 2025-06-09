@@ -33,7 +33,7 @@ function ChooseCharacter() {
 
   return (
     <div className="character-screen bg-loading-screen fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat flex items-center justify-center px-4 py-8 z-[1000]">
-      <div className="glass-card w-full max-w-[400px] sm:max-w-[450px] rounded-[30px] p-6 sm:p-8 flex flex-col items-center gap-6 shadow-2xl animate-fadeIn">
+      <div className="glass-card w-full max-w-[350px] sm:max-w-[450px] rounded-[30px] p-6 sm:p-8 flex flex-col items-center gap-6 shadow-2xl animate-fadeIn">
         <h1 className="judul_chara text-white text-[26px] sm:text-[32px] uppercase text-center font-bold tracking-wider select-none leading-tight">Choose Your Character</h1>
 
         <div className="flex items-center justify-center gap-4 sm:gap-6">

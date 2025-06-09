@@ -26,8 +26,8 @@
 
 .back-to-toggle-button {
   position: fixed;
-  top: 100px;
-  right: 420px;
+  top: auto;
+  right: auto;
   padding: 10px 12px;
   border-radius: 30px;
   font-family: "Press Start 2P", system-ui;
@@ -119,8 +119,8 @@
   transition: 0s;
 }
 
-/* Responsive positioning */
-@media screen and (max-width: 1024px) {
+/* Mobile (max 768px) */
+@media screen and (max-width: 768px) {
   .back-to-toggle-button {
     width: 55px !important;
     height: 55px !important;
@@ -128,9 +128,9 @@
     border-radius: 50% !important;
     padding: 0 !important;
     gap: 0 !important;
-    top: 33% !important;
-    right: 25px !important;
-    left: auto !important;
+    top: 22% !important;
+    left: 33px !important;
+    right: auto !important;
     transform: translateY(-50%) !important;
   }
   .back-to-text {
@@ -142,26 +142,20 @@
   }
 }
 
+/* Tablet to small desktop */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .back-to-toggle-button {
-    width: 55px !important;
-    height: 55px !important;
     top: 33% !important;
     right: 25px !important;
-    left: auto !important;
     transform: translateY(-50%) !important;
-  }
-  .back-to-text {
-    display: none;
   }
 }
 
-/* Desktop: rectangle with icon and text */
+/* Desktop */
 @media screen and (min-width: 1025px) {
   .back-to-toggle-button {
     top: 100px;
-    right: 570px; /* Positioned to the left of the Speed button */
-    left: auto;
+    right: 1050px;
     transform: none;
     width: auto;
     height: auto;
@@ -169,13 +163,5 @@
     border-radius: 30px;
     padding: 10px 12px;
     gap: 8px;
-  }
-  .back-to-toggle-button:hover {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 8px 20px var(--back-hover-shadow);
-  }
-  .back-to-toggle-button:active {
-    transform: translateY(1px) scale(0.98);
-    box-shadow: 0 2px 8px var(--back-active-shadow);
   }
 }
