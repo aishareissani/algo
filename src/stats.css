@@ -639,8 +639,8 @@ body {
 /* ===== DESKTOP VERSION ===== */
 .stats-card {
   position: absolute;
-  left: 3px;
-  top: -380px;
+  left: 35px;
+  top: 160px;
   width: 280px;
   height: 486px;
   background: var(--stats-card-bg);

@@ -437,15 +437,6 @@ function Map() {
           {(shouldUseMinimizedBehavior() ? isPlayerInfoExpanded : true) && (
             <div className="player-coords">
               {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-              <button
-                className="back-to-start-button-inline"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent triggering the parent onClick
-                  handleBackToStart();
-                }}
-              >
-                Back to Start
-              </button>
             </div>
           )}
         </div>
