@@ -1,4 +1,5 @@
 /* speed.css */
+
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 
 :root {
@@ -44,9 +45,9 @@
 
 /* Mini circular version for mobile/tablet */
 .speed-toggle-button.mini-circular {
-  width: 55px;
-  height: 55px;
-  min-width: 50px;
+  width: 55px; /* Synchronized container size */
+  height: 55px; /* Synchronized container size */
+  min-width: 55px;
   border-radius: 50%;
   padding: 0;
   gap: 0;
@@ -70,17 +71,17 @@
 }
 
 .speed-toggle-button svg {
-  width: 20px;
-  height: 20px;
+  width: 30px; /* Synchronized icon size */
+  height: 30px; /* Synchronized icon size */
   fill: currentColor;
   flex-shrink: 0;
-  margin-right: 2px;
+  margin-right: 0; /* Ensure no extra margin for circular icons */
 }
 
-/* Adjust icon size for mini circular */
+/* Adjust icon size for mini circular - will be overridden by general svg rule now */
 .speed-toggle-button.mini-circular svg {
-  width: 35px;
-  height: 35px;
+  width: 30px; /* Synchronized icon size */
+  height: 30px; /* Synchronized icon size */
   margin-right: 0;
 }
 
@@ -201,24 +202,25 @@
 @media screen and (max-width: 1024px) {
   .speed-toggle-button {
     /* Force mini circular positioning for mobile/tablet */
-    top: 60% !important;
-    left: 50% !important;
-    right: auto !important;
-    transform: translate(-50%, -50%) !important;
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
+    width: 55px; /* Synchronized container size */
+    height: 55px; /* Synchronized container size */
+    min-width: 55px; /* Ensure min-width is consistent */
     border-radius: 50%;
     padding: 0;
     gap: 0;
+    /* Common positioning for tablet */
+    top: 41% !important;
+    right: 25px !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
   }
 
   .speed-toggle-button:hover {
-    transform: translate(-50%, -50%) translateY(-2px) scale(1.05) !important;
+    transform: translateY(-50%) translateY(-2px) scale(1.05) !important;
   }
 
   .speed-toggle-button:active {
-    transform: translate(-50%, -50%) translateY(1px) scale(0.95) !important;
+    transform: translateY(-50%) translateY(1px) scale(0.95) !important;
   }
 
   .speed-toggle-button.fast-forward {
@@ -226,39 +228,47 @@
   }
 
   .speed-toggle-button svg {
-    width: 24px;
-    height: 24px;
+    width: 30px; /* Synchronized icon size */
+    height: 30px; /* Synchronized icon size */
     margin-right: 0;
   }
 }
 
-/* Mobile specific adjustments */
+/* Mobile specific adjustments (max-width: 768px) */
 @media screen and (max-width: 768px) {
   .speed-toggle-button.mini-circular {
-    top: 41% !important;
-    right: calc(40% - 140px) !important;
+    /* Synchronized button container size */
+    width: 55px !important;
+    height: 55px !important;
+    /* Synchronized positioning */
+    top: 41% !important; /* All toggles will overlap here for testing */
+    right: 25px !important; /* All toggles will overlap here for testing */
     left: auto !important;
     transform: translateY(-50%) !important;
   }
 
   .speed-toggle-button:hover {
-    transform: translate(-50%, -50%) translateY(-2px) scale(1.05) !important;
+    transform: translateY(-50%) scale(1.05) !important;
   }
 
   .speed-toggle-button:active {
-    transform: translate(-50%, -50%) translateY(1px) scale(0.95) !important;
+    transform: translateY(-50%) scale(0.95) !important;
+  }
+
+  .speed-toggle-button.fast-forward {
+    animation: none; /* Disable the problematic animation */
   }
 
   .speed-toggle-button svg {
-    width: 22px;
-    height: 22px;
+    width: 30px; /* Synchronized icon size */
+    height: 30px; /* Synchronized icon size */
+    margin-right: 0;
   }
 }
 
 /* Desktop - normal rectangular button */
 @media screen and (min-width: 1025px) {
   .speed-toggle-button {
-    /* Desktop positioning - back to original */
     top: 100px;
     right: 420px;
     left: auto;

@@ -128,3 +128,20 @@
   flex-direction: column;
   align-items: flex-start;
 }
+
+/* Mobile specific adjustments */
+@media screen and (max-width: 768px) {
+  .field-game-container {
+    display: flex;
+    align-items: flex-start; /* Align to top instead of center */
+    justify-content: center;
+  }
+
+  .field-game-viewport {
+    width: calc(100vw - 30px); /* Consistent 30px gap */
+    height: calc(100vh - 240px); /* Fill remaining height */
+    margin: auto;
+    min-height: 240px; /* Minimum height to prevent too small */
+    margin-top: 150px; /* This margin directly affects where your map starts */
+  }
+}
