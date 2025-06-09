@@ -1,0 +1,181 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+:root {
+  /* BackTo colors per type */
+  --back-map-bg-1: #4a90e2;
+  --back-map-bg-2: #357abd;
+  --back-map-text: white;
+
+  --back-home-bg-1: #e67e22;
+  --back-home-bg-2: #d35400;
+  --back-home-text: white;
+
+  --back-start-bg-1: #8e44ad;
+  --back-start-bg-2: #732d91;
+  --back-start-text: white;
+
+  /* Common styles */
+  --back-border: rgba(255, 255, 255, 0.25);
+  --back-shadow: rgba(0, 0, 0, 0.25);
+  --back-hover-shadow: rgba(0, 0, 0, 0.3);
+  --back-active-shadow: rgba(0, 0, 0, 0.3);
+  --back-text-shadow: rgba(0, 0, 0, 0.2);
+  --back-hover-overlay: rgba(255, 255, 255, 0.2);
+  --back-active-overlay: rgba(255, 255, 255, 0.1);
+}
+
+.back-to-toggle-button {
+  position: fixed;
+  top: 100px;
+  right: 420px;
+  padding: 10px 12px;
+  border-radius: 30px;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+  border: 2px solid var(--back-border);
+  outline: none;
+  box-shadow: 0 4px 15px var(--back-shadow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  justify-content: center;
+  text-shadow: 1px 1px 2px var(--back-text-shadow);
+  overflow: hidden;
+}
+
+/* Variant styles */
+.back-to-toggle-button.back-to-map {
+  background: linear-gradient(145deg, var(--back-map-bg-1), var(--back-map-bg-2));
+  color: var(--back-map-text);
+}
+
+.back-to-toggle-button.back-to-home {
+  background: linear-gradient(145deg, var(--back-home-bg-1), var(--back-home-bg-2));
+  color: var(--back-home-text);
+}
+
+.back-to-toggle-button.back-to-start {
+  background: linear-gradient(145deg, var(--back-start-bg-1), var(--back-start-bg-2));
+  color: var(--back-start-text);
+}
+
+.back-to-toggle-button svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  flex-shrink: 0;
+  margin-right: 0;
+}
+
+.back-to-text {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.back-to-toggle-button:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(var(--back-hover-overlay), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.back-to-toggle-button:hover {
+  box-shadow: 0 8px 20px var(--back-hover-shadow);
+}
+
+.back-to-toggle-button:hover:before {
+  opacity: 1;
+}
+
+.back-to-toggle-button:active {
+  box-shadow: 0 2px 8px var(--back-active-shadow);
+}
+
+.back-to-toggle-button:after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--back-active-overlay);
+  transform: scale(0);
+  transition: transform 0.5s ease-out;
+}
+
+.back-to-toggle-button:active:after {
+  transform: scale(3);
+  opacity: 0;
+  transition: 0s;
+}
+
+/* Responsive positioning */
+@media screen and (max-width: 1024px) {
+  .back-to-toggle-button {
+    width: 55px !important;
+    height: 55px !important;
+    min-width: 55px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    top: 33% !important;
+    right: 25px !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
+  }
+  .back-to-text {
+    display: none !important;
+  }
+  .back-to-toggle-button svg {
+    width: 30px !important;
+    height: 30px !important;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .back-to-toggle-button {
+    width: 55px !important;
+    height: 55px !important;
+    top: 33% !important;
+    right: 25px !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
+  }
+  .back-to-text {
+    display: none;
+  }
+}
+
+/* Desktop: rectangle with icon and text */
+@media screen and (min-width: 1025px) {
+  .back-to-toggle-button {
+    top: 100px;
+    right: 570px; /* Positioned to the left of the Speed button */
+    left: auto;
+    transform: none;
+    width: auto;
+    height: auto;
+    min-width: 120px;
+    border-radius: 30px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .back-to-toggle-button:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px var(--back-hover-shadow);
+  }
+  .back-to-toggle-button:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 8px var(--back-active-shadow);
+  }
+}

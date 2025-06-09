@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
+import BackTo from "./BackTo"; // ADD THIS IMPORT
 import "../beach.css";
 import ArrowKey from "./wasd_key";
 import Task from "./task";
@@ -19,7 +20,7 @@ function Beach() {
   const [currentActivity, setCurrentActivity] = useState("");
   const [showTasks, setShowTasks] = useState(true);
 
-  const [mobileZoom, setMobileZoom] = useState(0.299); // New state for mobile zoom
+  const [mobileZoom, setMobileZoom] = useState(0.299);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -484,7 +485,7 @@ function Beach() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
-  const handleArrowPress = (direction) => {
+  const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
       let newY = prev.y;
@@ -508,7 +509,7 @@ function Beach() {
 
       return { x: newX, y: newY };
     });
-  };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -638,10 +639,10 @@ function Beach() {
       <div>
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
         <SpeedToggleButton />
+        <BackTo type="map" onClick={handleBackToMap} /> {/* UPDATED: Using BackTo component */}
       </div>
 
       <div className="beach-game-viewport" ref={beachRef}>
-        <SpeedToggleButton />
         {showDialog && currentLocationbeach && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationbeach] || `Do you want to enter the ${currentLocationbeach}?`)}
@@ -695,9 +696,7 @@ function Beach() {
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            <button className="back-to-map-button-inline" onClick={handleBackToMap}>
-              Back to Map
-            </button>
+            {/* REMOVED OLD BUTTON */}
           </div>
         </div>
         <div className="controls-hint">

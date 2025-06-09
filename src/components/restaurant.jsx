@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
+import BackTo from "./BackTo"; // ADD THIS IMPORT (lowercase)
 import Inventory from "./inventory";
 import "../restaurant.css";
 import ArrowKey from "./wasd_key";
@@ -21,7 +22,7 @@ function Resto() {
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
 
-  const [mobileZoom, setMobileZoom] = useState(0.299); // New state for mobile zoom
+  const [mobileZoom, setMobileZoom] = useState(0.299);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -116,7 +117,7 @@ function Resto() {
     });
   }, []);
 
-  const handleBackToMap = () => {
+  const handlebackToMap = () => {
     navigate("/map", {
       state: {
         characterName,
@@ -405,7 +406,7 @@ function Resto() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
-  const handleArrowPress = (direction) => {
+  const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
       let newY = prev.y;
@@ -429,7 +430,7 @@ function Resto() {
 
       return { x: newX, y: newY };
     });
-  };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -549,6 +550,7 @@ function Resto() {
       <div>
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleUseItem} />
         <SpeedToggleButton />
+        <BackTo type="map" onClick={handlebackToMap} /> {/* UPDATED: Using BackTo component */}
       </div>
       <div className="resto-game-viewport" ref={restoRef}>
         {showDialog && currentLocationResto && !isPerformingActivity && (
@@ -604,9 +606,7 @@ function Resto() {
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            <button className="back-to-map-button-inline" onClick={handleBackToMap}>
-              Back to Map
-            </button>
+            {/* REMOVED OLD BUTTON */}
           </div>
         </div>
         <div className="controls-hint">

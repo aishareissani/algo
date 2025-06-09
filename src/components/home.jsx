@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
+import BackTo from "./BackTo"; // ADD THIS IMPORT
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import "../home.css";
@@ -27,7 +28,7 @@ function Home() {
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(0.299);
   const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
-  const [mobileZoom, setMobileZoom] = useState(0.299); // New state for mobile zoom
+  const [mobileZoom, setMobileZoom] = useState(0.299);
 
   const houseRef = useRef(null);
   const playerRef = useRef(null);
@@ -53,7 +54,7 @@ function Home() {
     level: 1,
     skillPoints: 0,
     items: [],
-    tasks: {}, // Make sure tasks is always included
+    tasks: {},
   };
 
   const [playerStats, setPlayerStats] = useState(() => {
@@ -121,7 +122,7 @@ function Home() {
       state: {
         characterName,
         playerName,
-        stats: playerStats, // Pass the entire playerStats including tasks
+        stats: playerStats,
       },
     });
   };
@@ -400,7 +401,7 @@ function Home() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
-  const handleArrowPress = (direction) => {
+  const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
       let newY = prev.y;
@@ -424,7 +425,7 @@ function Home() {
 
       return { x: newX, y: newY };
     });
-  };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -499,6 +500,7 @@ function Home() {
       <div>
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
         <SpeedToggleButton />
+        <BackTo type="map" onClick={handleBackToMap} /> {/* UPDATED: Using BackTo component */}
       </div>
 
       <div className="home-game-viewport" ref={houseRef}>
@@ -557,9 +559,7 @@ function Home() {
           <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
           <div className="player-coords">
             {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            <button className="back-to-map-button-inline" onClick={handleBackToMap}>
-              Back to Map
-            </button>
+            {/* REMOVED OLD BUTTON */}
           </div>
         </div>
         <div className="controls-hint">

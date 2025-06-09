@@ -6,6 +6,7 @@ import { useSpeedMode, SpeedToggleButton } from "./speed";
 import { handleUseItem } from "../utils/itemHandlers";
 import WASDKey from "./wasd_key";
 import Task from "./task";
+import BackTo from "./BackTo";
 
 function Map() {
   const { isFastForward } = useSpeedMode();
@@ -352,6 +353,7 @@ function Map() {
       <div>
         <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onResetStats={handleResetStats} onUseItem={handleItemUse} visitedLocations={visitedLocations} usedItems={usedItems} playtime={getPlaytime()} onMainMenu={handleMainMenu} />
         <SpeedToggleButton />
+        <BackTo type="start" onClick={handleBackToStart} />
       </div>
 
       {showDialog && currentLocation && currentLocation !== "map" && (
