@@ -2,11 +2,7 @@
 import React from "react";
 import "../backTo.css";
 
-const BackTo = ({
-  type = "map", // "start", "home", or "map"
-  onClick,
-  className = "",
-}) => {
+const BackTo = ({ type = "map", onClick, className = "" }) => {
   console.log("BackTo component rendered with type:", type);
 
   const getButtonConfig = () => {
@@ -48,12 +44,7 @@ const BackTo = ({
   const config = getButtonConfig();
 
   return (
-    <button
-      className={`back-to-toggle-button back-to-${config.cssClass} ${className}`}
-      onClick={onClick}
-      // For debugging, you can temporarily add inline style (remove or modify afterward)
-      style={{ backgroundColor: "red", color: "white" }}
-    >
+    <button className={`back-to-toggle-button back-to-${config.cssClass} ${className}`} onClick={onClick} style={{ backgroundColor: "red", color: "white" }}>
       {config.icon}
       <span className="back-to-text">{config.text}</span>
     </button>

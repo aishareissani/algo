@@ -24,6 +24,13 @@
   --wasd-text-shadow: rgba(255, 255, 255, 0.7);
 }
 
+body {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
 .wasd-key-container {
   position: fixed;
   bottom: 155px;
@@ -32,12 +39,20 @@
   /* Add default gap for desktop, will be overridden by media queries */
   margin-right: 20px; /* Example desktop gap from right */
   margin-bottom: 20px; /* Example desktop gap from bottom */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 /* Map-specific position ONLY - will be handled by main .wasd-key-container for mobile */
 .wasd-key-container.map-location {
   bottom: 102px;
   right: 410px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .wasd-key-container::before {
@@ -175,6 +190,10 @@
     top: auto; /* Ensure top is auto */
     transform: none; /* Remove previous transforms */
     z-index: 1500;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
   /* .map-location class is no longer needed as positioning is consistent */
@@ -184,6 +203,10 @@
     left: auto;
     top: auto;
     transform: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
   .wasd-key-pad {
@@ -213,6 +236,10 @@
     top: auto !important;
     transform: none !important;
     z-index: 1500;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
   /* .map-location class is no longer needed */
@@ -221,6 +248,10 @@
     left: auto !important;
     top: auto !important;
     transform: none !important;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
   .wasd-key-pad {
@@ -250,11 +281,19 @@
     margin-right: 0; /* Remove mobile/tablet specific margins */
     margin-bottom: 0; /* Remove mobile/tablet specific margins */
     transform: none; /* Ensure no transforms */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
   .wasd-key-container.map-location {
     bottom: 102px; /* Revert to original desktop map-location bottom */
     right: 410px; /* Revert to original desktop map-location right */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
   .wasd-key-pad {

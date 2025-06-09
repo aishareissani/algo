@@ -2,10 +2,8 @@ import React, { useEffect, useRef } from "react";
 import "../wasd_key.css";
 
 const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
-  // Store interval IDs for each direction
   const intervals = useRef({});
 
-  // Handle physical keyboard inputs
   useEffect(() => {
     const handleKeyDown = (event) => {
       const key = event.key.toLowerCase();
@@ -17,7 +15,7 @@ const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
       };
 
       if (keyMap[key]) {
-        event.preventDefault();
+        event.preventDefault(); // PENTING! Cegah select teks dan default browser
         onKeyPress(keyMap[key]);
       }
     };
@@ -26,7 +24,6 @@ const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onKeyPress]);
 
-  // Start continuous move on mouse/touch down
   const handleStartPress = (direction) => {
     onKeyPress(direction);
     intervals.current[direction] = setInterval(() => {
@@ -34,7 +31,6 @@ const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
     }, 30);
   };
 
-  // Clear the timer when mouse/touch is released
   const handleEndPress = (direction) => {
     if (intervals.current[direction]) {
       clearInterval(intervals.current[direction]);
@@ -42,7 +38,6 @@ const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
     }
   };
 
-  // Generate class names based on isMapLocation prop
   const containerClass = `wasd-key-container${isMapLocation ? " map-location" : ""}`;
   const padClass = `wasd-key-pad${isMapLocation ? " map-location" : ""}`;
   const middleRowClass = `wasd-key-middle-row${isMapLocation ? " map-location" : ""}`;
@@ -51,7 +46,6 @@ const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
   return (
     <div className={containerClass}>
       <div className={padClass}>
-        {/* Top row with just W */}
         <div className="wasd-key-top-row">
           <button
             className={keyClass("w")}
@@ -65,8 +59,6 @@ const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
             W
           </button>
         </div>
-
-        {/* Bottom row with A S D */}
         <div className={middleRowClass}>
           <button
             className={keyClass("a")}
@@ -79,7 +71,6 @@ const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
           >
             A
           </button>
-
           <button
             className={keyClass("s")}
             aria-label="S key for down"
@@ -91,7 +82,6 @@ const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
           >
             S
           </button>
-
           <button
             className={keyClass("d")}
             aria-label="D key for right"
