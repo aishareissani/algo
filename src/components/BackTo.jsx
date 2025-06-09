@@ -1,6 +1,6 @@
-// backTo.jsx
+// BackTo.jsx
 import React from "react";
-import "../backTo.css";
+import "../BackTo.css";
 
 const BackTo = ({ type = "map", onClick, className = "" }) => {
   console.log("BackTo component rendered with type:", type);

@@ -6,7 +6,7 @@ import { useSpeedMode, SpeedToggleButton } from "./speed";
 import { handleUseItem } from "../utils/itemHandlers";
 import WASDKey from "./wasd_key";
 import Task from "./task";
-import BackTo from "./backTo";
+import BackTo from "./BackTo";
 
 function Map() {
   const { isFastForward } = useSpeedMode();
