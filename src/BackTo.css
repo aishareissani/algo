@@ -169,7 +169,7 @@
 @media screen and (min-width: 1025px) {
   .back-to-toggle-button {
     top: 100px;
-    right: 1050px;
+    right: 1050px !important;
     transform: none;
     width: auto;
     height: auto;
