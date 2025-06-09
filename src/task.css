@@ -1,8 +1,5 @@
 /* task.css */
 
-/* Assuming these imports might exist in your actual task.css */
-/* @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"); */
-
 :root {
   /* Task Colors */
   --task-icon-shadow: rgba(0, 0, 0, 0.2);
@@ -115,16 +112,21 @@
   box-shadow: none;
 }
 
-/* Minimized view */
+/* ===== FIXED MINIMIZED ICON - ABSOLUTE PATH ===== */
 .task-minimized-view {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
-  color: white;
-  font-size: 24px; /* This font-size will be overridden by background-image for actual icon display */
-  filter: drop-shadow(1px 1px 2px var(--task-icon-shadow));
+  width: 30px !important;
+  height: 30px !important;
+  /* FIXED: ABSOLUTE PATH + FALLBACK */
+  background-image: url("/assets/icons/task.png") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  filter: drop-shadow(1px 1px 2px var(--task-icon-shadow)) !important;
+  /* FALLBACK untuk test */
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Fullscreen modal for mobile/tablet - HIGHEST Z-INDEX */
@@ -453,7 +455,7 @@
   opacity: 0.8;
 }
 
-/* Responsive Design - MOBILE AND TABLET Z-INDEX OVERRIDES */
+/* ===== RESPONSIVE DESIGN - FIXED POSITIONING ===== */
 @media screen and (max-width: 1024px) {
   .task-modal-overlay {
     z-index: 2147483647 !important;
@@ -471,14 +473,12 @@
     z-index: inherit !important;
   }
 
-  /* Tablet-specific adjustments (still within the 1024px media query) */
+  /* FIXED POSITIONING: CONSISTENT TRANSFORM */
   .task-container.minimized {
-    /* Synchronized button container size */
     width: 55px !important;
     height: 55px !important;
-    /* Synchronized positioning for tablet */
-    top: 41% !important; /* All toggles will overlap here for testing */
-    right: 25px !important; /* Consistent right gap */
+    top: 41% !important;
+    right: 25px !important;
     left: auto !important;
     transform: translateY(-50%) !important;
   }
@@ -492,20 +492,9 @@
   }
 
   .task-container.inside-location.minimized {
-    top: 41% !important; /* Keep consistent with general minimized state for tablet */
+    top: 41% !important;
     right: 25px !important;
     transform: translateY(-50%) !important;
-  }
-
-  .task-minimized-view {
-    background-image: url("./assets/icons/task.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: 2px;
-    margin-left: 1px;
-    width: 30px; /* Synchronized icon size */
-    height: 30px; /* Synchronized icon size */
-    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
   }
 
   .task-window-modal {
@@ -543,13 +532,12 @@
     z-index: 2147483647 !important;
   }
 
+  /* FIXED POSITIONING: CONSISTENT TRANSFORM */
   .task-container.minimized {
-    /* Synchronized button container size */
     width: 55px !important;
     height: 55px !important;
-    /* Synchronized positioning */
-    top: 56% !important; /* All toggles will overlap here for testing */
-    right: 25px !important; /* Consistent right gap */
+    top: 56% !important;
+    right: 25px !important;
     left: auto !important;
     transform: translateY(-50%) !important;
   }
@@ -563,20 +551,9 @@
   }
 
   .task-container.inside-location.minimized {
-    top: 56% !important; /* Keep consistent with general minimized state for mobile */
+    top: 56% !important;
     right: 25px !important;
     transform: translateY(-50%) !important;
-  }
-
-  .task-minimized-view {
-    background-image: url("./assets/icons/task.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: 2px;
-    margin-left: 1px;
-    width: 30px; /* Synchronized icon size */
-    height: 30px; /* Synchronized icon size */
-    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
   }
 
   .task-window-modal .task-title {
@@ -633,12 +610,10 @@
   }
 
   .task-container.minimized {
-    /* Synchronized button container size */
     width: 55px !important;
     height: 55px !important;
-    /* Synchronized positioning for tablet */
-    top: 41% !important; /* All toggles will overlap here for testing */
-    right: 25px !important; /* Consistent right gap */
+    top: 41% !important;
+    right: 25px !important;
     left: auto !important;
     transform: translateY(-50%) !important;
   }

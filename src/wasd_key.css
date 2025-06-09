@@ -168,6 +168,8 @@
 /* For screens up to 1024px (tablet) */
 @media screen and (max-width: 1024px) {
   .wasd-key-container {
+    /* Position relative to the bottom and right of the map screen */
+    bottom: 20px; /* Gap from bottom of map screen */
     right: 20px; /* Gap from right of map screen */
     left: auto; /* Ensure left is auto */
     top: auto; /* Ensure top is auto */
@@ -177,6 +179,7 @@
 
   /* .map-location class is no longer needed as positioning is consistent */
   .wasd-key-container.map-location {
+    bottom: 20px; /* Consistent gap */
     right: 20px; /* Consistent gap */
     left: auto;
     top: auto;

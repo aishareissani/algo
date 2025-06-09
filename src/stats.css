@@ -356,75 +356,71 @@ body {
   box-shadow: 0 6px 16px rgba(121, 85, 72, 0.4);
 }
 
+/* ===== FIXED ICON PATH + SIZE ===== */
 .inventory-icon-circular {
-  background-image: url("./assets/icons/item.png");
+  /* FIXED: ABSOLUTE PATH + FALLBACK */
+  background-image: url("/assets/icons/item.png");
   background-size: contain;
   background-repeat: no-repeat;
-  margin-bottom: 2px;
-  margin-left: 1px;
-  width: 30px; /* Synchronized icon size */
-  height: 30px; /* Synchronized icon size */
+  background-position: center;
+  width: 30px !important;
+  height: 30px !important;
   filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+  /* FALLBACK untuk test */
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Positioning for different screen sizes */
 @media screen and (max-width: 1024px) {
   .inventory-button-circular-container {
-    top: 60%;
-    right: calc(50% - 80px);
-    transform: translateY(-50%);
+    top: 49% !important;
+    right: 25px !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .inventory-button-circular-container:hover {
+    transform: translateY(-50%) scale(1.05) !important;
+  }
+
+  .inventory-button-circular-container:active {
+    transform: translateY(-50%) scale(0.95) !important;
+  }
+
+  .inventory-icon-circular {
+    width: 30px !important;
+    height: 30px !important;
   }
 }
 
 @media screen and (max-width: 768px) {
   .inventory-button-circular-container {
-    /* Synchronized button container size */
     width: 55px !important;
     height: 55px !important;
-    /* Synchronized positioning */
-    top: 49% !important; /* Adjust as needed for vertical stacking with other toggles */
-    right: 25px !important; /* Consistent right gap */
+    top: 49% !important;
+    right: 25px !important;
     left: auto !important;
     transform: translateY(-50%) !important;
   }
 
-  .inventory-button-circular-container:hover {
-    transform: translateY(-50%) scale(1.05) !important;
-  }
-
-  .inventory-button-circular-container:active {
-    transform: translateY(-50%) scale(0.95) !important;
-  }
-
   .inventory-button-circular {
-    width: 100%; /* Make button fill its container */
-    height: 100%; /* Make button fill its container */
+    width: 100%;
+    height: 100%;
   }
 
   .inventory-icon-circular {
-    width: 30px; /* Synchronized icon size */
-    height: 30px; /* Synchronized icon size */
+    width: 30px !important;
+    height: 30px !important;
   }
 }
 
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .inventory-button-circular-container {
-    /* Synchronized button container size for tablet */
     width: 55px !important;
     height: 55px !important;
-    /* Synchronized positioning for tablet */
-    top: 41% !important; /* Adjust as needed for vertical stacking */
-    right: 25px !important; /* Consistent right gap */
+    top: 41% !important;
+    right: 25px !important;
     left: auto !important;
     transform: translateY(-50%) !important;
-  }
-
-  .inventory-button-circular-container:hover {
-    transform: translateY(-50%) scale(1.05) !important;
-  }
-
-  .inventory-button-circular-container:active {
-    transform: translateY(-50%) scale(0.95) !important;
   }
 }
 
@@ -894,7 +890,7 @@ body {
 .xp-icon {
   width: 25px;
   height: 25px;
-  background-image: url("./assets/icons/xp_icon.svg");
+  background-image: url("/assets/icons/xp_icon.svg");
   background-repeat: no-repeat;
   background-size: contain;
   display: inline-block;
@@ -903,7 +899,7 @@ body {
 .skill-icon {
   width: 25px;
   height: 25px;
-  background-image: url("./assets/icons/skill.png");
+  background-image: url("/assets/icons/skill.png");
   background-repeat: no-repeat;
   background-size: contain;
   display: inline-block;
@@ -1088,7 +1084,7 @@ body {
     margin: auto;
     min-height: 240px;
     margin-top: 150px;
-    padding-right: 80px; /* Adjusted padding to accommodate overlapping toggles */
+    padding-right: 80px;
     box-sizing: border-box;
   }
 }
