@@ -99,7 +99,7 @@
 }
 
 .speed-toggle-button:hover {
-  transform: translateY(-2px) scale(1.03);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.1s ease-out;
   box-shadow: 0 8px 20px var(--speed-hover-shadow);
 }
 
@@ -235,34 +235,41 @@
 }
 
 /* Mobile specific adjustments (max-width: 768px) */
+/* Mobile specific adjustments (max-width: 768px) */
 @media screen and (max-width: 768px) {
   .speed-toggle-button.mini-circular {
-    /* Synchronized button container size */
     width: 55px !important;
     height: 55px !important;
-    /* Synchronized positioning */
-    top: 41% !important; /* All toggles will overlap here for testing */
-    right: 25px !important; /* All toggles will overlap here for testing */
+    top: 41% !important;
+    right: 25px !important;
     left: auto !important;
     transform: translateY(-50%) !important;
   }
 
   .speed-toggle-button:hover {
-    transform: translateY(-50%) scale(1.05) !important;
+    transform: translateY(-50%) translateY(-2px) scale(1.05) !important;
   }
 
   .speed-toggle-button:active {
-    transform: translateY(-50%) scale(0.95) !important;
+    transform: translateY(-50%) translateY(1px) scale(0.95) !important;
+    animation-play-state: paused !important; /* Pause animasi saat ditekan */
   }
 
+  /* Override pulse animation untuk mobile - maintain center position */
   .speed-toggle-button.fast-forward {
-    animation: none; /* Disable the problematic animation */
+    animation: pulseMobile 1.5s infinite;
   }
 
-  .speed-toggle-button svg {
-    width: 30px; /* Synchronized icon size */
-    height: 30px; /* Synchronized icon size */
-    margin-right: 0;
+  @keyframes pulseMobile {
+    0% {
+      transform: translateY(-50%) scale(1);
+    }
+    50% {
+      transform: translateY(-50%) scale(1.05);
+    }
+    100% {
+      transform: translateY(-50%) scale(1);
+    }
   }
 }
 
