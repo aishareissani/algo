@@ -136,10 +136,7 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visit
       const calculatedLevel = baseLevel + xpLevels + spLevels;
 
       if (calculatedLevel > stats.level) {
-        // Trigger level up animation
-        setLevelUpAnimation(true);
-        setTimeout(() => setLevelUpAnimation(false), 2000);
-
+        // Update level without showing notification
         onStatsUpdate({
           ...stats,
           level: calculatedLevel,
@@ -232,15 +229,6 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visit
       <div className="stats-top-mobile-tablet mobile-tablet-only">
         <div className="stats-top-grid">
           {/* Row 1 */}
-          {/* Level - spans 3 columns */}
-          <div className="stats-tile info level">
-            <div className="tile-label">Level</div>
-            <div className="tile-value">
-              {level}
-              <Indicator statKey="level" />
-            </div>
-          </div>
-
           {/* Health - progress bar */}
           <div className="stats-bar-tile health">
             <div className="tile-label">Health</div>
@@ -519,14 +507,6 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visit
         >
           <h4>{STAT_DESCRIPTIONS[hoveredStat].title}</h4>
           <p>{STAT_DESCRIPTIONS[hoveredStat].description}</p>
-        </div>
-      )}
-
-      {/* Level Up Notification */}
-      {levelUpAnimation && (
-        <div className="level-up-notification">
-          <div className="level-up-text">LEVEL UP!</div>
-          <div className="level-up-details">You reached Level {level}!</div>
         </div>
       )}
 
