@@ -67,7 +67,6 @@
   --stats-inventory-btn-active-shadow-1: rgba(121, 217, 89, 0.3);
   --stats-inventory-btn-active-shadow-2: rgba(0, 0, 0, 0.1);
   --stats-inventory-btn-active-shadow-3: rgba(255, 255, 255, 0.2);
-  --stats-inventory-btn-shimmer: rgba(255, 255, 255, 0.3);
   --stats-inventory-btn-active-bg-1: #ff5a5a;
   --stats-inventory-btn-active-bg-2: #ff5a5a;
   --stats-inventory-btn-active-bg-3: #ff5a5a;
@@ -110,7 +109,6 @@ body {
 }
 
 /* Responsive breakpoints */
-/* Show mobile/tablet layout on screens 1024px and below */
 @media screen and (max-width: 1024px) {
   .mobile-tablet-only {
     display: block !important;
@@ -120,7 +118,6 @@ body {
   }
 }
 
-/* Show desktop layout on screens larger than 1024px */
 @media screen and (min-width: 1025px) {
   .mobile-tablet-only {
     display: none !important;
@@ -131,32 +128,32 @@ body {
 }
 
 /* ===== MOBILE/TABLET TOP STATS PANEL ===== */
-
-/* Top Stats Panel for Mobile/Tablet */
 .stats-top-mobile-tablet {
-  width: 100vw;
-  padding: 7px 10px;
+  width: calc(100vw - 30px);
+  max-width: 800px;
   position: fixed;
   z-index: 1200;
-  top: 0;
+  top: 10px;
   left: 0;
   right: 0;
+  margin-left: auto;
+  margin-right: auto;
   background: transparent;
   font-family: "Press Start 2P", system-ui;
   font-size: 12px;
+  box-sizing: border-box;
 }
 
-/* Grid layout: 2 rows, 6 columns, Level spans 3 */
 .stats-top-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(2, auto);
-  gap: 8px;
-  max-width: 800px;
-  margin: 0 auto 12px auto;
+  gap: 10px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 8px;
 }
 
-/* Info Tiles (Level, Money, XP, SP) - No progress bars */
 .stats-tile.info {
   display: flex;
   flex-direction: column;
@@ -166,10 +163,10 @@ body {
   border: 1.5px solid #d0d0d0;
   border-radius: 10px;
   min-width: 0;
-  min-height: 50px;
+  min-height: 60px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  padding: 10px 12px 8px 12px;
-  font-size: 11px;
+  padding: 12px 14px 10px 14px;
+  font-size: 12px;
   font-family: inherit;
   box-sizing: border-box;
   transition: all 0.2s ease;
@@ -180,13 +177,12 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
-/* Grid positioning for info tiles */
 .stats-tile.info.level {
   grid-column: 1 / span 3;
   grid-row: 1;
   align-items: flex-start;
   justify-content: center;
-  min-height: 50px;
+  min-height: 60px;
 }
 
 .stats-tile.info.money {
@@ -204,7 +200,6 @@ body {
   grid-row: 2;
 }
 
-/* Progress Bar Tiles (Health, Energy, Hunger, Sleep, Mood, Clean) */
 .stats-bar-tile {
   display: flex;
   flex-direction: column;
@@ -214,10 +209,10 @@ body {
   border: 1.5px solid #d0d0d0;
   border-radius: 10px;
   min-width: 0;
-  min-height: 50px;
+  min-height: 60px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  padding: 10px 12px 8px 12px;
-  font-size: 10px;
+  padding: 12px 14px 10px 14px;
+  font-size: 11px;
   font-family: inherit;
   box-sizing: border-box;
   transition: all 0.2s ease;
@@ -228,7 +223,6 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
-/* Grid positioning for progress bar tiles */
 .stats-bar-tile.health {
   grid-column: 4;
   grid-row: 1;
@@ -259,42 +253,40 @@ body {
   grid-row: 2;
 }
 
-/* Tile labels and values */
 .tile-label {
   font-weight: bold;
   color: #5a5a5a;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.3px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   text-transform: uppercase;
 }
 
 .tile-value {
-  font-size: 12px;
+  font-size: 13px;
   color: #2a2a2a;
   font-weight: bold;
   letter-spacing: -0.3px;
 }
 
-/* Progress bar row container */
 .tile-bar-row {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 2px;
 }
 
-/* Small progress bars */
 .progress-bar-sm {
   display: block;
   flex: 1 1 0;
-  height: 10px;
+  height: 12px;
   background: #e8e8e8;
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset;
   overflow: hidden;
   position: relative;
-  min-width: 35px;
+  min-width: 50px;
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -308,7 +300,6 @@ body {
   bottom: 0;
 }
 
-/* Progress bar colors */
 .stats-bar-tile.health .progress-bar-fill {
   background: var(--stats-bar-health);
 }
@@ -333,26 +324,22 @@ body {
   background: var(--stats-bar-clean);
 }
 
-/* Progress bar tile value */
 .stats-bar-tile .tile-value {
-  min-width: 42px;
+  min-width: 48px;
   text-align: right;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 /* ===== CIRCULAR ITEMS BUTTON FOR MOBILE/TABLET ===== */
-
-/* Circular Items Button Container */
 .inventory-button-circular-container {
   position: fixed;
   z-index: 101;
   transition: all 0.3s ease;
 }
 
-/* Circular Items Button */
 .inventory-button-circular {
-  width: 50px;
-  height: 50px;
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
   background: var(--stats-inventory-btn-bg-1);
   border: 3px solid var(--stats-inventory-btn-border);
@@ -375,8 +362,8 @@ body {
   background-repeat: no-repeat;
   margin-bottom: 2px;
   margin-left: 1px;
-  width: 25px;
-  height: 25px;
+  width: 30px; /* Synchronized icon size */
+  height: 30px; /* Synchronized icon size */
   filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
 }
 
@@ -391,26 +378,53 @@ body {
 
 @media screen and (max-width: 768px) {
   .inventory-button-circular-container {
-    top: 50%;
-    right: calc(40% - 140px);
-    transform: translateY(-50%);
+    /* Synchronized button container size */
+    width: 55px !important;
+    height: 55px !important;
+    /* Synchronized positioning */
+    top: 49% !important; /* Adjust as needed for vertical stacking with other toggles */
+    right: 25px !important; /* Consistent right gap */
+    left: auto !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .inventory-button-circular-container:hover {
+    transform: translateY(-50%) scale(1.05) !important;
+  }
+
+  .inventory-button-circular-container:active {
+    transform: translateY(-50%) scale(0.95) !important;
   }
 
   .inventory-button-circular {
-    width: 55px;
-    height: 55px;
+    width: 100%; /* Make button fill its container */
+    height: 100%; /* Make button fill its container */
   }
 
   .inventory-icon-circular {
-    font-size: 18px;
+    width: 30px; /* Synchronized icon size */
+    height: 30px; /* Synchronized icon size */
   }
 }
 
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .inventory-button-circular-container {
-    top: 62%;
-    right: calc(50% - 75px);
-    transform: translateY(-50%);
+    /* Synchronized button container size for tablet */
+    width: 55px !important;
+    height: 55px !important;
+    /* Synchronized positioning for tablet */
+    top: 41% !important; /* Adjust as needed for vertical stacking */
+    right: 25px !important; /* Consistent right gap */
+    left: auto !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .inventory-button-circular-container:hover {
+    transform: translateY(-50%) scale(1.05) !important;
+  }
+
+  .inventory-button-circular-container:active {
+    transform: translateY(-50%) scale(0.95) !important;
   }
 }
 
@@ -493,19 +507,16 @@ body {
 /* Responsive Design for Mobile/Tablet */
 @media screen and (max-width: 768px) {
   .stats-top-grid {
-    /* 3 rows, 3 columns for mobile - no level, all 9 stats fit */
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(65px, 1fr));
     grid-template-rows: repeat(3, auto);
-    gap: 8px;
-    margin-right: 5vw;
+    gap: 10px;
+    margin: 0 10px 12px auto;
   }
 
-  /* Hide level tile on mobile */
   .stats-tile.info.level {
     display: none;
   }
 
-  /* Row 1: Money, XP, SP */
   .stats-tile.info.money {
     grid-column: 1;
     grid-row: 1;
@@ -521,7 +532,6 @@ body {
     grid-row: 1;
   }
 
-  /* Row 2: Health, Energy, Hunger */
   .stats-bar-tile.health {
     grid-column: 1;
     grid-row: 2;
@@ -537,7 +547,6 @@ body {
     grid-row: 2;
   }
 
-  /* Row 3: Sleep, Mood, Clean */
   .stats-bar-tile.sleep {
     grid-column: 1;
     grid-row: 3;
@@ -553,22 +562,74 @@ body {
     grid-row: 3;
   }
 
-  /* Make tiles smaller for mobile */
   .stats-tile.info,
   .stats-bar-tile {
-    min-height: 35px;
-    padding: 6px 8px 5px 8px;
+    min-height: 45px;
+    padding: 8px 10px 7px 10px;
+    font-size: 10px;
+  }
+
+  .progress-bar-sm {
+    height: 8px;
+    min-width: 30px;
+  }
+
+  .tile-label {
+    font-size: 8px;
+    margin-bottom: 3px;
+  }
+
+  .tile-value {
+    font-size: 10px;
+  }
+
+  .stats-bar-tile .tile-value {
+    font-size: 9px;
+    min-width: 30px;
+  }
+
+  .tile-bar-row {
+    gap: 6px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .stats-top-mobile-tablet {
+    width: calc(100vw - 30px);
+    top: 10px;
+  }
+
+  .stats-top-grid {
+    gap: 6px;
+    padding: 6px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .stats-top-mobile-tablet {
+    width: calc(100vw - 30px);
+    top: 8px;
+  }
+
+  .stats-top-grid {
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .stats-tile.info,
+  .stats-bar-tile {
+    min-height: 40px;
+    padding: 6px 8px 6px 8px;
     font-size: 9px;
   }
 
   .progress-bar-sm {
-    height: 6px;
-    min-width: 20px;
+    height: 7px;
+    min-width: 25px;
   }
 
   .tile-label {
     font-size: 7px;
-    margin-bottom: 2px;
   }
 
   .tile-value {
@@ -579,51 +640,9 @@ body {
     font-size: 8px;
     min-width: 25px;
   }
-
-  .tile-bar-row {
-    gap: 4px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .stats-top-mobile-tablet {
-    padding: 8px 12px 6px 12px;
-  }
-
-  .stats-top-grid {
-    gap: 3px;
-    margin: 0 8px 12px 8px;
-  }
-
-  .stats-tile.info,
-  .stats-bar-tile {
-    min-height: 30px;
-    padding: 4px 6px 4px 6px;
-    font-size: 8px;
-  }
-
-  .progress-bar-sm {
-    height: 5px;
-    min-width: 15px;
-  }
-
-  .tile-label {
-    font-size: 6px;
-  }
-
-  .tile-value {
-    font-size: 8px;
-  }
-
-  .stats-bar-tile .tile-value {
-    font-size: 7px;
-    min-width: 20px;
-  }
 }
 
 /* ===== DESKTOP VERSION ===== */
-
-/* Desktop Stats Card - Original Design */
 .stats-card {
   position: absolute;
   left: 35px;
@@ -678,7 +697,6 @@ body {
   border: 2px solid var(--stats-level-border);
 }
 
-/* Desktop Stats Grid */
 .stats-card .stats-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -712,27 +730,22 @@ body {
   border-left-color: var(--stats-border-critical);
 }
 
-/* Mood-specific color styling */
 .stat-container.mood .stat-bar-fill.mood-bar {
   transition: background-color 0.5s ease, width 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-/* Happy mood (> 50%) - Bright green */
 .stat-container.mood.good .mood-bar {
   background: var(--stats-mood-bar-good);
 }
 
-/* Neutral mood (25-50%) - Yellow */
 .stat-container.mood.warning .mood-bar {
   background: var(--stats-mood-bar-warning);
 }
 
-/* Sad mood (< 25%) - Blue/Gray */
 .stat-container.mood.critical .mood-bar {
   background: var(--stats-mood-bar-critical);
 }
 
-/* Update mood icon based on status */
 .mood-icon.mood-good {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2366f880'%3E%3Cpath d='M256,16C123.452,16,16,123.452,16,256S123.452,496,256,496,496,388.548,496,256,388.548,16,256,16ZM403.078,403.078a207.253,207.253,0,1,1,44.589-66.125A207.332,207.332,0,0,1,403.078,403.078Z'/%3E%3Cpath d='M256,384A104,104,0,0,0,360,280H152A104,104,0,0,0,256,384Z'/%3E%3Cpolygon points='205.757 228.292 226.243 203.708 168 155.173 109.757 203.708 130.243 228.292 168 196.827 205.757 228.292'/%3E%3Cpolygon points='285.757 203.708 306.243 228.292 344 196.827 381.757 228.292 402.243 203.708 344 155.173 285.757 203.708'/%3E%3C/svg%3E");
 }
@@ -806,7 +819,6 @@ body {
   overflow: hidden;
 }
 
-/* Updated stat bar colors for desktop - more specific targeting */
 .stats-card .stat-container:nth-child(1) .stat-bar-fill {
   background: var(--stats-bar-health);
 }
@@ -846,7 +858,6 @@ body {
   }
 }
 
-/* Desktop Footer with resources and inventory button */
 .stats-card .stats-footer {
   display: flex;
   flex-direction: column;
@@ -908,7 +919,6 @@ body {
   width: 100%;
 }
 
-/* Inventory Button for Desktop */
 .inventory-button {
   position: relative;
   display: inline-flex;
@@ -961,7 +971,22 @@ body {
   box-shadow: 0 2px 4px var(--stats-inventory-btn-active-shadow-1), 0 1px 2px var(--stats-inventory-btn-active-shadow-2), inset 0 1px 0 var(--stats-inventory-btn-active-shadow-3);
 }
 
-/* Stat Indicators */
+.inventory-icon {
+  width: 18px;
+  height: 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-2 .89-2 2v11c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zM10 4h4v2h-4V4zm10 15H4V8h16v11z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 1px 2px var(--stats-inventory-icon-shadow));
+}
+
+.inventory-button-mobile:hover .inventory-icon {
+  transform: scale(1.1) rotate(5deg);
+  filter: drop-shadow(0 2px 4px var(--stats-inventory-icon-hover-shadow));
+}
+
 .stat-increase-indicator {
   color: var(--stats-stat-increase-color);
   font-weight: bold;
@@ -976,7 +1001,6 @@ body {
   margin-left: 5px;
 }
 
-/* Level Up Notification */
 .level-up-notification {
   position: fixed;
   top: 50%;
@@ -1028,7 +1052,6 @@ body {
   }
 }
 
-/* Stat Tooltip */
 .stat-tooltip {
   position: fixed;
   background: var(--stats-tooltip-bg);
@@ -1055,4 +1078,17 @@ body {
 .stat-tooltip p {
   margin: 0 0 8px 0;
   color: var(--stats-tooltip-text);
+}
+
+/* To ensure the map has space for all three toggles */
+@media screen and (max-width: 768px) {
+  .home-game-viewport {
+    width: calc(100vw - 30px);
+    height: calc(100vh - 240px);
+    margin: auto;
+    min-height: 240px;
+    margin-top: 150px;
+    padding-right: 80px; /* Adjusted padding to accommodate overlapping toggles */
+    box-sizing: border-box;
+  }
 }

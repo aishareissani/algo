@@ -1,3 +1,8 @@
+/* task.css */
+
+/* Assuming these imports might exist in your actual task.css */
+/* @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"); */
+
 :root {
   /* Task Colors */
   --task-icon-shadow: rgba(0, 0, 0, 0.2);
@@ -53,7 +58,6 @@
   --task-completed-text: #888;
   --task-completed-bullet: #888;
   --task-minimized-bg: #795548;
-  --task-minimized-border: #795548;
   --task-minimized-shadow: rgba(121, 85, 72, 0.3);
   --task-close-btn-bg: #ff5757;
   --task-close-btn-text: white;
@@ -86,15 +90,14 @@
 
 /* Minimized floating button */
 .task-container.minimized {
-  width: 60px;
-  height: 60px;
+  width: 55px;
+  height: 55px;
   cursor: pointer;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--task-minimized-bg);
-  border: 3px solid var(--task-minimized-border);
   box-shadow: 0 4px 12px var(--task-minimized-shadow);
 }
 
@@ -120,7 +123,7 @@
   width: 100%;
   height: 100%;
   color: white;
-  font-size: 24px;
+  font-size: 24px; /* This font-size will be overridden by background-image for actual icon display */
   filter: drop-shadow(1px 1px 2px var(--task-icon-shadow));
 }
 
@@ -135,7 +138,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2147483647 !important; /* Maximum z-index value */
+  z-index: 2147483647 !important;
   padding: 20px;
   box-sizing: border-box;
 }
@@ -147,7 +150,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2147483647 !important; /* Maximum z-index value */
+  z-index: 2147483647 !important;
 }
 
 .task-window-modal {
@@ -155,7 +158,7 @@
   height: auto !important;
   max-height: 80vh !important;
   animation: modalSlideIn 0.3s ease-out;
-  z-index: 2147483647 !important; /* Maximum z-index value */
+  z-index: 2147483647 !important;
 }
 
 @keyframes modalSlideIn {
@@ -275,7 +278,7 @@
   display: flex;
   align-items: center;
   gap: calc(var(--padding-base, 10px) * 0.8);
-  min-width: 150px;
+  min-width: 155px;
   justify-content: center;
 }
 
@@ -452,9 +455,8 @@
 
 /* Responsive Design - MOBILE AND TABLET Z-INDEX OVERRIDES */
 @media screen and (max-width: 1024px) {
-  /* Maximum z-index for mobile/tablet expanded task */
   .task-modal-overlay {
-    z-index: 2147483647 !important; /* Maximum possible z-index */
+    z-index: 2147483647 !important;
   }
 
   .task-modal-content {
@@ -469,17 +471,29 @@
     z-index: inherit !important;
   }
 
+  /* Tablet-specific adjustments (still within the 1024px media query) */
   .task-container.minimized {
-    top: 60%;
-    right: calc(50% + 80px);
-    transform: translateY(-50%);
-    width: 50px;
-    height: 50px;
+    /* Synchronized button container size */
+    width: 55px !important;
+    height: 55px !important;
+    /* Synchronized positioning for tablet */
+    top: 41% !important; /* All toggles will overlap here for testing */
+    right: 25px !important; /* Consistent right gap */
+    left: auto !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .task-container.minimized:hover {
+    transform: translateY(-50%) scale(1.05) !important;
+  }
+
+  .task-container.minimized:active {
+    transform: translateY(-50%) scale(0.95) !important;
   }
 
   .task-container.inside-location.minimized {
-    top: 60% !important;
-    right: calc(50% + 80px) !important;
+    top: 41% !important; /* Keep consistent with general minimized state for tablet */
+    right: 25px !important;
     transform: translateY(-50%) !important;
   }
 
@@ -489,8 +503,8 @@
     background-repeat: no-repeat;
     margin-bottom: 2px;
     margin-left: 1px;
-    width: 25px;
-    height: 25px;
+    width: 30px; /* Synchronized icon size */
+    height: 30px; /* Synchronized icon size */
     filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
   }
 
@@ -516,9 +530,8 @@
 }
 
 @media screen and (max-width: 768px) {
-  /* Maximum z-index for mobile expanded task */
   .task-modal-overlay {
-    z-index: 2147483647 !important; /* Maximum possible z-index */
+    z-index: 2147483647 !important;
     padding: 15px;
   }
 
@@ -531,16 +544,27 @@
   }
 
   .task-container.minimized {
-    top: 57% !important;
-    right: calc(40% - 140px) !important;
-    transform: translateY(-50%);
-    width: 50px;
-    height: 50px;
+    /* Synchronized button container size */
+    width: 55px !important;
+    height: 55px !important;
+    /* Synchronized positioning */
+    top: 56% !important; /* All toggles will overlap here for testing */
+    right: 25px !important; /* Consistent right gap */
+    left: auto !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .task-container.minimized:hover {
+    transform: translateY(-50%) scale(1.05) !important;
+  }
+
+  .task-container.minimized:active {
+    transform: translateY(-50%) scale(0.95) !important;
   }
 
   .task-container.inside-location.minimized {
-    top: 58% !important;
-    right: calc(40% - 140px) !important;
+    top: 56% !important; /* Keep consistent with general minimized state for mobile */
+    right: 25px !important;
     transform: translateY(-50%) !important;
   }
 
@@ -550,8 +574,8 @@
     background-repeat: no-repeat;
     margin-bottom: 2px;
     margin-left: 1px;
-    width: 25px;
-    height: 25px;
+    width: 30px; /* Synchronized icon size */
+    height: 30px; /* Synchronized icon size */
     filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
   }
 
@@ -596,9 +620,8 @@
 }
 
 @media screen and (min-width: 769px) and (max-width: 1024px) {
-  /* Maximum z-index for tablet expanded task */
   .task-modal-overlay {
-    z-index: 2147483647 !important; /* Maximum possible z-index */
+    z-index: 2147483647 !important;
   }
 
   .task-modal-content {
@@ -610,16 +633,19 @@
   }
 
   .task-container.minimized {
-    top: 62%;
-    right: 80%;
-    transform: translateX(105px);
-    width: 50px;
-    height: 50px;
+    /* Synchronized button container size */
+    width: 55px !important;
+    height: 55px !important;
+    /* Synchronized positioning for tablet */
+    top: 41% !important; /* All toggles will overlap here for testing */
+    right: 25px !important; /* Consistent right gap */
+    left: auto !important;
+    transform: translateY(-50%) !important;
   }
 
   .task-container.inside-location.minimized {
-    top: 62% !important;
-    right: calc(50% + 23px) !important;
+    top: 41% !important;
+    right: 25px !important;
     transform: translateY(-50%) !important;
   }
 }
@@ -646,7 +672,7 @@
   .task-window {
     width: 275px !important;
     height: 375px !important;
-    z-index: 102 !important; /* Normal z-index for desktop */
+    z-index: 102 !important;
   }
 
   .task-close-btn {

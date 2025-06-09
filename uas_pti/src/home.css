@@ -100,10 +100,10 @@
   }
 
   .home-game-viewport {
-    width: calc(100vw - 30px); /* 20px gaps on sides */
+    width: calc(100vw - 30px); /* Consistent 30px gap */
     height: calc(100vh - 240px); /* Fill remaining height */
     margin: auto;
     min-height: 240px; /* Minimum height to prevent too small */
-    margin-top: 150px;
+    margin-top: 150px; /* This margin directly affects where your map starts */
   }
 }

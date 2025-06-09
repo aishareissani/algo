@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import "../speed.css";
 
 // Create a context to manage speed mode across components
@@ -37,19 +37,37 @@ const FastForwardIcon = () => (
   </svg>
 );
 
-// Speed Toggle Button component
+// Speed Toggle Button component - Fixed version
 export function SpeedToggleButton() {
   const { isFastForward, toggleSpeedMode } = useSpeedMode();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
-  // Check if current screen size should use mini circular behavior
-  const shouldUseMiniCircular = () => {
-    return window.innerWidth <= 1024;
+  // Add resize listener to properly update mobile state
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+
+    // Set initial state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    // Clean up
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Handle click with debugging
+  const handleClick = (e) => {
+    e.preventDefault();
+    console.log("Speed toggle clicked");
+    toggleSpeedMode();
   };
 
   return (
-    <button onClick={toggleSpeedMode} className={`speed-toggle-button ${isFastForward ? "fast-forward" : "normal"} ${shouldUseMiniCircular() ? "mini-circular" : ""}`}>
-      {/* Desktop version - shows icon + text */}
-      {!shouldUseMiniCircular() && (
+    <button onClick={handleClick} className={`speed-toggle-button ${isFastForward ? "fast-forward" : "normal"} ${isMobile ? "mini-circular" : ""}`} aria-label={isFastForward ? "Switch to normal speed" : "Switch to fast forward"}>
+      {!isMobile ? (
         <>
           {isFastForward ? (
             <>
@@ -63,12 +81,23 @@ export function SpeedToggleButton() {
             </>
           )}
         </>
+      ) : (
+        <>{isFastForward ? <FastForwardIcon /> : <PlayIcon />}</>
       )}
-
-      {/* Mobile/Tablet version - shows only icon */}
-      {shouldUseMiniCircular() && <>{isFastForward ? <FastForwardIcon /> : <PlayIcon />}</>}
     </button>
   );
 }
 
-export default { SpeedModeProvider, useSpeedMode, SpeedToggleButton };
+// Example of how to use the components in your app
+export function SpeedControlApp() {
+  return (
+    <SpeedModeProvider>
+      <div className="app">
+        {/* Your app content */}
+        <SpeedToggleButton />
+      </div>
+    </SpeedModeProvider>
+  );
+}
+
+export default { SpeedModeProvider, useSpeedMode, SpeedToggleButton, SpeedControlApp };
