@@ -1,5 +1,6 @@
+// backTo.jsx
 import React from "react";
-import "../BackTo.css";
+import "../backTo.css";
 
 const BackTo = ({
   type = "map", // "start", "home", or "map"

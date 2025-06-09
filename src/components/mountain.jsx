@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
-import BackTo from "./BackTo"; // ADD THIS IMPORT (lowercase)
+import BackTo from "./backTo"; // ADD THIS IMPORT (lowercase)
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import "../mountain.css";
