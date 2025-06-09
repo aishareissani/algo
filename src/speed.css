@@ -43,23 +43,6 @@
   overflow: hidden;
 }
 
-/* Mini circular version for mobile/tablet */
-.speed-toggle-button.mini-circular {
-  width: 55px; /* Synchronized container size */
-  height: 55px; /* Synchronized container size */
-  min-width: 55px;
-  border-radius: 50%;
-  padding: 0;
-  gap: 0;
-  top: 60%;
-  left: 50%;
-  right: auto;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .speed-toggle-button.normal {
   background: linear-gradient(145deg, var(--speed-normal-bg-1), var(--speed-normal-bg-2));
   color: var(--speed-normal-text);
@@ -71,17 +54,10 @@
 }
 
 .speed-toggle-button svg {
-  width: 30px; /* Synchronized icon size */
-  height: 30px; /* Synchronized icon size */
+  width: 30px;
+  height: 30px;
   fill: currentColor;
   flex-shrink: 0;
-  margin-right: 0; /* Ensure no extra margin for circular icons */
-}
-
-/* Adjust icon size for mini circular - will be overridden by general svg rule now */
-.speed-toggle-button.mini-circular svg {
-  width: 30px; /* Synchronized icon size */
-  height: 30px; /* Synchronized icon size */
   margin-right: 0;
 }
 
@@ -98,14 +74,8 @@
   transition: opacity 0.3s ease;
 }
 
+/* ===== REMOVED ALL TRANSFORMS - ONLY SHADOW/OVERLAY CHANGES ===== */
 .speed-toggle-button:hover {
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.1s ease-out;
-  box-shadow: 0 8px 20px var(--speed-hover-shadow);
-}
-
-/* Hover for mini circular - maintain center position */
-.speed-toggle-button.mini-circular:hover {
-  transform: translate(-50%, -50%) translateY(-2px) scale(1.05);
   box-shadow: 0 8px 20px var(--speed-hover-shadow);
 }
 
@@ -114,13 +84,6 @@
 }
 
 .speed-toggle-button:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px var(--speed-active-shadow);
-}
-
-/* Active for mini circular - maintain center position */
-.speed-toggle-button.mini-circular:active {
-  transform: translate(-50%, -50%) translateY(1px) scale(0.95);
   box-shadow: 0 2px 8px var(--speed-active-shadow);
 }
 
@@ -141,7 +104,7 @@
   transition: 0s;
 }
 
-/* Animation for speed change */
+/* ===== PULSE ANIMATIONS (NO TRANSFORM CONFLICTS) ===== */
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -154,73 +117,45 @@
   }
 }
 
+@keyframes pulseCircular {
+  0% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.05);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+}
+
 /* Pulse animation for fast forward */
 .speed-toggle-button.fast-forward {
   animation: pulse 1.5s infinite;
 }
 
-/* Pulse animation for mini circular fast forward - maintain center position */
-.speed-toggle-button.mini-circular.fast-forward {
-  animation: pulseCircular 1.5s infinite;
-}
-
-@keyframes pulseCircular {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.05);
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-
-/* Smooth icon rotation for transition */
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.speed-toggle-button svg {
-  transition: transform 0.3s ease;
-}
-
-.speed-toggle-button:hover svg {
-  transform: scale(1.2);
-}
-
-.speed-toggle-button.fast-forward:hover svg {
-  animation: rotate 1s linear infinite;
-}
-
-/* Responsive positioning */
+/* ===== RESPONSIVE POSITIONING ===== */
 @media screen and (max-width: 1024px) {
   .speed-toggle-button {
-    /* Force mini circular positioning for mobile/tablet */
-    width: 55px; /* Synchronized container size */
-    height: 55px; /* Synchronized container size */
-    min-width: 55px; /* Ensure min-width is consistent */
-    border-radius: 50%;
-    padding: 0;
-    gap: 0;
-    /* Common positioning for tablet */
+    width: 55px !important;
+    height: 55px !important;
+    min-width: 55px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    gap: 0 !important;
     top: 41% !important;
     right: 25px !important;
     left: auto !important;
     transform: translateY(-50%) !important;
   }
 
+  /* NO HOVER/ACTIVE TRANSFORMS - ONLY SHADOW */
   .speed-toggle-button:hover {
-    transform: translateY(-50%) translateY(-2px) scale(1.05) !important;
+    box-shadow: 0 8px 20px var(--speed-hover-shadow) !important;
   }
 
   .speed-toggle-button:active {
-    transform: translateY(-50%) translateY(1px) scale(0.95) !important;
+    box-shadow: 0 2px 8px var(--speed-active-shadow) !important;
   }
 
   .speed-toggle-button.fast-forward {
@@ -228,16 +163,14 @@
   }
 
   .speed-toggle-button svg {
-    width: 30px; /* Synchronized icon size */
-    height: 30px; /* Synchronized icon size */
-    margin-right: 0;
+    width: 30px !important;
+    height: 30px !important;
+    margin-right: 0 !important;
   }
 }
 
-/* Mobile specific adjustments (max-width: 768px) */
-/* Mobile specific adjustments (max-width: 768px) */
 @media screen and (max-width: 768px) {
-  .speed-toggle-button.mini-circular {
+  .speed-toggle-button {
     width: 55px !important;
     height: 55px !important;
     top: 41% !important;
@@ -246,30 +179,42 @@
     transform: translateY(-50%) !important;
   }
 
+  /* NO HOVER/ACTIVE TRANSFORMS - ONLY SHADOW */
   .speed-toggle-button:hover {
-    transform: translateY(-50%) translateY(-2px) scale(1.05) !important;
+    box-shadow: 0 8px 20px var(--speed-hover-shadow) !important;
   }
 
   .speed-toggle-button:active {
-    transform: translateY(-50%) translateY(1px) scale(0.95) !important;
-    animation-play-state: paused !important; /* Pause animasi saat ditekan */
+    box-shadow: 0 2px 8px var(--speed-active-shadow) !important;
   }
 
-  /* Override pulse animation untuk mobile - maintain center position */
   .speed-toggle-button.fast-forward {
-    animation: pulseMobile 1.5s infinite;
+    animation: pulseCircular 1.5s infinite;
   }
 
-  @keyframes pulseMobile {
-    0% {
-      transform: translateY(-50%) scale(1);
-    }
-    50% {
-      transform: translateY(-50%) scale(1.05);
-    }
-    100% {
-      transform: translateY(-50%) scale(1);
-    }
+  .speed-toggle-button svg {
+    width: 30px !important;
+    height: 30px !important;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .speed-toggle-button {
+    width: 55px !important;
+    height: 55px !important;
+    top: 41% !important;
+    right: 25px !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
+  }
+
+  /* NO HOVER/ACTIVE TRANSFORMS - ONLY SHADOW */
+  .speed-toggle-button:hover {
+    box-shadow: 0 8px 20px var(--speed-hover-shadow) !important;
+  }
+
+  .speed-toggle-button:active {
+    box-shadow: 0 2px 8px var(--speed-active-shadow) !important;
   }
 }
 
@@ -288,12 +233,15 @@
     gap: 10px;
   }
 
+  /* DESKTOP GETS SOME HOVER TRANSFORM (OPTIONAL) */
   .speed-toggle-button:hover {
     transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px var(--speed-hover-shadow);
   }
 
   .speed-toggle-button:active {
     transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 8px var(--speed-active-shadow);
   }
 
   .speed-toggle-button.fast-forward {
@@ -305,4 +253,26 @@
     height: 20px;
     margin-right: 2px;
   }
+}
+
+/* ===== ICON HOVER EFFECTS (OPTIONAL) ===== */
+.speed-toggle-button svg {
+  transition: transform 0.3s ease;
+}
+
+.speed-toggle-button:hover svg {
+  transform: scale(1.1);
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.speed-toggle-button.fast-forward:hover svg {
+  animation: rotate 1s linear infinite;
 }

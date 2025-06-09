@@ -126,7 +126,6 @@
   background-position: center !important;
   filter: drop-shadow(1px 1px 2px var(--task-icon-shadow)) !important;
   /* FALLBACK untuk test */
-  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Fullscreen modal for mobile/tablet - HIGHEST Z-INDEX */
