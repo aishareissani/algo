@@ -489,7 +489,7 @@
     position: absolute !important;
     top: 50% !important;
     right: 30px !important;
-    transform: translateY(130px) !important;
+    transform: translateY(120px) !important;
   }
 
   .task-container.minimized:hover {
@@ -497,7 +497,7 @@
   }
 
   .task-container.inside-location.minimized:hover {
-    transform: translateY(50px) scale(1.05) !important;
+    transform: translateY(120px) scale(1.05) !important;
   }
 
   .task-container.minimized:active {
@@ -505,7 +505,7 @@
   }
 
   .task-container.inside-location.minimized:active {
-    transform: translateY(50px) scale(0.95) !important;
+    transform: translateY(120px) scale(0.95) !important;
   }
 
   .task-window-modal .task-title {
@@ -575,7 +575,7 @@
     position: absolute !important;
     top: 50% !important;
     right: 10px !important;
-    transform: translateY(130px) !important;
+    transform: translateY(120px) !important;
   }
 
   .task-window-modal {
