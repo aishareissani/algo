@@ -998,28 +998,32 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: linear-gradient(135deg, var(--stats-level-up-bg-1), var(--stats-level-up-bg-2));
-  border: 2px solid var(--stats-level-up-border);
+  background: linear-gradient(135deg, #ffd700, #fff9c4);
+  border: 3px solid #fff;
   border-radius: 20px;
   padding: 24px 48px;
   text-align: center;
-  z-index: 10000;
-  box-shadow: 0 0 12px var(--stats-level-up-shadow-1), 0 0 24px var(--stats-level-up-shadow-2), inset 0 0 8px var(--stats-level-up-shadow-3);
-  animation: levelUpFade 7s ease-out forwards;
+  z-index: 2147483647 !important; /* Highest z-index to appear above everything */
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4), 0 0 24px rgba(255, 215, 0, 0.3), inset 0 0 8px rgba(255, 255, 255, 0.3);
+  animation: levelUpFade 4s ease-out forwards;
+  font-family: "Press Start 2P", system-ui;
+  pointer-events: none;
 }
 
 .level-up-text {
   font-size: 26px;
   font-weight: bold;
-  color: var(--stats-level-up-text);
-  text-shadow: 0 1px 0 var(--stats-level-up-text-shadow-1), 0 0 6px var(--stats-level-up-text-shadow-2);
+  color: #fff;
+  text-shadow: 0 1px 0 #a86d00, 0 0 6px #fff4c1;
   margin-bottom: 10px;
+  letter-spacing: 1px;
 }
 
 .level-up-details {
   font-size: 16px;
-  color: var(--stats-level-up-details);
+  color: #4b3b00;
   font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 @keyframes levelUpFade {
@@ -1074,13 +1078,56 @@ body {
 
 /* To ensure the map has space for all three toggles */
 @media screen and (max-width: 768px) {
-  .home-game-viewport {
-    width: calc(100vw - 30px);
-    height: calc(100vh - 240px);
-    margin: auto;
-    min-height: 240px;
-    margin-top: 150px;
-    padding-right: 80px;
-    box-sizing: border-box;
+  .level-up-notification {
+    width: 70vw;
+    max-width: 250px;
+    padding: 20px 30px;
+  }
+
+  .level-up-text {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .level-up-details {
+    font-size: 12px;
+  }
+}
+
+/* Additional animation for level badge */
+.level-up-animation {
+  animation: levelBadgePulse 1s ease-out;
+}
+
+@keyframes levelBadgePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(121, 85, 72, 0.1);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    background: linear-gradient(135deg, #ffd700, #fff9c4);
+    color: #4b3b00;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(121, 85, 72, 0.1);
+  }
+}
+
+.level-number-animated {
+  animation: levelNumberGlow 1s ease-out;
+}
+
+@keyframes levelNumberGlow {
+  0% {
+    text-shadow: none;
+  }
+  50% {
+    text-shadow: 0 0 10px #ffd700;
+  }
+  100% {
+    text-shadow: none;
   }
 }

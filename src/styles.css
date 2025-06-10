@@ -749,8 +749,8 @@ body {
 
   /* Adjust activity overlay for mobile */
   .activity-overlay {
-    width: 90vw;
-    max-width: 320px;
+    width: 80vw;
+    max-width: 280px;
     padding: 20px 25px;
   }
 

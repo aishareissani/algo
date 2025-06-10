@@ -13,6 +13,8 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visit
   const [decreasedIndicators, setDecreasedIndicators] = useState({});
   const [levelUpAnimation, setLevelUpAnimation] = useState(false);
   const [xpGainAnimation, setXpGainAnimation] = useState(false);
+  const [showLevelUpNotification, setShowLevelUpNotification] = useState(false);
+  const [levelUpData, setLevelUpData] = useState({ newLevel: 1, oldLevel: 1 });
   const prevStatsRef = useRef();
   const { isFastForward } = useSpeedMode();
 
@@ -130,13 +132,29 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visit
         setTimeout(() => setXpGainAnimation(false), 1000);
       }
 
+      // Level up calculation and notification
       const baseLevel = 1;
       const xpLevels = Math.floor(stats.experience / 5);
       const spLevels = Math.floor(stats.skillPoints / 5);
       const calculatedLevel = baseLevel + xpLevels + spLevels;
 
       if (calculatedLevel > stats.level) {
-        // Update level without showing notification
+        // Show level up notification
+        setLevelUpData({ newLevel: calculatedLevel, oldLevel: stats.level });
+        setShowLevelUpNotification(true);
+        setLevelUpAnimation(true);
+
+        // Hide notification after 4 seconds
+        setTimeout(() => {
+          setShowLevelUpNotification(false);
+        }, 4000);
+
+        // Hide level badge animation after 1 second
+        setTimeout(() => {
+          setLevelUpAnimation(false);
+        }, 1000);
+
+        // Update level
         onStatsUpdate({
           ...stats,
           level: calculatedLevel,
@@ -200,6 +218,14 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visit
 
   return (
     <>
+      {/* Level Up Notification */}
+      {showLevelUpNotification && (
+        <div className="level-up-notification">
+          <div className="level-up-text">LEVEL UP!</div>
+          <div className="level-up-details">Level {levelUpData.newLevel}</div>
+        </div>
+      )}
+
       {/* Game Over Screen - Should be at the very top level */}
       {showGameOver && (
         <GameOver
