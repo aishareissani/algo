@@ -480,32 +480,13 @@
   .task-container.minimized {
     top: 50% !important;
     right: 30px !important;
-    width: 55px !important;
-    height: 55px !important;
-    transform: translateY(120px) !important;
+    transform: translateY(130px) !important;
   }
 
   .task-container.inside-location.minimized {
-    position: absolute !important;
     top: 50% !important;
     right: 30px !important;
-    transform: translateY(120px) !important;
-  }
-
-  .task-container.minimized:hover {
-    transform: scale(1.05) !important;
-  }
-
-  .task-container.inside-location.minimized:hover {
-    transform: scale(1.05) !important;
-  }
-
-  .task-container.minimized:active {
-    transform: scale(1.05) !important;
-  }
-
-  .task-container.inside-location.minimized:active {
-    transform: scale(1.05) !important;
+    transform: translateY(130px) !important;
   }
 
   .task-window-modal .task-title {
