@@ -482,9 +482,9 @@
   }
 
   .task-container.inside-location.minimized {
-    top: 50%;
-    right: 30px;
-    transform: translateY(calc(-50% + 538px)); /* Lakukan hal yang sama di sini */
+    top: 50% !important;
+    right: 30px !important;
+    transform: translateY(130px) !important;
   }
 
   .task-window-modal .task-title {
@@ -548,9 +548,9 @@
   }
 
   .task-container.inside-location.minimized {
-    top: 50%;
-    right: 10px;
-    transform: translateY(calc(-50% + 155px)); /* Dan di sini */
+    top: 50% !important;
+    right: 30% !important; /* TETAPKAN right 10px dari kanan */
+    transform: translateY(130px) !important; /* Konsisten dengan mobile */
   }
 
   .task-window-modal {
