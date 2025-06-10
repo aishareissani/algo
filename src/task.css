@@ -69,13 +69,61 @@
   z-index: 100;
 }
 
+/* Circular button container for mobile/tablet */
+.task-button-circular-container {
+  position: fixed;
+  top: 50%;
+  right: 10px;
+  transform: translateY(110px); /* Offset below inventory */
+  z-index: 1001;
+  pointer-events: auto;
+}
+
+.task-button-circular-container.inside-location {
+  position: absolute;
+  transform: translateY(80px); /* Offset below inventory when inside location */
+}
+
+.task-button-circular {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: var(--task-minimized-bg);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px var(--task-minimized-shadow);
+  transition: all 0.3s ease;
+}
+
+.task-button-circular:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px var(--task-minimized-shadow);
+}
+
+.task-button-circular:active {
+  transform: scale(0.95);
+}
+
+.task-icon-circular {
+  width: 30px;
+  height: 30px;
+  background-image: url("/assets/icons/task.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: drop-shadow(1px 1px 2px var(--task-icon-shadow));
+}
+
 /* Desktop task container */
 .task-container {
   position: fixed;
   top: 226px;
   right: 80px;
   pointer-events: auto;
-  z-index: 101;
+  z-index: 101 !important;
   display: flex;
   flex-direction: column;
   width: 270px;
@@ -88,60 +136,6 @@
   top: 18px;
   right: 75px;
   transform: translateY(50px);
-  width: 270px;
-}
-
-.task-container.expanded {
-  width: auto;
-  height: auto;
-  border-radius: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  cursor: default;
-}
-
-/* TASK CIRCULAR BUTTON FOR MOBILE/TABLET - MENGIKUTI STRUKTUR INVENTORY */
-.task-button-circular-container {
-  position: fixed;
-  z-index: 101;
-  transition: all 0.3s ease;
-}
-
-.task-button-circular-container.inside-location {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-15px);
-}
-
-.task-button-circular {
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background: var(--task-minimized-bg);
-  border: 3px solid var(--task-window-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px var(--task-minimized-shadow);
-}
-
-.task-button-circular:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px var(--task-minimized-shadow);
-}
-
-.task-icon-circular {
-  background-image: url("/assets/icons/task.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  width: 30px !important;
-  height: 30px !important;
-  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 /* Fullscreen modal for mobile/tablet - HIGHEST Z-INDEX */
@@ -155,7 +149,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2147483647;
+  z-index: 2147483647 !important;
   padding: 20px;
   box-sizing: border-box;
 }
@@ -167,15 +161,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2147483647;
+  z-index: 2147483647 !important;
 }
 
 .task-window-modal {
-  width: 100%;
-  height: auto;
-  max-height: 80vh;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 80vh !important;
   animation: modalSlideIn 0.3s ease-out;
-  z-index: 2147483647;
+  z-index: 2147483647 !important;
 }
 
 @keyframes modalSlideIn {
@@ -195,15 +189,15 @@
   border: 3px solid var(--task-window-border);
   border-radius: 15px;
   box-shadow: 0 8px 32px var(--task-window-shadow);
-  width: 275px;
-  height: 390px;
+  width: 275px !important;
+  height: 390px !important;
   display: flex;
   flex-direction: column;
   animation: slideDown 0.3s ease-out;
   font-family: "Press Start 2P", system-ui;
   box-sizing: border-box;
   position: relative;
-  z-index: 102;
+  z-index: 102 !important;
 }
 
 @keyframes slideDown {
@@ -472,50 +466,29 @@
 
 /* Mobile positioning */
 @media screen and (max-width: 768px) {
+  .task-button-circular-container {
+    top: 50%;
+    right: 30px;
+    transform: translateY(140px);
+  }
+
+  .task-button-circular-container.inside-location {
+    top: 50%;
+    right: 30px;
+    transform: translateY(140px);
+  }
+
   .task-modal-overlay {
-    z-index: 2147483647;
+    z-index: 2147483647 !important;
     padding: 15px;
   }
 
   .task-modal-content {
-    z-index: 2147483647;
+    z-index: 2147483647 !important;
   }
 
   .task-window-modal {
-    z-index: 2147483647;
-  }
-
-  .task-button-circular-container {
-    top: 50% !important;
-    right: 30px !important;
-    width: 55px !important;
-    height: 55px !important;
-    transform: translateY(140px) !important;
-  }
-
-  .task-button-circular-container.inside-location {
-    position: absolute !important;
-    top: 50% !important;
-    right: 30px !important;
-    transform: translateY(120px) !important;
-  }
-
-  .task-button-circular-container:hover {
-    transform: translateY(-15px) scale(1.05) !important;
-  }
-
-  .task-button-circular-container:active {
-    transform: translateY(-15px) scale(0.95) !important;
-  }
-
-  .task-button-circular {
-    width: 100%;
-    height: 100%;
-  }
-
-  .task-icon-circular {
-    width: 30px !important;
-    height: 30px !important;
+    z-index: 2147483647 !important;
   }
 
   .task-window-modal .task-title {
@@ -560,47 +533,24 @@
 
 /* Tablet positioning */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
-  .task-modal-overlay {
-    z-index: 2147483647;
-  }
-
-  .task-modal-content {
-    z-index: 2147483647;
-  }
-
-  .task-window-modal {
-    z-index: 2147483647;
-  }
-
   .task-button-circular-container {
-    top: 85px !important;
-    right: 30px !important;
-    width: 55px !important;
-    height: 55px !important;
-    transform: none !important;
+    transform: translateY(110px);
   }
 
   .task-button-circular-container.inside-location {
-    position: absolute !important;
-    top: 50% !important;
-    right: 30px !important;
-    transform: translateY(140px) !important;
+    transform: translateY(80px);
   }
 
-  .task-button-circular-container:hover {
-    transform: scale(1.05) !important;
+  .task-modal-overlay {
+    z-index: 2147483647 !important;
   }
 
-  .task-button-circular-container.inside-location:hover {
-    transform: translateY(-15px) scale(1.05) !important;
+  .task-modal-content {
+    z-index: 2147483647 !important;
   }
 
-  .task-button-circular-container:active {
-    transform: scale(0.95) !important;
-  }
-
-  .task-button-circular-container.inside-location:active {
-    transform: translateY(-15px) scale(0.95) !important;
+  .task-window-modal {
+    z-index: 2147483647 !important;
   }
 
   .task-window-modal {
@@ -626,8 +576,11 @@
 
 /* Desktop - Always expanded (normal z-index) */
 @media screen and (min-width: 1025px) {
+  .task-button-circular-container {
+    display: none; /* Hide circular button on desktop */
+  }
+
   .task-container {
-    position: fixed;
     top: 226px;
     right: 80px;
     width: 270px;
@@ -635,24 +588,20 @@
   }
 
   .task-container.inside-location {
-    position: absolute;
-    top: 18px;
-    right: 75px;
-    transform: translateY(50px);
+    position: absolute !important;
+    top: 18px !important;
+    right: 75px !important;
+    transform: translateY(50px) !important;
     width: 270px;
   }
 
   .task-window {
-    width: 275px;
-    height: 375px;
-    z-index: 102;
+    width: 275px !important;
+    height: 375px !important;
+    z-index: 102 !important;
   }
 
   .task-close-btn {
-    display: none;
-  }
-
-  .task-button-circular-container {
     display: none;
   }
 }
@@ -669,8 +618,4 @@
 .task-list::-webkit-scrollbar-thumb {
   background: var(--task-list-scroll-thumb);
   border-radius: 3px;
-}
-
-.task-list::-webkit-scrollbar-thumb:hover {
-  background: #5d4037;
 }

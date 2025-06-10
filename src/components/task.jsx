@@ -71,10 +71,6 @@ const Task = ({ currentLocation, containerWidth = 250, containerHeight = 350, is
     return window.innerWidth <= 1024;
   };
 
-  const shouldUseCircularBehavior = () => {
-    return window.innerWidth <= 1024;
-  };
-
   useEffect(() => {
     if (externalTasks) {
       setTasks(externalTasks);
@@ -217,8 +213,8 @@ const Task = ({ currentLocation, containerWidth = 250, containerHeight = 350, is
 
   return (
     <>
-      {/* Circular button for mobile/tablet */}
-      {shouldUseCircularBehavior() && (
+      {/* Circular button for mobile/tablet - similar to inventory */}
+      {shouldUseMinimizedBehavior() && (
         <div className={`task-button-circular-container ${isInsideLocation ? "inside-location" : ""}`}>
           <button onClick={toggleExpanded} className="task-button-circular">
             <div className="task-icon-circular"></div>
