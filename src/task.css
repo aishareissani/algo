@@ -77,13 +77,6 @@
   transition: all 0.3s ease;
 }
 
-.task-button-circular-container.inside-location {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(80px); /* Positioned below inventory */
-}
-
 .task-button-circular {
   width: 55px;
   height: 55px;
@@ -129,13 +122,6 @@
   width: 270px;
   align-items: flex-start;
   transition: all 0.3s ease;
-}
-
-.task-container.inside-location {
-  position: absolute;
-  top: 18px;
-  right: 75px;
-  transform: translateY(50px);
 }
 
 /* Fullscreen modal for mobile/tablet - HIGHEST Z-INDEX */
