@@ -492,22 +492,6 @@
     transform: translateY(90px) !important;
   }
 
-  .task-container.minimized:hover {
-    transform: scale(1.05) !important;
-  }
-
-  .task-container.inside-location.minimized:hover {
-    transform: translateY(50px) scale(1.05) !important;
-  }
-
-  .task-container.minimized:active {
-    transform: scale(0.95) !important;
-  }
-
-  .task-container.inside-location.minimized:active {
-    transform: translateY(50px) scale(0.95) !important;
-  }
-
   .task-window-modal .task-title {
     font-size: 12px;
   }

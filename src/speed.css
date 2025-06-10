@@ -172,14 +172,6 @@
     transform: translateY(-70%) !important;
   }
 
-  .speed-toggle-button:hover {
-    box-shadow: 0 8px 20px var(--speed-hover-shadow) !important;
-  }
-
-  .speed-toggle-button:active {
-    box-shadow: 0 2px 8px var(--speed-active-shadow) !important;
-  }
-
   .speed-toggle-button.fast-forward {
     animation: pulseCircular 1.5s infinite;
   }

@@ -201,6 +201,7 @@ body {
 .judul_chara {
   color: var(--map-chara-title);
   text-shadow: 3px 3px 5px var(--map-chara-shadow);
+  line-height: 35px;
 }
 
 .glass-card {
@@ -239,6 +240,15 @@ body {
   border: 2px solid var(--map-arrow-border);
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px var(--map-arrow-shadow);
+  /* Default desktop size */
+  padding: 8px;
+}
+
+.arrow_button img {
+  /* Consistent icon size across devices */
+  width: 16px;
+  height: 16px;
+  max-width: 16px;
 }
 
 .arrow_button:hover {
@@ -523,7 +533,7 @@ body {
   box-shadow: 0 8px 32px var(--map-dialog-shadow);
   text-align: center;
   border: 3px solid var(--map-dialog-border);
-  z-index: 100;
+  z-index: 10000;
   animation: fadeIn 0.3s ease-out;
   width: 280px;
 }
@@ -699,15 +709,24 @@ body {
     box-shadow: 0 4px 12px var(--map-mini-map-shadow);
     pointer-events: auto;
 
-    /* Responsive sizing based on available space */
-    width: calc(100vw - 25px - 65px - 10px); /* screen width - right margin - toggle width (with some buffer) - gap */
-    height: calc(100vh - 250px - 65px - 10px - 15px); /* screen height - stats area - toggle height - gaps - bottom padding */
+    width: calc(100vw - 25px - 65px - 10px);
+    height: calc(100vh - 250px - 65px - 10px - 15px);
 
     /* Constraints untuk prevent extreme sizes */
     min-width: 100px;
     max-width: 180px;
     min-height: 60px;
     max-height: 140px;
+
+    .arrow_button {
+      padding: 8px; /* Same as desktop */
+    }
+
+    .arrow_button img {
+      width: 16px; /* Same as desktop */
+      height: 16px; /* Same as desktop */
+      max-width: 16px;
+    }
   }
 
   /* Specific untuk iPhone SE dan device kecil serupa (width <= 375px) */
@@ -749,8 +768,8 @@ body {
 
   /* Adjust activity overlay for mobile */
   .activity-overlay {
-    width: 80vw;
-    max-width: 280px;
+    width: 90vw;
+    max-width: 320px;
     padding: 20px 25px;
   }
 
@@ -788,6 +807,16 @@ body {
     bottom: 40px;
     right: 40px;
     width: 220px;
+  }
+
+  .arrow_button {
+    padding: 8px; /* Same as desktop */
+  }
+
+  .arrow_button img {
+    width: 16px; /* Same as desktop */
+    height: 16px; /* Same as desktop */
+    max-width: 16px;
   }
 }
 

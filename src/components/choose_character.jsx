@@ -37,8 +37,8 @@ function ChooseCharacter() {
         <h1 className="judul_chara text-white text-[26px] sm:text-[32px] uppercase text-center font-bold tracking-wider select-none leading-tight">Choose Your Character</h1>
 
         <div className="flex items-center justify-center gap-4 sm:gap-6">
-          <button onClick={handlePrevious} className="arrow_button p-2 hover:scale-110 transition-transform rounded-[10px] flex items-center justify-center">
-            <img src="/assets/icons/left_arrow.svg" alt="Left" className="max-w-[20px]" />
+          <button onClick={handlePrevious} className="arrow_button hover:scale-110 transition-transform rounded-[10px] flex items-center justify-center">
+            <img src="/assets/icons/left_arrow.svg" alt="Left" />
           </button>
 
           <div className="flex flex-col items-center gap-3">
@@ -47,8 +47,8 @@ function ChooseCharacter() {
             </div>
           </div>
 
-          <button onClick={handleNext} className="arrow_button p-2 hover:scale-110 transition-transform rounded-[10px] flex items-center justify-center">
-            <img src="/assets/icons/right_arrow.svg" alt="Right" className="max-w-[20px]" />
+          <button onClick={handleNext} className="arrow_button hover:scale-110 transition-transform rounded-[10px] flex items-center justify-center">
+            <img src="/assets/icons/right_arrow.svg" alt="Right" />
           </button>
         </div>
 
