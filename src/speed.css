@@ -162,7 +162,7 @@
     top: 50% !important;
     right: 30px !important;
     left: auto !important;
-    transform: translateY(-70%) !important;
+    transform: translateY(-30%) !important;
   }
 
   .speed-toggle-button.inside-location {

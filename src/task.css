@@ -482,14 +482,14 @@
     right: 30px !important;
     width: 55px !important;
     height: 55px !important;
-    transform: translateY(80px) !important;
+    transform: translateY(120px) !important;
   }
 
   .task-container.inside-location.minimized {
     position: absolute !important;
     top: 50% !important;
     right: 30px !important;
-    transform: translateY(80px) !important;
+    transform: translateY(130px) !important;
   }
 
   .task-container.minimized:hover {
