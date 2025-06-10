@@ -69,50 +69,9 @@
   z-index: 100;
 }
 
-/* Circular button container for mobile/tablet */
-.task-button-circular-container {
-  position: fixed;
-  z-index: 1001;
-  pointer-events: auto;
-  transition: all 0.3s ease;
-}
-
-.task-button-circular {
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background: var(--task-minimized-bg);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px var(--task-minimized-shadow);
-  transition: all 0.3s ease;
-}
-
-.task-button-circular:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px var(--task-minimized-shadow);
-}
-
-.task-button-circular:active {
-  transform: scale(0.95);
-}
-
-.task-icon-circular {
-  width: 30px;
-  height: 30px;
-  background-image: url("/assets/icons/task.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  filter: drop-shadow(1px 1px 2px var(--task-icon-shadow));
-}
-
-/* Desktop task container */
+/* Floating button container */
 .task-container {
-  position: fixed;
+  position: fixed; /* Fixed untuk map biasa, akan di-override untuk inside location */
   top: 226px;
   right: 80px;
   pointer-events: auto;
@@ -122,6 +81,59 @@
   width: 270px;
   align-items: flex-start;
   transition: all 0.3s ease;
+}
+
+/* Ketika inside location, posisi berubah ke absolute (relatif ke viewport) */
+.task-container.inside-location {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(50px); /* Offset untuk stacking */
+}
+
+/* Minimized floating button */
+.task-container.minimized {
+  width: 55px;
+  height: 55px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--task-minimized-bg);
+  box-shadow: 0 4px 12px var(--task-minimized-shadow);
+}
+
+.task-container.minimized:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px var(--task-minimized-shadow);
+}
+
+.task-container.inside-location.minimized:hover {
+  transform: translateY(50px) scale(1.05);
+  box-shadow: 0 6px 16px var(--task-minimized-shadow);
+}
+
+.task-container.expanded {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.task-minimized-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px !important;
+  height: 30px !important;
+  background-image: url("/assets/icons/task.png") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  filter: drop-shadow(1px 1px 2px var(--task-icon-shadow)) !important;
 }
 
 /* Fullscreen modal for mobile/tablet - HIGHEST Z-INDEX */
@@ -450,35 +462,8 @@
   opacity: 0.8;
 }
 
-/* Mobile positioning - PERSIS SEPERTI INVENTORY */
+/* Mobile positioning */
 @media screen and (max-width: 768px) {
-  .task-button-circular-container {
-    top: 50% !important;
-    right: 30px !important;
-    width: 55px !important;
-    height: 55px !important;
-    transform: translateY(140px) !important; /* Below inventory yang di translateY(60px) */
-  }
-
-  .task-button-circular-container.inside-location {
-    position: absolute !important;
-    top: 50% !important;
-    right: 30px !important;
-    transform: translateY(140px) !important; /* Below inventory yang di translateY(25px) */
-  }
-
-  .task-button-circular:hover {
-    transform: scale(1.05) !important;
-  }
-
-  .task-button-circular-container.inside-location .task-button-circular:hover {
-    transform: scale(1.05) !important;
-  }
-
-  .task-button-circular:active {
-    transform: scale(0.95) !important;
-  }
-
   .task-modal-overlay {
     z-index: 2147483647 !important;
     padding: 15px;
@@ -490,6 +475,37 @@
 
   .task-window-modal {
     z-index: 2147483647 !important;
+  }
+
+  .task-container.minimized {
+    top: 50% !important;
+    right: 30px !important;
+    width: 55px !important;
+    height: 55px !important;
+    transform: translateY(130px) !important;
+  }
+
+  .task-container.inside-location.minimized {
+    position: absolute !important;
+    top: 50% !important;
+    right: 30px !important;
+    transform: translateY(90px) !important;
+  }
+
+  .task-container.minimized:hover {
+    transform: scale(1.05) !important;
+  }
+
+  .task-container.inside-location.minimized:hover {
+    transform: translateY(50px) scale(1.05) !important;
+  }
+
+  .task-container.minimized:active {
+    transform: scale(0.95) !important;
+  }
+
+  .task-container.inside-location.minimized:active {
+    transform: translateY(50px) scale(0.95) !important;
   }
 
   .task-window-modal .task-title {
@@ -534,21 +550,6 @@
 
 /* Tablet positioning */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
-  .task-button-circular-container {
-    top: 85px !important;
-    right: 30px !important;
-    width: 55px !important;
-    height: 55px !important;
-    transform: translateY(60px) !important; /* Below inventory */
-  }
-
-  .task-button-circular-container.inside-location {
-    position: absolute !important;
-    top: 50% !important;
-    right: 30px !important;
-    transform: translateY(40px) !important; /* Below inventory */
-  }
-
   .task-modal-overlay {
     z-index: 2147483647 !important;
   }
@@ -559,6 +560,22 @@
 
   .task-window-modal {
     z-index: 2147483647 !important;
+  }
+
+  .task-container.minimized {
+    top: 50% !important;
+    right: 10px !important;
+    width: 55px !important;
+    height: 55px !important;
+    transform: translateY(50px) !important;
+  }
+
+  /* Inside location - tengah viewport */
+  .task-container.inside-location.minimized {
+    position: absolute !important;
+    top: 50% !important;
+    right: 10px !important;
+    transform: translateY(50px) !important;
   }
 
   .task-window-modal {
@@ -584,10 +601,6 @@
 
 /* Desktop - Always expanded (normal z-index) */
 @media screen and (min-width: 1025px) {
-  .task-button-circular-container {
-    display: none; /* Hide circular button on desktop */
-  }
-
   .task-container {
     top: 226px;
     right: 80px;
@@ -595,12 +608,23 @@
     transform: none;
   }
 
+  /* Inside location - tengah viewport */
   .task-container.inside-location {
     position: absolute !important;
     top: 18px !important;
     right: 75px !important;
-    transform: translateY(40px) !important;
+    transform: translateY(50px) !important;
     width: 270px;
+  }
+
+  .task-container.expanded {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    cursor: default;
   }
 
   .task-window {
