@@ -478,13 +478,19 @@
   .task-container.minimized {
     top: 50% !important;
     right: 30px !important;
-    transform: translateY(130px) !important;
+    /* Ganti ini: */
+    /* transform: translateY(130px) !important; */
+    /* Menjadi seperti ini untuk menggabungkan centering dan offset: */
+    transform: translateY(calc(-50% + 155px)) !important;
+    /* Atau, jika 130px itu adalah total dari atas, pakai ini saja: */
+    /* top: calc(50% + 130px) !important; */
+    /* Lalu hapus transform jika tidak ada lagi transform lain yang perlu digabung */
   }
 
   .task-container.inside-location.minimized {
     top: 50% !important;
     right: 30px !important;
-    transform: translateY(130px) !important;
+    transform: translateY(calc(-50% + 155px)) !important; /* Lakukan hal yang sama di sini */
   }
 
   .task-window-modal .task-title {
@@ -544,17 +550,13 @@
   .task-container.minimized {
     top: 50% !important;
     right: 10px !important;
-    width: 55px !important;
-    height: 55px !important;
-    transform: translateY(120px) !important;
+    transform: translateY(calc(-50% + 155px)) !important; /* Sesuaikan juga di sini */
   }
 
-  /* Inside location - tengah viewport */
   .task-container.inside-location.minimized {
-    position: absolute !important;
     top: 50% !important;
     right: 10px !important;
-    transform: translateY(120px) !important;
+    transform: translateY(calc(-50% + 155px)) !important; /* Dan di sini */
   }
 
   .task-window-modal {
@@ -626,7 +628,7 @@
   background: var(--task-list-scroll-track);
 }
 
-.task-list::-webkit-scrollbar-thumb {
+.task-list::-webkit-scrollbar-thaumb {
   background: var(--task-list-scroll-thumb);
   border-radius: 3px;
 }
