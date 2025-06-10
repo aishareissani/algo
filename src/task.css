@@ -88,7 +88,6 @@
   position: absolute;
   top: 50%;
   right: 10px;
-  transform: translateY(50px); /* Offset untuk stacking */
 }
 
 /* Minimized floating button */
@@ -110,7 +109,6 @@
 }
 
 .task-container.inside-location.minimized:hover {
-  transform: translateY(50px) scale(1.05);
   box-shadow: 0 6px 16px var(--task-minimized-shadow);
 }
 
