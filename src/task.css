@@ -489,7 +489,7 @@
     position: absolute !important;
     top: 50% !important;
     right: 30px !important;
-    transform: translateY(100px) !important;
+    transform: translateY(130px) !important;
   }
 
   .task-container.minimized:hover {
@@ -567,7 +567,7 @@
     right: 10px !important;
     width: 55px !important;
     height: 55px !important;
-    transform: translateY(50px) !important;
+    transform: translateY(120px) !important;
   }
 
   /* Inside location - tengah viewport */
@@ -575,7 +575,7 @@
     position: absolute !important;
     top: 50% !important;
     right: 10px !important;
-    transform: translateY(50px) !important;
+    transform: translateY(130px) !important;
   }
 
   .task-window-modal {
