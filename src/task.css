@@ -69,9 +69,9 @@
   z-index: 100;
 }
 
-/* Floating button container */
+/* Desktop task container */
 .task-container {
-  position: fixed; /* Fixed untuk map biasa, akan di-override untuk inside location */
+  position: fixed;
   top: 226px;
   right: 80px;
   pointer-events: auto;
@@ -83,33 +83,12 @@
   transition: all 0.3s ease;
 }
 
-/* Ketika inside location, posisi berubah ke absolute (relatif ke viewport) */
 .task-container.inside-location {
   position: absolute;
-  top: 50%;
-  right: 10px;
-}
-
-/* Minimized floating button */
-.task-container.minimized {
-  width: 55px;
-  height: 55px;
-  cursor: pointer;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--task-minimized-bg);
-  box-shadow: 0 4px 12px var(--task-minimized-shadow);
-}
-
-.task-container.minimized:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px var(--task-minimized-shadow);
-}
-
-.task-container.inside-location.minimized:hover {
-  box-shadow: 0 6px 16px var(--task-minimized-shadow);
+  top: 18px;
+  right: 75px;
+  transform: translateY(50px);
+  width: 270px;
 }
 
 .task-container.expanded {
@@ -119,19 +98,50 @@
   background: transparent;
   border: none;
   box-shadow: none;
+  cursor: default;
 }
 
-.task-minimized-view {
+/* TASK CIRCULAR BUTTON FOR MOBILE/TABLET - MENGIKUTI STRUKTUR INVENTORY */
+.task-button-circular-container {
+  position: fixed;
+  z-index: 101;
+  transition: all 0.3s ease;
+}
+
+.task-button-circular-container.inside-location {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-15px);
+}
+
+.task-button-circular {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: var(--task-minimized-bg);
+  border: 3px solid var(--task-window-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px var(--task-minimized-shadow);
+}
+
+.task-button-circular:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px var(--task-minimized-shadow);
+}
+
+.task-icon-circular {
   background-image: url("/assets/icons/task.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  filter: drop-shadow(1px 1px 2px var(--task-icon-shadow));
+  width: 30px !important;
+  height: 30px !important;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 /* Fullscreen modal for mobile/tablet - HIGHEST Z-INDEX */
@@ -475,17 +485,37 @@
     z-index: 2147483647;
   }
 
-  .task-container.minimized {
-    top: 50%;
-    right: 30px;
-    transform: translateY(calc(-50% + 155px));
+  .task-button-circular-container {
+    top: 50% !important;
+    right: 30px !important;
+    width: 55px !important;
+    height: 55px !important;
+    transform: translateY(140px) !important;
   }
 
-  .task-container.inside-location.minimized {
+  .task-button-circular-container.inside-location {
     position: absolute !important;
     top: 50% !important;
     right: 30px !important;
-    transform: translateY(230%) !important;
+    transform: translateY(140px) !important;
+  }
+
+  .task-button-circular-container:hover {
+    transform: translateY(-15px) scale(1.05) !important;
+  }
+
+  .task-button-circular-container:active {
+    transform: translateY(-15px) scale(0.95) !important;
+  }
+
+  .task-button-circular {
+    width: 100%;
+    height: 100%;
+  }
+
+  .task-icon-circular {
+    width: 30px !important;
+    height: 30px !important;
   }
 
   .task-window-modal .task-title {
@@ -542,17 +572,35 @@
     z-index: 2147483647;
   }
 
-  .task-container.minimized {
-    top: 50%;
-    right: 30px;
-    transform: translateY(calc(-50% + 155px)); /* Sesuaikan juga di sini */
+  .task-button-circular-container {
+    top: 85px !important;
+    right: 30px !important;
+    width: 55px !important;
+    height: 55px !important;
+    transform: none !important;
   }
 
-  .task-container.inside-location.minimized {
+  .task-button-circular-container.inside-location {
     position: absolute !important;
     top: 50% !important;
-    right: 30px !important; /* Ganti dari 10px ke 30px biar sama kayak speed */
-    transform: translateY(230%) !important;
+    right: 30px !important;
+    transform: translateY(-15px) !important;
+  }
+
+  .task-button-circular-container:hover {
+    transform: scale(1.05) !important;
+  }
+
+  .task-button-circular-container.inside-location:hover {
+    transform: translateY(-15px) scale(1.05) !important;
+  }
+
+  .task-button-circular-container:active {
+    transform: scale(0.95) !important;
+  }
+
+  .task-button-circular-container.inside-location:active {
+    transform: translateY(-15px) scale(0.95) !important;
   }
 
   .task-window-modal {
@@ -579,29 +627,19 @@
 /* Desktop - Always expanded (normal z-index) */
 @media screen and (min-width: 1025px) {
   .task-container {
+    position: fixed;
     top: 226px;
     right: 80px;
     width: 270px;
     transform: none;
   }
 
-  /* Inside location - tengah viewport */
   .task-container.inside-location {
     position: absolute;
     top: 18px;
     right: 75px;
     transform: translateY(50px);
     width: 270px;
-  }
-
-  .task-container.expanded {
-    width: auto;
-    height: auto;
-    border-radius: 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    cursor: default;
   }
 
   .task-window {
@@ -611,6 +649,10 @@
   }
 
   .task-close-btn {
+    display: none;
+  }
+
+  .task-button-circular-container {
     display: none;
   }
 }
@@ -624,7 +666,7 @@
   background: var(--task-list-scroll-track);
 }
 
-.task-list::-webkit-scrollbar-thaumb {
+.task-list::-webkit-scrollbar-thumb {
   background: var(--task-list-scroll-thumb);
   border-radius: 3px;
 }

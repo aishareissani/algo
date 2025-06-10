@@ -71,6 +71,10 @@ const Task = ({ currentLocation, containerWidth = 250, containerHeight = 350, is
     return window.innerWidth <= 1024;
   };
 
+  const shouldUseCircularBehavior = () => {
+    return window.innerWidth <= 1024;
+  };
+
   useEffect(() => {
     if (externalTasks) {
       setTasks(externalTasks);
@@ -213,19 +217,24 @@ const Task = ({ currentLocation, containerWidth = 250, containerHeight = 350, is
 
   return (
     <>
-      {/* Minimized floating button */}
-      <div
-        className={`task-container ${shouldUseMinimizedBehavior() ? "minimized" : "expanded"} ${isInsideLocation ? "inside-location" : ""}`}
-        style={{
-          ...(customPosition ? customPosition : {}),
-          marginTop: "10px",
-        }}
-        onClick={toggleExpanded}
-      >
-        {shouldUseMinimizedBehavior() && !isExpanded && <div className="task-minimized-view"></div>}
+      {/* Circular button for mobile/tablet */}
+      {shouldUseCircularBehavior() && (
+        <div className={`task-button-circular-container ${isInsideLocation ? "inside-location" : ""}`}>
+          <button onClick={toggleExpanded} className="task-button-circular">
+            <div className="task-icon-circular"></div>
+          </button>
+        </div>
+      )}
 
-        {/* Desktop expanded view */}
-        {!shouldUseMinimizedBehavior() && (
+      {/* Desktop expanded view */}
+      {!shouldUseMinimizedBehavior() && (
+        <div
+          className={`task-container expanded ${isInsideLocation ? "inside-location" : ""}`}
+          style={{
+            ...(customPosition ? customPosition : {}),
+            marginTop: "10px",
+          }}
+        >
           <div className="task-window" style={styles.container}>
             <div className="task-header">
               <h2 className="task-title">QUEST LOG</h2>
@@ -271,8 +280,8 @@ const Task = ({ currentLocation, containerWidth = 250, containerHeight = 350, is
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Fullscreen modal for mobile/tablet */}
       {shouldUseMinimizedBehavior() && isExpanded && (
