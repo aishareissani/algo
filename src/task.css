@@ -497,15 +497,15 @@
   }
 
   .task-container.inside-location.minimized:hover {
-    transform: translateY(130px) scale(1.05) !important;
+    transform: scale(1.05) !important;
   }
 
   .task-container.minimized:active {
-    transform: scale(0.95) !important;
+    transform: scale(1.05) !important;
   }
 
   .task-container.inside-location.minimized:active {
-    transform: translateY(130px) scale(1.05) !important;
+    transform: scale(1.05) !important;
   }
 
   .task-window-modal .task-title {
