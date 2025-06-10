@@ -489,7 +489,7 @@
     position: absolute !important;
     top: 50% !important;
     right: 30px !important;
-    transform: translateY(130px) !important;
+    transform: translateY(100px) !important;
   }
 
   .task-container.minimized:hover {
