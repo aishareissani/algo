@@ -25,9 +25,7 @@
 }
 
 .back-to-toggle-button {
-  position: fixed;
-  top: auto;
-  right: auto;
+  position: absolute;
   padding: 10px 12px;
   border-radius: 30px;
   font-family: "Press Start 2P", system-ui;
@@ -119,6 +117,55 @@
   transition: 0s;
 }
 
+/* Desktop - Position below player stats */
+@media screen and (min-width: 1025px) {
+  .back-to-toggle-button.back-to-map {
+    top: 100px; /* Below player stats card (160px top + 486px height + margin) */
+    left: 415px; /* 10px gap from left border of stats card (35px + 10px) */
+    width: auto;
+    height: auto;
+    min-width: 120px;
+    border-radius: 30px;
+    padding: 10px 12px;
+    gap: 8px;
+    transform: none;
+  }
+
+  /* For location screens - positioned inside viewport with 10px gaps */
+  .back-to-toggle-button.back-to-home,
+  .back-to-toggle-button.back-to-start {
+    top: 100px; /* 10px gap from top border of viewport */
+    left: 420px; /* 10px gap from left border of viewport */
+    width: auto;
+    height: auto;
+    min-width: 120px;
+    border-radius: 30px;
+    padding: 10px 12px;
+    gap: 8px;
+    transform: none;
+  }
+}
+
+/* Tablet to small desktop */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .back-to-toggle-button {
+    transform: none !important;
+  }
+
+  /* For location screens - positioned inside viewport with 10px gaps */
+  .back-to-toggle-button.back-to-home,
+  .back-to-toggle-button.back-to-start {
+    top: 10px !important; /* 10px gap from top border of viewport */
+    left: 10px !important; /* 10px gap from left border of viewport */
+  }
+
+  /* For map screen - positioned below mini-map area */
+  .back-to-toggle-button.back-to-map {
+    top: 300px !important; /* Below mini-map */
+    left: 25px !important; /* 10px gap from left edge */
+  }
+}
+
 /* Mobile (max 768px) */
 @media screen and (max-width: 768px) {
   .back-to-toggle-button {
@@ -128,22 +175,20 @@
     border-radius: 50% !important;
     padding: 0 !important;
     gap: 0 !important;
-    transform: translateY(-50%) !important;
+    transform: none !important;
   }
 
-  .back-to-toggle-button.back-to-map {
-    top: 23% !important;
-    left: 35px !important;
-  }
-
-  .back-to-toggle-button.back-to-home {
-    top: 23% !important;
-    left: 35px !important;
-  }
-
+  /* For location screens - positioned inside viewport with 10px gaps */
+  .back-to-toggle-button.back-to-home,
   .back-to-toggle-button.back-to-start {
-    top: 25% !important;
-    left: 45px !important;
+    top: 170px !important; /* Below mobile stats */
+    left: 30px !important; /* 10px gap from left edge */
+  }
+
+  /* For map screen - positioned below stats area */
+  .back-to-toggle-button.back-to-map {
+    top: 170px !important; /* Below mobile stats */
+    left: 30px !important; /* 10px gap from left edge */
   }
 
   .back-to-text {
@@ -153,29 +198,5 @@
   .back-to-toggle-button svg {
     width: 30px !important;
     height: 30px !important;
-  }
-}
-
-/* Tablet to small desktop */
-@media screen and (min-width: 769px) and (max-width: 1024px) {
-  .back-to-toggle-button {
-    top: 33% !important;
-    right: 25px !important;
-    transform: translateY(-50%) !important;
-  }
-}
-
-/* Desktop */
-@media screen and (min-width: 1025px) {
-  .back-to-toggle-button {
-    top: 100px;
-    right: 1050px !important;
-    transform: none;
-    width: auto;
-    height: auto;
-    min-width: 120px;
-    border-radius: 30px;
-    padding: 10px 12px;
-    gap: 8px;
   }
 }

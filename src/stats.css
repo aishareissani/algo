@@ -1,4 +1,3 @@
-/* stats.css */
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Silkscreen&display=swap");
 
@@ -127,7 +126,7 @@ body {
   }
 }
 
-/* ===== MOBILE/TABLET TOP STATS PANEL ===== */
+/* MOBILE/TABLET TOP STATS PANEL */
 .stats-top-mobile-tablet {
   width: calc(100vw - 30px);
   max-width: 800px;
@@ -330,11 +329,19 @@ body {
   font-size: 12px;
 }
 
-/* ===== CIRCULAR ITEMS BUTTON FOR MOBILE/TABLET ===== */
+/* CIRCULAR INVENTORY BUTTON FOR MOBILE/TABLET */
 .inventory-button-circular-container {
-  position: fixed;
+  position: fixed; /* Fixed untuk map biasa, akan di-override untuk inside location */
   z-index: 101;
   transition: all 0.3s ease;
+}
+
+/* Ketika inside location, posisi berubah ke absolute (relatif ke viewport) */
+.inventory-button-circular-container.inside-location {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-15px); /* Center position */
 }
 
 .inventory-button-circular {
@@ -356,9 +363,7 @@ body {
   box-shadow: 0 6px 16px rgba(121, 85, 72, 0.4);
 }
 
-/* ===== FIXED ICON PATH + SIZE ===== */
 .inventory-icon-circular {
-  /* FIXED: ABSOLUTE PATH + FALLBACK */
   background-image: url("/assets/icons/item.png");
   background-size: contain;
   background-repeat: no-repeat;
@@ -368,36 +373,37 @@ body {
   filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
 }
 
-/* Positioning for different screen sizes */
-@media screen and (max-width: 1024px) {
+/* Mobile positioning */
+@media screen and (max-width: 768px) {
   .inventory-button-circular-container {
-    top: 49% !important;
-    right: 25px !important;
-    transform: translateY(-50%) !important;
+    top: 50% !important;
+    right: 30px !important;
+    width: 55px !important;
+    height: 55px !important;
+    transform: translateY(25px) !important;
+  }
+
+  .inventory-button-circular-container.inside-location {
+    position: absolute !important;
+    top: 50% !important;
+    right: 10px !important;
+    transform: translateY(25px) !important;
   }
 
   .inventory-button-circular-container:hover {
-    transform: translateY(-50%) scale(1.05) !important;
+    transform: scale(1.05) !important;
+  }
+
+  .inventory-button-circular-container.inside-location:hover {
+    transform: translateY(-15px) scale(1.05) !important;
   }
 
   .inventory-button-circular-container:active {
-    transform: translateY(-50%) scale(0.95) !important;
+    transform: scale(0.95) !important;
   }
 
-  .inventory-icon-circular {
-    width: 30px !important;
-    height: 30px !important;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .inventory-button-circular-container {
-    width: 55px !important;
-    height: 55px !important;
-    top: 63% !important;
-    right: 25px !important;
-    left: auto !important;
-    transform: translateY(-50%) !important;
+  .inventory-button-circular-container.inside-location:active {
+    transform: translateY(-15px) scale(0.95) !important;
   }
 
   .inventory-button-circular {
@@ -411,14 +417,22 @@ body {
   }
 }
 
+/* Tablet positioning */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .inventory-button-circular-container {
+    top: 85px !important;
+    right: 30px !important;
     width: 55px !important;
     height: 55px !important;
-    top: 41% !important;
-    right: 25px !important;
-    left: auto !important;
-    transform: translateY(-50%) !important;
+    transform: none !important;
+  }
+
+  /* Inside location - tengah viewport */
+  .inventory-button-circular-container.inside-location {
+    position: absolute !important;
+    top: 50% !important;
+    right: 30px !important;
+    transform: translateY(-15px) !important;
   }
 }
 
@@ -636,7 +650,7 @@ body {
   }
 }
 
-/* ===== DESKTOP VERSION ===== */
+/* DESKTOP VERSION */
 .stats-card {
   position: absolute;
   left: 35px;
@@ -1072,4 +1086,17 @@ body {
 .stat-tooltip p {
   margin: 0 0 8px 0;
   color: var(--stats-tooltip-text);
+}
+
+/* To ensure the map has space for all three toggles */
+@media screen and (max-width: 768px) {
+  .home-game-viewport {
+    width: calc(100vw - 30px);
+    height: calc(100vh - 240px);
+    margin: auto;
+    min-height: 240px;
+    margin-top: 150px;
+    padding-right: 80px;
+    box-sizing: border-box;
+  }
 }

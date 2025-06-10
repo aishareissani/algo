@@ -1,5 +1,3 @@
-/* task.css */
-
 :root {
   /* Task Colors */
   --task-icon-shadow: rgba(0, 0, 0, 0.2);
@@ -73,7 +71,7 @@
 
 /* Floating button container */
 .task-container {
-  position: fixed;
+  position: fixed; /* Fixed untuk map biasa, akan di-override untuk inside location */
   top: 226px;
   right: 80px;
   pointer-events: auto;
@@ -83,6 +81,14 @@
   width: 270px;
   align-items: flex-start;
   transition: all 0.3s ease;
+}
+
+/* Ketika inside location, posisi berubah ke absolute (relatif ke viewport) */
+.task-container.inside-location {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(50px); /* Offset untuk stacking */
 }
 
 /* Minimized floating button */
@@ -103,6 +109,11 @@
   box-shadow: 0 6px 16px var(--task-minimized-shadow);
 }
 
+.task-container.inside-location.minimized:hover {
+  transform: translateY(50px) scale(1.05);
+  box-shadow: 0 6px 16px var(--task-minimized-shadow);
+}
+
 .task-container.expanded {
   width: auto;
   height: auto;
@@ -112,20 +123,17 @@
   box-shadow: none;
 }
 
-/* ===== FIXED MINIMIZED ICON - ABSOLUTE PATH ===== */
 .task-minimized-view {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 30px !important;
   height: 30px !important;
-  /* FIXED: ABSOLUTE PATH + FALLBACK */
   background-image: url("/assets/icons/task.png") !important;
   background-size: contain !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
   filter: drop-shadow(1px 1px 2px var(--task-icon-shadow)) !important;
-  /* FALLBACK untuk test */
 }
 
 /* Fullscreen modal for mobile/tablet - HIGHEST Z-INDEX */
@@ -454,69 +462,7 @@
   opacity: 0.8;
 }
 
-/* ===== RESPONSIVE DESIGN - FIXED POSITIONING ===== */
-@media screen and (max-width: 1024px) {
-  .task-modal-overlay {
-    z-index: 2147483647 !important;
-  }
-
-  .task-modal-content {
-    z-index: 2147483647 !important;
-  }
-
-  .task-window-modal {
-    z-index: 2147483647 !important;
-  }
-
-  .task-window-modal * {
-    z-index: inherit !important;
-  }
-
-  /* FIXED POSITIONING: CONSISTENT TRANSFORM */
-  .task-container.minimized {
-    width: 55px !important;
-    height: 55px !important;
-    top: 41% !important;
-    right: 25px !important;
-    left: auto !important;
-    transform: translateY(-50%) !important;
-  }
-
-  .task-container.minimized:hover {
-    transform: translateY(-50%) scale(1.05) !important;
-  }
-
-  .task-container.minimized:active {
-    transform: translateY(-50%) scale(0.95) !important;
-  }
-
-  .task-container.inside-location.minimized {
-    top: 41% !important;
-    right: 25px !important;
-    transform: translateY(-50%) !important;
-  }
-
-  .task-window-modal {
-    font-size: 14px;
-  }
-
-  .task-window-modal .task-title {
-    font-size: 14px;
-  }
-
-  .task-window-modal .location-name {
-    font-size: 11px;
-  }
-
-  .task-window-modal .task-name {
-    font-size: 9px;
-  }
-
-  .task-window-modal .task-list {
-    max-height: 300px;
-  }
-}
-
+/* Mobile positioning */
 @media screen and (max-width: 768px) {
   .task-modal-overlay {
     z-index: 2147483647 !important;
@@ -531,28 +477,35 @@
     z-index: 2147483647 !important;
   }
 
-  /* FIXED POSITIONING: CONSISTENT TRANSFORM */
   .task-container.minimized {
+    top: 50% !important;
+    right: 30px !important;
     width: 55px !important;
     height: 55px !important;
-    top: 70% !important;
-    right: 25px !important;
-    left: auto !important;
-    transform: translateY(-50%) !important;
-  }
-
-  .task-container.minimized:hover {
-    transform: translateY(-50%) scale(1.05) !important;
-  }
-
-  .task-container.minimized:active {
-    transform: translateY(-50%) scale(0.95) !important;
+    transform: translateY(80px) !important;
   }
 
   .task-container.inside-location.minimized {
-    top: 70% !important;
-    right: 25px !important;
-    transform: translateY(-50%) !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: 30px !important;
+    transform: translateY(80px) !important;
+  }
+
+  .task-container.minimized:hover {
+    transform: scale(1.05) !important;
+  }
+
+  .task-container.inside-location.minimized:hover {
+    transform: translateY(50px) scale(1.05) !important;
+  }
+
+  .task-container.minimized:active {
+    transform: scale(0.95) !important;
+  }
+
+  .task-container.inside-location.minimized:active {
+    transform: translateY(50px) scale(0.95) !important;
   }
 
   .task-window-modal .task-title {
@@ -595,6 +548,7 @@
   }
 }
 
+/* Tablet positioning */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .task-modal-overlay {
     z-index: 2147483647 !important;
@@ -609,18 +563,39 @@
   }
 
   .task-container.minimized {
+    top: 50% !important;
+    right: 10px !important;
     width: 55px !important;
     height: 55px !important;
-    top: 41% !important;
-    right: 25px !important;
-    left: auto !important;
-    transform: translateY(-50%) !important;
+    transform: translateY(50px) !important;
   }
 
+  /* Inside location - tengah viewport */
   .task-container.inside-location.minimized {
-    top: 41% !important;
-    right: 25px !important;
-    transform: translateY(-50%) !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: 10px !important;
+    transform: translateY(50px) !important;
+  }
+
+  .task-window-modal {
+    font-size: 14px;
+  }
+
+  .task-window-modal .task-title {
+    font-size: 14px;
+  }
+
+  .task-window-modal .location-name {
+    font-size: 11px;
+  }
+
+  .task-window-modal .task-name {
+    font-size: 9px;
+  }
+
+  .task-window-modal .task-list {
+    max-height: 300px;
   }
 }
 
@@ -631,6 +606,15 @@
     right: 80px;
     width: 270px;
     transform: none;
+  }
+
+  /* Inside location - tengah viewport */
+  .task-container.inside-location {
+    position: absolute !important;
+    top: 18px !important;
+    right: 75px !important;
+    transform: translateY(50px) !important;
+    width: 270px;
   }
 
   .task-container.expanded {

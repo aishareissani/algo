@@ -38,7 +38,7 @@ const FastForwardIcon = () => (
 );
 
 // Speed Toggle Button component - Fixed version
-export function SpeedToggleButton() {
+export function SpeedToggleButton({ isInsideLocation = false }) {
   const { isFastForward, toggleSpeedMode } = useSpeedMode();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
@@ -66,7 +66,11 @@ export function SpeedToggleButton() {
   };
 
   return (
-    <button onClick={handleClick} className={`speed-toggle-button ${isFastForward ? "fast-forward" : "normal"} ${isMobile ? "mini-circular" : ""}`} aria-label={isFastForward ? "Switch to normal speed" : "Switch to fast forward"}>
+    <button
+      onClick={handleClick}
+      className={`speed-toggle-button ${isFastForward ? "fast-forward" : "normal"} ${isMobile ? "mini-circular" : ""} ${isInsideLocation ? "inside-location" : ""}`}
+      aria-label={isFastForward ? "Switch to normal speed" : "Switch to fast forward"}
+    >
       {!isMobile ? (
         <>
           {isFastForward ? (

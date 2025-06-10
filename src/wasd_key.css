@@ -231,7 +231,8 @@ body {
 /* For screens up to 768px (mobile) */
 @media screen and (max-width: 768px) {
   .wasd-key-container {
-    right: 15px !important; /* Smaller gap for mobile */
+    bottom: 10px !important; /* Always 10px from bottom */
+    right: 30px !important; /* Always 30px from right */
     left: auto !important;
     top: auto !important;
     transform: none !important;
@@ -242,9 +243,9 @@ body {
     -ms-user-select: none;
   }
 
-  /* .map-location class is no longer needed */
   .wasd-key-container.map-location {
-    right: 15px !important; /* Consistent gap */
+    bottom: 10px !important; /* Always 10px from bottom in map-inside-screen */
+    right: 30px !important; /* Always 30px from right */
     left: auto !important;
     top: auto !important;
     transform: none !important;

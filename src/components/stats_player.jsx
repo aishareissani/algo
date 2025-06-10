@@ -4,7 +4,7 @@ import { useSpeedMode } from "./speed";
 import Inventory from "./inventory";
 import GameOver from "./game_over";
 
-function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visitedLocations = new Set(["home"]), usedItems = new Set(), playtime = 0, onMainMenu }) {
+function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visitedLocations = new Set(["home"]), usedItems = new Set(), playtime = 0, onMainMenu, isInsideLocation = false }) {
   // Destructure stats object
   const { meal = 50, sleep = 50, health = 80, energy = 80, happiness = 50, cleanliness = 50, money = 100, experience = 0, level = 1, skillPoints = 0, items = [] } = stats;
 
@@ -343,9 +343,8 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visit
         </div>
       </div>
 
-      {/* Circular Items Button for Mobile/Tablet */}
       {shouldUseCircularBehavior() && (
-        <div className="inventory-button-circular-container">
+        <div className={`inventory-button-circular-container ${isInsideLocation ? "inside-location" : ""}`}>
           <button onClick={handleInventoryClick} className="inventory-button-circular">
             <div className="inventory-icon-circular"></div>
           </button>
