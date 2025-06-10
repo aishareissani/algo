@@ -390,22 +390,6 @@ body {
     transform: translateY(25px) !important;
   }
 
-  .inventory-button-circular-container:hover {
-    transform: scale(1.05) !important;
-  }
-
-  .inventory-button-circular-container.inside-location:hover {
-    transform: translateY(-15px) scale(1.05) !important;
-  }
-
-  .inventory-button-circular-container:active {
-    transform: scale(0.95) !important;
-  }
-
-  .inventory-button-circular-container.inside-location:active {
-    transform: translateY(-15px) scale(0.95) !important;
-  }
-
   .inventory-button-circular {
     width: 100%;
     height: 100%;

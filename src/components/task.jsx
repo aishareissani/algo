@@ -94,7 +94,7 @@ const Task = ({ currentLocation, containerWidth = 250, containerHeight = 350, is
         setLocationIndex(index);
       }
     }
-  }, [currentLocation]);
+  }, [currentLocation, locations, locationKeys]);
 
   const handlePrevLocation = (e) => {
     e.stopPropagation();
@@ -213,7 +213,6 @@ const Task = ({ currentLocation, containerWidth = 250, containerHeight = 350, is
 
   return (
     <>
-      {/* Circular button for mobile/tablet - similar to inventory */}
       {shouldUseMinimizedBehavior() && (
         <div className={`task-button-circular-container ${isInsideLocation ? "inside-location" : ""}`}>
           <button onClick={toggleExpanded} className="task-button-circular">
@@ -222,15 +221,8 @@ const Task = ({ currentLocation, containerWidth = 250, containerHeight = 350, is
         </div>
       )}
 
-      {/* Desktop expanded view */}
       {!shouldUseMinimizedBehavior() && (
-        <div
-          className={`task-container expanded ${isInsideLocation ? "inside-location" : ""}`}
-          style={{
-            ...(customPosition ? customPosition : {}),
-            marginTop: "10px",
-          }}
-        >
+        <div className={`task-container expanded ${isInsideLocation ? "inside-location" : ""}`}>
           <div className="task-window" style={styles.container}>
             <div className="task-header">
               <h2 className="task-title">QUEST LOG</h2>

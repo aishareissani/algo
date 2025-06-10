@@ -72,16 +72,16 @@
 /* Circular button container for mobile/tablet */
 .task-button-circular-container {
   position: fixed;
-  top: 50%;
-  right: 10px;
-  transform: translateY(110px); /* Offset below inventory */
   z-index: 1001;
   pointer-events: auto;
+  transition: all 0.3s ease;
 }
 
 .task-button-circular-container.inside-location {
   position: absolute;
-  transform: translateY(80px); /* Offset below inventory when inside location */
+  top: 50%;
+  right: 10px;
+  transform: translateY(80px); /* Positioned below inventory */
 }
 
 .task-button-circular {
@@ -464,18 +464,33 @@
   opacity: 0.8;
 }
 
-/* Mobile positioning */
+/* Mobile positioning - PERSIS SEPERTI INVENTORY */
 @media screen and (max-width: 768px) {
   .task-button-circular-container {
-    top: 50%;
-    right: 30px;
-    transform: translateY(140px);
+    top: 50% !important;
+    right: 30px !important;
+    width: 55px !important;
+    height: 55px !important;
+    transform: translateY(140px) !important; /* Below inventory yang di translateY(60px) */
   }
 
   .task-button-circular-container.inside-location {
-    top: 50%;
-    right: 30px;
-    transform: translateY(140px);
+    position: absolute !important;
+    top: 50% !important;
+    right: 30px !important;
+    transform: translateY(140px) !important; /* Below inventory yang di translateY(25px) */
+  }
+
+  .task-button-circular:hover {
+    transform: scale(1.05) !important;
+  }
+
+  .task-button-circular-container.inside-location .task-button-circular:hover {
+    transform: scale(1.05) !important;
+  }
+
+  .task-button-circular:active {
+    transform: scale(0.95) !important;
   }
 
   .task-modal-overlay {
@@ -534,11 +549,18 @@
 /* Tablet positioning */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .task-button-circular-container {
-    transform: translateY(110px);
+    top: 85px !important;
+    right: 30px !important;
+    width: 55px !important;
+    height: 55px !important;
+    transform: translateY(60px) !important; /* Below inventory */
   }
 
   .task-button-circular-container.inside-location {
-    transform: translateY(80px);
+    position: absolute !important;
+    top: 50% !important;
+    right: 30px !important;
+    transform: translateY(40px) !important; /* Below inventory */
   }
 
   .task-modal-overlay {
@@ -591,7 +613,7 @@
     position: absolute !important;
     top: 18px !important;
     right: 75px !important;
-    transform: translateY(50px) !important;
+    transform: translateY(40px) !important;
     width: 270px;
   }
 
