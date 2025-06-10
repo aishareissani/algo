@@ -394,7 +394,7 @@ body {
   .inventory-button-circular-container {
     width: 55px !important;
     height: 55px !important;
-    top: 49% !important;
+    top: 58.5% !important;
     right: 25px !important;
     left: auto !important;
     transform: translateY(-50%) !important;
@@ -1072,17 +1072,4 @@ body {
 .stat-tooltip p {
   margin: 0 0 8px 0;
   color: var(--stats-tooltip-text);
-}
-
-/* To ensure the map has space for all three toggles */
-@media screen and (max-width: 768px) {
-  .home-game-viewport {
-    width: calc(100vw - 30px);
-    height: calc(100vh - 240px);
-    margin: auto;
-    min-height: 240px;
-    margin-top: 150px;
-    padding-right: 80px;
-    box-sizing: border-box;
-  }
 }

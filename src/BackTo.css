@@ -128,12 +128,12 @@
     border-radius: 50% !important;
     padding: 0 !important;
     gap: 0 !important;
-    transform: translateY(-50%) !important;
+    transform: translateY(0) !important;
   }
 
   .back-to-toggle-button.back-to-map {
-    top: 22% !important;
-    left: 33px !important;
+    top: 150px !important; /* Aligned with mini-map top */
+    left: 15px !important;
   }
 
   .back-to-toggle-button.back-to-home {
@@ -154,11 +154,38 @@
     width: 30px !important;
     height: 30px !important;
   }
+
+  /* Specific untuk iPhone SE dan device kecil serupa (width <= 375px) */
+  @media screen and (max-width: 375px) {
+    .back-to-toggle-button.back-to-map {
+      top: 150px !important; /* Keep same alignment */
+      left: 15px !important;
+    }
+  }
+
+  /* Specific untuk device yang lebih besar seperti iPhone XR (width >= 414px) */
+  @media screen and (min-width: 414px) and (max-width: 768px) {
+    .back-to-toggle-button.back-to-map {
+      top: 150px !important; /* Keep same alignment */
+      left: 15px !important;
+    }
+  }
 }
 
 /* Tablet to small desktop */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .back-to-toggle-button {
+    transform: translateY(0) !important;
+  }
+
+  .back-to-toggle-button.back-to-map {
+    top: calc(10px + 120px + 10px) !important; /* Aligned with mini-map top */
+    right: auto !important;
+    left: 25px !important;
+  }
+
+  .back-to-toggle-button.back-to-home,
+  .back-to-toggle-button.back-to-start {
     top: 33% !important;
     right: 25px !important;
     transform: translateY(-50%) !important;
@@ -167,7 +194,20 @@
 
 /* Desktop */
 @media screen and (min-width: 1025px) {
-  .back-to-toggle-button {
+  .back-to-toggle-button.back-to-map {
+    top: 76px; /* Aligned with mini-map top */
+    right: 360px !important; /* Positioned to the left of mini-map */
+    transform: none;
+    width: auto;
+    height: auto;
+    min-width: 120px;
+    border-radius: 30px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .back-to-toggle-button.back-to-home,
+  .back-to-toggle-button.back-to-start {
     top: 100px;
     right: 1050px !important;
     transform: none;
