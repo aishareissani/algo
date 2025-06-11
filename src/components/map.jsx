@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import Inventory from "./inventory";
@@ -8,13 +8,14 @@ import { handleUseItem } from "../utils/itemHandlers";
 import WASDKey from "./wasd_key";
 import Task from "./task";
 import BackTo from "./BackTo";
+import Gif from "./gif";
 
 function Map() {
   const { isFastForward } = useSpeedMode();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { characterName = "claire", playerName = "Player", stats: passedStats } = location.state || {};
+  const { characterName = "manda", playerName = "Player", stats: passedStats } = location.state || {};
 
   const [playerPos, setPlayerPos] = useState({ x: 2110, y: 730 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
@@ -33,12 +34,16 @@ function Map() {
 
   const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
+  const [isWalking, setIsWalking] = useState(false);
+  const [walkingDirection, setWalkingDirection] = useState("down");
+
   const mapRef = useRef(null);
   const playerRef = useRef(null);
+  const moveIntervalRef = useRef(null); // Add ref untuk interval
 
   const WORLD_WIDTH = 3700;
   const WORLD_HEIGHT = 1954;
-  const PLAYER_SIZE = 40;
+  const PLAYER_SIZE = 80;
   const MOVE_SPEED = 8;
 
   // Location coordinates for pointers
@@ -89,7 +94,7 @@ function Map() {
   useEffect(() => {
     if (playerStats.health <= 0 || playerStats.sleep <= 0) {
       setIsGameOver(true);
-      setShowDialog(false); // Hide any existing dialogs
+      setShowDialog(false);
     }
   }, [playerStats.health, playerStats.sleep]);
 
@@ -110,13 +115,8 @@ function Map() {
       }
     };
 
-    // Initial size
     updateViewportSize();
-
-    // Listen for window resize
     window.addEventListener("resize", updateViewportSize);
-
-    // Use ResizeObserver for more precise tracking of viewport changes
     const resizeObserver = new ResizeObserver(updateViewportSize);
     if (mapRef.current) {
       resizeObserver.observe(mapRef.current);
@@ -128,140 +128,77 @@ function Map() {
     };
   }, []);
 
-  const handleBackToStart = () => {
-    if (isGameOver) return; // Prevent navigation when game over
+  // PERBAIKAN: Single handleArrowPress function
+  const handleArrowPress = useCallback(
+    (direction) => {
+      if (isGameOver) return;
 
-    navigate("/", {
-      state: {
-        characterName,
-        playerName,
-        stats: {
-          ...playerStats,
-          lastVisitedLocation,
-        },
-      },
-    });
-  };
+      setPlayerPos((prev) => {
+        let newX = prev.x;
+        let newY = prev.y;
 
-  const handleItemUse = (item) => {
-    if (isGameOver) return; // Prevent item use when game over
+        switch (direction) {
+          case "up":
+            newY = Math.max(0, prev.y - MOVE_SPEED);
+            break;
+          case "down":
+            newY = Math.min(WORLD_HEIGHT - 100, prev.y + MOVE_SPEED);
+            break;
+          case "left":
+            newX = Math.max(0, prev.x - MOVE_SPEED);
+            break;
+          case "right":
+            newX = Math.min(WORLD_WIDTH - PLAYER_SIZE, prev.x + MOVE_SPEED);
+            break;
+          default:
+            break;
+        }
 
-    // Track used items
-    setUsedItems((prev) => new Set([...prev, item.name]));
-    handleUseItem(item, setPlayerStats);
-  };
-
-  const handleLocationClick = (locationName) => {
-    if (isGameOver) return; // Prevent location clicks when game over
-
-    // Track visited locations
-    setVisitedLocations((prev) => new Set([...prev, locationName]));
-
-    const routes = {
-      home: "/home",
-      beach: "/beach",
-      field: "/field",
-      mountain: "/mountain",
-      restaurant: "/restaurant",
-    };
-
-    if (routes[locationName]) {
-      navigate(routes[locationName], {
-        state: {
-          characterName,
-          playerName,
-          stats: {
-            ...playerStats,
-            lastVisitedLocation,
-          },
-        },
+        return { x: newX, y: newY };
       });
-    }
-  };
+    },
+    [isGameOver, WORLD_WIDTH, WORLD_HEIGHT, PLAYER_SIZE, MOVE_SPEED]
+  );
 
-  const toggleTaskCompletion = (taskId) => {
-    if (isGameOver) return; // Prevent task interaction when game over
+  // PERBAIKAN: Unified movement handler untuk keyboard dan WASD
+  const startMovement = useCallback(
+    (direction) => {
+      if (isGameOver) return;
 
-    const taskLocation = lastVisitedLocation || "home";
-    const taskKey = `${taskLocation}-${taskId}`;
+      // Set walking state
+      setIsWalking(true);
+      setWalkingDirection(direction);
 
-    setPlayerStats((prev) => ({
-      ...prev,
-      tasks: {
-        ...prev.tasks,
-        [taskKey]: {
-          ...(prev.tasks?.[taskKey] || {}),
-          completed: !(prev.tasks?.[taskKey]?.completed || false),
-        },
-      },
-    }));
-  };
-
-  // Calculate playtime
-  const getPlaytime = () => {
-    return Math.floor((Date.now() - gameStartTime) / 1000);
-  };
-
-  // Reset stats function for new game
-  const handleResetStats = () => {
-    if (isGameOver) return; // Prevent reset when game over
-
-    const defaultStats = {
-      meal: 50,
-      sleep: 50,
-      health: 80,
-      energy: 80,
-      happiness: 50,
-      cleanliness: 50,
-      money: 100,
-      experience: 0,
-      level: 1,
-      skillPoints: 0,
-      items: [],
-      tasks: {},
-      lastVisitedLocation: "home",
-    };
-    setPlayerStats(defaultStats);
-    setVisitedLocations(new Set(["home"]));
-    setUsedItems(new Set());
-  };
-
-  const handleMainMenu = () => {
-    if (isGameOver) return; // Prevent navigation when game over
-    navigate("/");
-  };
-
-  const handleArrowPress = (direction) => {
-    if (isGameOver) return; // Prevent movement when game over
-
-    setPlayerPos((prev) => {
-      let newX = prev.x;
-      let newY = prev.y;
-
-      switch (direction) {
-        case "up":
-          newY = Math.max(0, prev.y - MOVE_SPEED);
-          break;
-        case "down":
-          newY = Math.min(WORLD_HEIGHT - PLAYER_SIZE, prev.y + MOVE_SPEED);
-          break;
-        case "left":
-          newX = Math.max(0, prev.x - MOVE_SPEED);
-          break;
-        case "right":
-          newX = Math.min(WORLD_WIDTH - PLAYER_SIZE, prev.x + MOVE_SPEED);
-          break;
-        default:
-          break;
+      // Clear existing interval
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
       }
 
-      return { x: newX, y: newY };
-    });
-  };
+      // Initial movement
+      handleArrowPress(direction);
 
+      // Start continuous movement
+      moveIntervalRef.current = setInterval(() => {
+        handleArrowPress(direction);
+      }, 40);
+    },
+    [isGameOver, handleArrowPress]
+  );
+
+  const stopMovement = useCallback(() => {
+    setIsWalking(false);
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
+    }
+  }, []);
+
+  // PERBAIKAN: Keyboard handler yang simplified
   useEffect(() => {
+    const keysPressed = new Set();
+
     const handleKeyDown = (e) => {
-      if (isGameOver) return; // Prevent keyboard input when game over
+      if (isGameOver || keysPressed.has(e.key)) return;
 
       let direction = null;
       switch (e.key) {
@@ -290,29 +227,100 @@ function Map() {
       }
 
       if (direction) {
-        e.preventDefault();
-        handleArrowPress(direction);
+        keysPressed.add(e.key);
+        startMovement(direction);
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      const walkKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "W", "a", "A", "s", "S", "d", "D"];
+      if (walkKeys.includes(e.key)) {
+        keysPressed.delete(e.key);
+
+        // Stop hanya jika tidak ada key lain yang ditekan
+        const stillWalking = walkKeys.some((key) => keysPressed.has(key));
+        if (!stillWalking) {
+          stopMovement();
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isGameOver]);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+    };
+  }, [isGameOver, startMovement, stopMovement]);
+
+  // Rest of the component methods (handleBackToStart, handleItemUse, etc.) remain the same...
+  const handleBackToStart = () => {
+    if (isGameOver) return;
+    navigate("/", {
+      state: { characterName, playerName, stats: { ...playerStats, lastVisitedLocation } },
+    });
+  };
+
+  const handleItemUse = (item) => {
+    if (isGameOver) return;
+    setUsedItems((prev) => new Set([...prev, item.name]));
+    handleUseItem(item, setPlayerStats);
+  };
+
+  const handleLocationClick = (locationName) => {
+    if (isGameOver) return;
+    setVisitedLocations((prev) => new Set([...prev, locationName]));
+    const routes = { home: "/home", beach: "/beach", field: "/field", mountain: "/mountain", restaurant: "/restaurant" };
+    if (routes[locationName]) {
+      navigate(routes[locationName], {
+        state: { characterName, playerName, stats: { ...playerStats, lastVisitedLocation } },
+      });
+    }
+  };
+
+  const toggleTaskCompletion = (taskId) => {
+    if (isGameOver) return;
+    const taskLocation = lastVisitedLocation || "home";
+    const taskKey = `${taskLocation}-${taskId}`;
+    setPlayerStats((prev) => ({
+      ...prev,
+      tasks: {
+        ...prev.tasks,
+        [taskKey]: { ...(prev.tasks?.[taskKey] || {}), completed: !(prev.tasks?.[taskKey]?.completed || false) },
+      },
+    }));
+  };
+
+  const getPlaytime = () => Math.floor((Date.now() - gameStartTime) / 1000);
+
+  const handleResetStats = () => {
+    if (isGameOver) return;
+    const defaultStats = { meal: 50, sleep: 50, health: 80, energy: 80, happiness: 50, cleanliness: 50, money: 100, experience: 0, level: 1, skillPoints: 0, items: [], tasks: {}, lastVisitedLocation: "home" };
+    setPlayerStats(defaultStats);
+    setVisitedLocations(new Set(["home"]));
+    setUsedItems(new Set());
+  };
+
+  const handleMainMenu = () => {
+    if (isGameOver) return;
+    navigate("/");
+  };
 
   // Updated camera centering logic using dynamic viewport size
   useEffect(() => {
     const cameraCenterX = playerPos.x - viewportSize.width / 2;
     const cameraCenterY = playerPos.y - viewportSize.height / 2;
-
     const clampedX = Math.max(0, Math.min(WORLD_WIDTH - viewportSize.width, cameraCenterX));
     const clampedY = Math.max(0, Math.min(WORLD_HEIGHT - viewportSize.height, cameraCenterY));
-
     setCameraPos({ x: clampedX, y: clampedY });
   }, [playerPos, viewportSize]);
 
   useEffect(() => {
-    if (isGameOver) return; // Don't show location dialogs if game over
-
+    if (isGameOver) return;
     if (isNearHouse(playerPos.x, playerPos.y) || isNearField(playerPos.x, playerPos.y) || isNearBeach(playerPos.x, playerPos.y) || isNearResto(playerPos.x, playerPos.y) || isNearGunung(playerPos.x, playerPos.y)) {
       if (isNearHouse(playerPos.x, playerPos.y)) {
         setCurrentLocation("home");
@@ -348,29 +356,19 @@ function Map() {
 
   const handleEnterLocation = () => {
     if (!currentLocation || currentLocation === "map" || isGameOver) return;
-
     const locationRoute = currentLocation === "home" ? "home" : currentLocation;
-
     navigate(`/${locationRoute}`, {
-      state: {
-        characterName,
-        playerName,
-        stats: {
-          ...playerStats,
-          lastVisitedLocation,
-        },
-      },
+      state: { characterName, playerName, stats: { ...playerStats, lastVisitedLocation } },
     });
   };
 
   const toggleTaskPanel = () => {
-    if (isGameOver) return; // Prevent task panel toggle when game over
+    if (isGameOver) return;
     setShowTasks(!showTasks);
   };
 
-  // Toggle player info expansion (only works on mobile/tablet)
   const togglePlayerInfo = () => {
-    if (isGameOver || !shouldUseMinimizedBehavior()) return; // Prevent toggle when game over
+    if (isGameOver || !shouldUseMinimizedBehavior()) return;
     setIsPlayerInfoExpanded(!isPlayerInfoExpanded);
   };
 
@@ -395,7 +393,6 @@ function Map() {
       {!isGameOver && showDialog && currentLocation && currentLocation !== "map" && (
         <div className="dialog fade-in-center">
           <p>{currentLocation === "home" ? "Do you want to go home?" : `Do you want to enter the ${capitalize(currentLocation)}?`}</p>
-
           <button className="yes-btn" onClick={handleEnterLocation}>
             Yes
           </button>
@@ -411,29 +408,24 @@ function Map() {
           className="game-world map-background"
           style={{
             transform: `translate(-${cameraPos.x}px, -${cameraPos.y}px)`,
-            pointerEvents: isGameOver ? "none" : "auto", // Disable pointer events when game over
+            pointerEvents: isGameOver ? "none" : "auto",
           }}
         >
           {/* Main Map Location Pointers */}
           {mainMapLocationPointers.map((pointer) => (
-            <div
-              key={pointer.name}
-              className="location-pointer"
-              style={{
-                left: pointer.x,
-                top: pointer.y,
-                pointerEvents: isGameOver ? "none" : "auto",
-              }}
-              onClick={() => handleLocationClick(pointer.name)}
-            >
+            <div key={pointer.name} className="location-pointer" style={{ left: pointer.x, top: pointer.y, pointerEvents: isGameOver ? "none" : "auto" }} onClick={() => handleLocationClick(pointer.name)}>
               <img src={`/assets/icons/${pointer.name}_pin.png`} alt={`${pointer.label} pointer`} className="pointer-image" />
               <div className="pointer-label">{pointer.label}</div>
             </div>
           ))}
 
           <div className="player" ref={playerRef} style={{ left: playerPos.x, top: playerPos.y }}>
-            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="player-sprite" draggable={false} />
-            <div />
+            {/* Tampilkan sprite idle atau GIF bergerak */}
+            {isWalking ? (
+              <Gif activity="jalan" location={currentLocation || "map"} isWalking={isWalking} characterName={characterName} walkingDirection={walkingDirection} />
+            ) : (
+              <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="player-sprite" draggable={false} />
+            )}
           </div>
         </div>
       </div>
@@ -460,7 +452,7 @@ function Map() {
                 className="mini-map-player"
                 style={{
                   left: `${((playerPos.x + PLAYER_SIZE / 2) / WORLD_WIDTH) * 100}%`,
-                  top: `${((playerPos.y + PLAYER_SIZE / 2) / WORLD_HEIGHT) * 100}%`,
+                  top: `${((playerPos.y + 50) / WORLD_HEIGHT) * 100}%`,
                 }}
               />
               <div
@@ -478,7 +470,6 @@ function Map() {
           {/* Updated player-info with conditional rendering and click handler */}
           <div className={`player-info ${shouldUseMinimizedBehavior() ? (isPlayerInfoExpanded ? "expanded" : "minimized") : ""}`} onClick={togglePlayerInfo}>
             <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
-            {/* Show player coords if expanded on mobile/tablet OR always on desktop */}
             {(shouldUseMinimizedBehavior() ? isPlayerInfoExpanded : true) && (
               <div className="player-coords">
                 {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
@@ -496,7 +487,7 @@ function Map() {
       {/* WASD and Inventory - disable when game over */}
       {!isGameOver && (
         <>
-          <WASDKey onKeyPress={handleArrowPress} isMapLocation={true} />
+          <WASDKey onStartMovement={startMovement} onStopMovement={stopMovement} isMapLocation={true} isWalking={isWalking} walkingDirection={walkingDirection} />
           {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
         </>
       )}

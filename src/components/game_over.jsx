@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../game_over.css";
 
-const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedItems = new Set(), playtime = 0, characterName = "claire", playerName = "Player", onClose, isGameOver = false }) => {
+const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedItems = new Set(), playtime = 0, characterName = "manda", playerName = "Player", onClose, isGameOver = false }) => {
   const [animationPhase, setAnimationPhase] = useState("enter");
   const navigate = useNavigate();
 

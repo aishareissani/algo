@@ -14,7 +14,7 @@ function Mountain() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { characterName = "claire", playerName = "Player", stats: initialStats = {} } = location.state || {};
+  const { characterName = "manda", playerName = "Player", stats: initialStats = {} } = location.state || {};
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationmountain, setCurrentLocationmountain] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);

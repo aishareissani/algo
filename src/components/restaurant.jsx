@@ -13,7 +13,7 @@ function Resto() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { characterName = "claire", playerName = "Player", stats: initialStats = {} } = location.state || {};
+  const { characterName = "manda", playerName = "Player", stats: initialStats = {} } = location.state || {};
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationResto, setcurrentLocationResto] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);

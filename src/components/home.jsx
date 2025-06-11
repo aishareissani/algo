@@ -14,7 +14,7 @@ function Home() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { characterName = "claire", playerName = "Player", stats: initialStats = {} } = location.state || {};
+  const { characterName = "manda", playerName = "Player", stats: initialStats = {} } = location.state || {};
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationHouse, setCurrentLocationHouse] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);

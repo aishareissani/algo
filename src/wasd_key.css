@@ -4,7 +4,7 @@
   /* WASD Colors */
   --wasd-main: #795548;
   --wasd-hover: #795548;
-  --wasd-active: #795548;
+  --wasd-active: #00ffb4;
   --wasd-key-shadow: 0 4px 0 #795548;
   --wasd-key-pressed: 0 2px 0 #795548;
   --wasd-pad-bg: #f8f8fe;
@@ -17,11 +17,15 @@
   --wasd-key-hover-shadow: 0 6px 0 #795548;
   --wasd-key-active-text: #fff;
   --wasd-key-active-border: #456c35;
+  --wasd-key-active-bg: rgba(0, 255, 180, 0.4);
+  --wasd-key-active-border-glow: rgba(0, 255, 180, 0.7);
   --wasd-key-w-bg-1: #a4f78f;
   --wasd-key-w-bg-2: #79d959;
   --wasd-key-w-border: #795548;
   --wasd-key-shine: rgba(255, 255, 255, 0.3);
   --wasd-text-shadow: rgba(255, 255, 255, 0.7);
+  --wasd-walking-bg: rgba(0, 0, 0, 0.6);
+  --wasd-walking-text: #00ffb4;
 }
 
 body {
@@ -36,16 +40,14 @@ body {
   bottom: 155px;
   right: 74px;
   z-index: 2000;
-  /* Add default gap for desktop, will be overridden by media queries */
-  margin-right: 20px; /* Example desktop gap from right */
-  margin-bottom: 20px; /* Example desktop gap from bottom */
+  margin-right: 20px;
+  margin-bottom: 20px;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
 }
 
-/* Map-specific position ONLY - will be handled by main .wasd-key-container for mobile */
 .wasd-key-container.map-location {
   bottom: 102px;
   right: 410px;
@@ -59,9 +61,9 @@ body {
   display: block;
   text-align: center;
   font-family: "Press Start 2P", system-ui;
-  font-size: 8px; /* Reduced from 11px */
+  font-size: 8px;
   color: var(--wasd-main);
-  margin-bottom: 6px; /* Reduced from 10px */
+  margin-bottom: 6px;
   letter-spacing: 1px;
   text-shadow: 1px 1px 0 var(--wasd-text-shadow);
 }
@@ -76,37 +78,36 @@ body {
   border: 2px solid var(--wasd-main);
   font-family: "Press Start 2P", system-ui;
   user-select: none;
-  justify-content: center; /* Center the content vertically */
-  align-items: center; /* Center the content horizontally */
+  justify-content: center;
+  align-items: center;
 }
 
-/* Top row with just W */
 .wasd-key-top-row {
   display: flex;
   justify-content: center;
-  margin-bottom: 2px; /* Reduced from 4px */
+  margin-bottom: 2px;
 }
 
-/* Bottom row with A S D */
 .wasd-key-middle-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 5px; /* Reduced from 8px */
+  gap: 5px;
   justify-items: center;
   margin-bottom: 5px;
 }
 
 .wasd-key {
   font-family: inherit;
-  font-size: 16px; /* Reduced from 24px */
+  font-size: 16px;
   font-weight: bold;
   background: linear-gradient(135deg, var(--wasd-key-bg-1) 0%, var(--wasd-key-bg-2) 100%);
   color: var(--wasd-key-text);
   border: 2px solid var(--wasd-main);
-  border-radius: 8px; /* Reduced from 12px */
-  height: 45px; /* Reduced from 45px */
-  width: 74px; /* Reduced from 74px */
+  border-radius: 8px;
+  height: 45px;
+  width: 74px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   box-shadow: var(--wasd-key-shadow);
@@ -124,7 +125,7 @@ body {
   right: 0;
   height: 50%;
   background: linear-gradient(to bottom, var(--wasd-key-shine), transparent);
-  border-radius: 6px 6px 0 0; /* Reduced from 10px */
+  border-radius: 6px 6px 0 0;
 }
 
 .wasd-key:hover,
@@ -136,12 +137,45 @@ body {
   box-shadow: var(--wasd-key-hover-shadow);
 }
 
-.wasd-key:active {
-  background: var(--wasd-active);
+.wasd-key:active,
+.wasd-key.active {
+  background: var(--wasd-key-active-bg);
   color: var(--wasd-key-active-text);
-  border-color: var(--wasd-key-active-border);
+  border-color: var(--wasd-key-active-border-glow);
   transform: translateY(2px);
   box-shadow: var(--wasd-key-pressed);
+  animation: keyPulse 0.3s ease;
+}
+
+.key-arrow {
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.8;
+  color: var(--wasd-main);
+}
+
+.wasd-key.active .key-arrow {
+  color: var(--wasd-walking-text);
+  text-shadow: 0 0 4px var(--wasd-walking-text);
+}
+
+/* Walking status indicator */
+.walking-status {
+  margin-top: 8px;
+  text-align: center;
+  background: var(--wasd-walking-bg);
+  padding: 4px 8px;
+  border-radius: 6px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 255, 180, 0.3);
+}
+
+.walking-text {
+  color: var(--wasd-walking-text);
+  font-size: 8px;
+  font-family: "Press Start 2P", monospace;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  animation: walkingGlow 2s ease-in-out infinite alternate;
 }
 
 /* Unique key styling */
@@ -175,20 +209,39 @@ body {
   }
 }
 
+@keyframes keyPulse {
+  0% {
+    box-shadow: var(--wasd-key-pressed);
+  }
+  50% {
+    box-shadow: 0 2px 0 #795548, 0 0 10px rgba(0, 255, 180, 0.5);
+  }
+  100% {
+    box-shadow: var(--wasd-key-pressed);
+  }
+}
+
+@keyframes walkingGlow {
+  0% {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  }
+  100% {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), 0 0 8px var(--wasd-walking-text);
+  }
+}
+
 .wasd-key:active {
   animation: keyPress 0.2s ease;
 }
 
 /* WASD Component Responsive Design */
-/* For screens up to 1024px (tablet) */
 @media screen and (max-width: 1024px) {
   .wasd-key-container {
-    /* Position relative to the bottom and right of the map screen */
-    bottom: 20px; /* Gap from bottom of map screen */
-    right: 20px; /* Gap from right of map screen */
-    left: auto; /* Ensure left is auto */
-    top: auto; /* Ensure top is auto */
-    transform: none; /* Remove previous transforms */
+    bottom: 20px;
+    right: 20px;
+    left: auto;
+    top: auto;
+    transform: none;
     z-index: 1500;
     user-select: none;
     -webkit-user-select: none;
@@ -196,10 +249,9 @@ body {
     -ms-user-select: none;
   }
 
-  /* .map-location class is no longer needed as positioning is consistent */
   .wasd-key-container.map-location {
-    bottom: 20px; /* Consistent gap */
-    right: 20px; /* Consistent gap */
+    bottom: 20px;
+    right: 20px;
     left: auto;
     top: auto;
     transform: none;
@@ -216,9 +268,9 @@ body {
   }
 
   .wasd-key {
-    font-size: 16px;
+    font-size: 14px;
     width: 50px;
-    height: 32px;
+    height: 38px;
     border-radius: 8px;
   }
 
@@ -228,11 +280,10 @@ body {
   }
 }
 
-/* For screens up to 768px (mobile) */
 @media screen and (max-width: 768px) {
   .wasd-key-container {
-    bottom: 10px !important; /* Always 10px from bottom */
-    right: 30px !important; /* Always 30px from right */
+    bottom: 10px !important;
+    right: 30px !important;
     left: auto !important;
     top: auto !important;
     transform: none !important;
@@ -244,8 +295,8 @@ body {
   }
 
   .wasd-key-container.map-location {
-    bottom: 10px !important; /* Always 10px from bottom in map-inside-screen */
-    right: 30px !important; /* Always 30px from right */
+    bottom: 10px !important;
+    right: 30px !important;
     left: auto !important;
     top: auto !important;
     transform: none !important;
@@ -262,10 +313,14 @@ body {
   }
 
   .wasd-key {
-    font-size: 12px;
-    width: 35px;
-    height: 28px;
+    font-size: 11px;
+    width: 40px;
+    height: 32px;
     border-radius: 6px;
+  }
+
+  .walking-text {
+    font-size: 6px;
   }
 
   .wasd-key-container::before {
@@ -274,14 +329,13 @@ body {
   }
 }
 
-/* Desktop - normal positioning */
 @media screen and (min-width: 1025px) {
   .wasd-key-container {
-    bottom: 155px; /* Revert to original desktop bottom */
-    right: 74px; /* Revert to original desktop right */
-    margin-right: 0; /* Remove mobile/tablet specific margins */
-    margin-bottom: 0; /* Remove mobile/tablet specific margins */
-    transform: none; /* Ensure no transforms */
+    bottom: 155px;
+    right: 74px;
+    margin-right: 0;
+    margin-bottom: 0;
+    transform: none;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -289,8 +343,8 @@ body {
   }
 
   .wasd-key-container.map-location {
-    bottom: 102px; /* Revert to original desktop map-location bottom */
-    right: 410px; /* Revert to original desktop map-location right */
+    bottom: 102px;
+    right: 410px;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -299,14 +353,18 @@ body {
 
   .wasd-key-pad {
     gap: 5px;
-    height: 108px; /* Reduced from 45px */
+    height: 108px;
     width: 255px;
     border-radius: 12px;
   }
 
   .wasd-key {
-    font-size: 20px;
-    width: 80px;
-    height: 50px;
+    font-size: 18px;
+    width: 74px;
+    height: 45px;
+  }
+
+  .walking-text {
+    font-size: 8px;
   }
 }

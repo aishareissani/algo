@@ -1,95 +1,115 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import "../wasd_key.css";
 
-const WASDKey = ({ onKeyPress, isMapLocation = false }) => {
-  const intervals = useRef({});
+const WASDKey = ({ onStartMovement, onStopMovement, isMapLocation = false, isWalking = false, walkingDirection = "down" }) => {
+  const [pressedKey, setPressedKey] = useState(null);
 
+  // Sinkronisasi dengan Map state
   useEffect(() => {
-    const handleKeyDown = (event) => {
-      const key = event.key.toLowerCase();
-      const keyMap = {
-        w: "up",
-        s: "down",
-        a: "left",
-        d: "right",
-      };
-
-      if (keyMap[key]) {
-        event.preventDefault(); // PENTING! Cegah select teks dan default browser
-        onKeyPress(keyMap[key]);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onKeyPress]);
+    if (isWalking) {
+      setPressedKey(walkingDirection);
+    } else {
+      setPressedKey(null);
+    }
+  }, [isWalking, walkingDirection]);
 
   const handleStartPress = (direction) => {
-    onKeyPress(direction);
-    intervals.current[direction] = setInterval(() => {
-      onKeyPress(direction);
-    }, 30);
+    setPressedKey(direction);
+    onStartMovement(direction);
   };
 
-  const handleEndPress = (direction) => {
-    if (intervals.current[direction]) {
-      clearInterval(intervals.current[direction]);
-      intervals.current[direction] = null;
-    }
+  const handleEndPress = () => {
+    setPressedKey(null);
+    onStopMovement();
   };
 
   const containerClass = `wasd-key-container${isMapLocation ? " map-location" : ""}`;
   const padClass = `wasd-key-pad${isMapLocation ? " map-location" : ""}`;
   const middleRowClass = `wasd-key-middle-row${isMapLocation ? " map-location" : ""}`;
-  const keyClass = (key) => `wasd-key wasd-key-${key}${isMapLocation ? " map-location" : ""}`;
+
+  const keyClass = (key, direction) => {
+    let baseClass = `wasd-key wasd-key-${key}${isMapLocation ? " map-location" : ""}`;
+    if (pressedKey === direction) {
+      baseClass += " active";
+    }
+    return baseClass;
+  };
 
   return (
     <div className={containerClass}>
       <div className={padClass}>
         <div className="wasd-key-top-row">
           <button
-            className={keyClass("w")}
+            className={keyClass("w", "up")}
             aria-label="W key for up"
             onMouseDown={() => handleStartPress("up")}
-            onMouseUp={() => handleEndPress("up")}
-            onMouseLeave={() => handleEndPress("up")}
-            onTouchStart={() => handleStartPress("up")}
-            onTouchEnd={() => handleEndPress("up")}
+            onMouseUp={handleEndPress}
+            onMouseLeave={handleEndPress}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              handleStartPress("up");
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              handleEndPress();
+            }}
+            onTouchCancel={handleEndPress}
           >
             W
           </button>
         </div>
         <div className={middleRowClass}>
           <button
-            className={keyClass("a")}
+            className={keyClass("a", "left")}
             aria-label="A key for left"
             onMouseDown={() => handleStartPress("left")}
-            onMouseUp={() => handleEndPress("left")}
-            onMouseLeave={() => handleEndPress("left")}
-            onTouchStart={() => handleStartPress("left")}
-            onTouchEnd={() => handleEndPress("left")}
+            onMouseUp={handleEndPress}
+            onMouseLeave={handleEndPress}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              handleStartPress("left");
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              handleEndPress();
+            }}
+            onTouchCancel={handleEndPress}
           >
             A
           </button>
           <button
-            className={keyClass("s")}
+            className={keyClass("s", "down")}
             aria-label="S key for down"
             onMouseDown={() => handleStartPress("down")}
-            onMouseUp={() => handleEndPress("down")}
-            onMouseLeave={() => handleEndPress("down")}
-            onTouchStart={() => handleStartPress("down")}
-            onTouchEnd={() => handleEndPress("down")}
+            onMouseUp={handleEndPress}
+            onMouseLeave={handleEndPress}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              handleStartPress("down");
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              handleEndPress();
+            }}
+            onTouchCancel={handleEndPress}
           >
             S
           </button>
           <button
-            className={keyClass("d")}
+            className={keyClass("d", "right")}
             aria-label="D key for right"
             onMouseDown={() => handleStartPress("right")}
-            onMouseUp={() => handleEndPress("right")}
-            onMouseLeave={() => handleEndPress("right")}
-            onTouchStart={() => handleStartPress("right")}
-            onTouchEnd={() => handleEndPress("right")}
+            onMouseUp={handleEndPress}
+            onMouseLeave={handleEndPress}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              handleStartPress("right");
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              handleEndPress();
+            }}
+            onTouchCancel={handleEndPress}
           >
             D
           </button>

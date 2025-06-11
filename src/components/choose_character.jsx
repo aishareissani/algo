@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const characters = [
-  { id: 1, name: "claire" },
-  { id: 2, name: "kai" },
-  { id: 3, name: "karen" },
+  { id: 1, name: "manda" },
+  { id: 2, name: "keni" },
+  { id: 3, name: "aisha" },
 ];
 
 function ChooseCharacter() {

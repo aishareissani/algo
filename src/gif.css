@@ -1,0 +1,169 @@
+.gif-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  padding: 15px;
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gif-container:hover {
+  transform: translateY(-5px);
+}
+
+.activity-gif {
+  width: 320px;
+  height: 230px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 3px solid #fff;
+}
+
+.walking-gif {
+  border: 3px solid #ff6b6b;
+  animation: walkingPulse 2s infinite;
+}
+
+@keyframes walkingPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    border-color: #ff6b6b;
+  }
+  50% {
+    transform: scale(1.05);
+    border-color: #ff8787;
+  }
+}
+
+.activity-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #2c3e50;
+  text-align: center;
+  text-transform: capitalize;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
+}
+
+/* Styling berdasarkan lokasi */
+.home-activity {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+}
+
+.restaurant-activity {
+  background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+}
+
+.field-activity {
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+}
+
+.mountain-activity {
+  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+}
+
+.beach-activity {
+  background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .gif-container {
+    margin: 5px;
+    padding: 10px;
+  }
+
+  .activity-gif {
+    width: 100px;
+    height: 100px;
+  }
+
+  .activity-label {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .activity-gif {
+    width: 80px;
+    height: 80px;
+  }
+
+  .activity-label {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+
+/* Layout untuk multiple gifs */
+.gif-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.location-section {
+  margin: 30px 0;
+}
+
+.location-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* PERBAIKAN UNTUK PLAYER DI MAP */
+.player .gif-container {
+  margin: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  /* HAPUS width dan height yang fixed */
+}
+
+.player .activity-gif {
+  width: 80px; /* SAMA dengan .player width */
+  height: 100px; /* SAMA dengan .player height */
+  border: none;
+  margin: 0;
+  border-radius: 0;
+  object-fit: contain; /* PENTING: biar proporsi benar */
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.player .activity-label {
+  display: none; /* Hide label di map */
+}
+
+.player .gif-container:hover {
+  transform: none; /* Disable hover effect di map */
+  box-shadow: none;
+}
+
+.player-sprite {
+  width: 80px; /* SAMA dengan .player width */
+  height: 100px; /* SAMA dengan .player height */
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.direction-indicator {
+  font-size: 12px;
+  color: #666;
+  font-weight: normal;
+}
