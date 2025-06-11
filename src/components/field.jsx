@@ -293,7 +293,7 @@ function Field() {
           money: -5,
           experience: 1,
         },
-        "duduk2 di kursi"
+        "lempar koin"
       );
     }
   };

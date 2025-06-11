@@ -24,7 +24,7 @@ const Gif = ({ activity, location, isWalking, characterName = "keni", walkingDir
       mandi: `${characterName}_mandi.gif`,
       makan: `${characterName}_makan.gif`,
       "work from home": `${characterName}_wfh.gif`,
-      "main kucing": `${characterName}_main_kucing.gif`,
+      "main kucing": `${characterName}_kucing.gif`,
 
       // Restoran
       "pesan makan": `${characterName}_makan.gif`,
@@ -35,6 +35,7 @@ const Gif = ({ activity, location, isWalking, characterName = "keni", walkingDir
       "main ayunan": `${characterName}_ayunan.gif`,
       piknik: `${characterName}_piknik.gif`,
       "duduk2 di kursi": `${characterName}_duduk.gif`,
+      "lempar koin": `${characterName}_koin.gif`,
 
       // Gunung
       mendaki: `${characterName}_mendaki.gif`,
