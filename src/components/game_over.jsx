@@ -2,9 +2,40 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../game_over.css";
 
-const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedItems = new Set(), playtime = 0, characterName = "claire", playerName = "Player", onClose }) => {
+const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedItems = new Set(), playtime = 0, characterName = "claire", playerName = "Player", onClose, isGameOver = false }) => {
   const [animationPhase, setAnimationPhase] = useState("enter");
   const navigate = useNavigate();
+
+  // Disable all interactions when game over
+  useEffect(() => {
+    if (isGameOver) {
+      // Disable all key events
+      const disableKeys = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      };
+
+      // Disable all click events except for game over buttons
+      const disableClicks = (e) => {
+        if (!e.target.closest(".game-over-container")) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      };
+
+      document.addEventListener("keydown", disableKeys, true);
+      document.addEventListener("click", disableClicks, true);
+      document.addEventListener("mousedown", disableClicks, true);
+      document.addEventListener("mouseup", disableClicks, true);
+
+      return () => {
+        document.removeEventListener("keydown", disableKeys, true);
+        document.removeEventListener("click", disableClicks, true);
+        document.removeEventListener("mousedown", disableClicks, true);
+        document.removeEventListener("mouseup", disableClicks, true);
+      };
+    }
+  }, [isGameOver]);
 
   // Score Calculations
   const calculateStatBalance = () => {
@@ -117,12 +148,19 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
     };
   }, []);
 
+  // Determine game over cause
+  const getGameOverCause = () => {
+    if (playerStats.health <= 0) return "Health reached 0%";
+    if (playerStats.sleep <= 0) return "Sleep reached 0%";
+    return "Game Over";
+  };
+
   return (
     <div className="game-over-overlay">
       <div className={`game-over-container ${animationPhase}`}>
         <div className="game-over-header">
           <h1 className="game-over-title">GAME OVER</h1>
-          <p className="game-over-cause">Health reached 0%</p>
+          <p className="game-over-cause">{getGameOverCause()}</p>
         </div>
 
         <div className="life-satisfaction-section">

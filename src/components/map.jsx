@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import Inventory from "./inventory";
+import GameOver from "./game_over";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import { handleUseItem } from "../utils/itemHandlers";
 import WASDKey from "./wasd_key";
@@ -23,6 +24,7 @@ function Map() {
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
   const [isPlayerInfoExpanded, setIsPlayerInfoExpanded] = useState(false);
+  const [isGameOver, setIsGameOver] = useState(false);
 
   // Add tracking for GameOver data
   const [visitedLocations, setVisitedLocations] = useState(new Set(["home"]));
@@ -83,6 +85,14 @@ function Map() {
 
   const [lastVisitedLocation, setLastVisitedLocation] = useState(passedStats?.lastVisitedLocation || "home");
 
+  // Check for game over conditions
+  useEffect(() => {
+    if (playerStats.health <= 0 || playerStats.sleep <= 0) {
+      setIsGameOver(true);
+      setShowDialog(false); // Hide any existing dialogs
+    }
+  }, [playerStats.health, playerStats.sleep]);
+
   // Check if current screen size should use minimized behavior
   const shouldUseMinimizedBehavior = () => {
     return window.innerWidth <= 1024;
@@ -119,6 +129,8 @@ function Map() {
   }, []);
 
   const handleBackToStart = () => {
+    if (isGameOver) return; // Prevent navigation when game over
+
     navigate("/", {
       state: {
         characterName,
@@ -132,12 +144,16 @@ function Map() {
   };
 
   const handleItemUse = (item) => {
+    if (isGameOver) return; // Prevent item use when game over
+
     // Track used items
     setUsedItems((prev) => new Set([...prev, item.name]));
     handleUseItem(item, setPlayerStats);
   };
 
   const handleLocationClick = (locationName) => {
+    if (isGameOver) return; // Prevent location clicks when game over
+
     // Track visited locations
     setVisitedLocations((prev) => new Set([...prev, locationName]));
 
@@ -164,6 +180,8 @@ function Map() {
   };
 
   const toggleTaskCompletion = (taskId) => {
+    if (isGameOver) return; // Prevent task interaction when game over
+
     const taskLocation = lastVisitedLocation || "home";
     const taskKey = `${taskLocation}-${taskId}`;
 
@@ -186,6 +204,8 @@ function Map() {
 
   // Reset stats function for new game
   const handleResetStats = () => {
+    if (isGameOver) return; // Prevent reset when game over
+
     const defaultStats = {
       meal: 50,
       sleep: 50,
@@ -207,10 +227,13 @@ function Map() {
   };
 
   const handleMainMenu = () => {
+    if (isGameOver) return; // Prevent navigation when game over
     navigate("/");
   };
 
   const handleArrowPress = (direction) => {
+    if (isGameOver) return; // Prevent movement when game over
+
     setPlayerPos((prev) => {
       let newX = prev.x;
       let newY = prev.y;
@@ -238,6 +261,8 @@ function Map() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (isGameOver) return; // Prevent keyboard input when game over
+
       let direction = null;
       switch (e.key) {
         case "ArrowUp":
@@ -272,7 +297,7 @@ function Map() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [isGameOver]);
 
   // Updated camera centering logic using dynamic viewport size
   useEffect(() => {
@@ -286,6 +311,8 @@ function Map() {
   }, [playerPos, viewportSize]);
 
   useEffect(() => {
+    if (isGameOver) return; // Don't show location dialogs if game over
+
     if (isNearHouse(playerPos.x, playerPos.y) || isNearField(playerPos.x, playerPos.y) || isNearBeach(playerPos.x, playerPos.y) || isNearResto(playerPos.x, playerPos.y) || isNearGunung(playerPos.x, playerPos.y)) {
       if (isNearHouse(playerPos.x, playerPos.y)) {
         setCurrentLocation("home");
@@ -317,10 +344,10 @@ function Map() {
       setCurrentLocation("map");
       setShowDialog(false);
     }
-  }, [playerPos]);
+  }, [playerPos, isGameOver]);
 
   const handleEnterLocation = () => {
-    if (!currentLocation || currentLocation === "map") return;
+    if (!currentLocation || currentLocation === "map" || isGameOver) return;
 
     const locationRoute = currentLocation === "home" ? "home" : currentLocation;
 
@@ -336,27 +363,36 @@ function Map() {
     });
   };
 
-  const toggleTaskPanel = () => setShowTasks(!showTasks);
+  const toggleTaskPanel = () => {
+    if (isGameOver) return; // Prevent task panel toggle when game over
+    setShowTasks(!showTasks);
+  };
 
   // Toggle player info expansion (only works on mobile/tablet)
   const togglePlayerInfo = () => {
-    if (shouldUseMinimizedBehavior()) {
-      setIsPlayerInfoExpanded(!isPlayerInfoExpanded);
-    }
+    if (isGameOver || !shouldUseMinimizedBehavior()) return; // Prevent toggle when game over
+    setIsPlayerInfoExpanded(!isPlayerInfoExpanded);
   };
 
   return (
     <div className="game-container">
-      {/* Task component with lowest z-index (below everything except map background) */}
-      {showTasks && <Task currentLocation={lastVisitedLocation || "home"} isInsideLocation={false} externalTasks={playerStats.tasks || {}} onTaskComplete={toggleTaskCompletion} />}
+      {/* Show GameOver component when game over */}
+      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={visitedLocations} usedItems={usedItems} playtime={getPlaytime()} characterName={characterName} playerName={playerName} isGameOver={true} />}
 
-      <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onResetStats={handleResetStats} onUseItem={handleItemUse} visitedLocations={visitedLocations} usedItems={usedItems} playtime={getPlaytime()} onMainMenu={handleMainMenu} />
-        <SpeedToggleButton />
-        <BackTo type="start" onClick={handleBackToStart} />
-      </div>
+      {/* Task component with lowest z-index (below everything except map background) - hide when game over */}
+      {!isGameOver && showTasks && <Task currentLocation={lastVisitedLocation || "home"} isInsideLocation={false} externalTasks={playerStats.tasks || {}} onTaskComplete={toggleTaskCompletion} />}
 
-      {showDialog && currentLocation && currentLocation !== "map" && (
+      {/* Stats and controls - hide when game over */}
+      {!isGameOver && (
+        <div>
+          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onResetStats={handleResetStats} onUseItem={handleItemUse} visitedLocations={visitedLocations} usedItems={usedItems} playtime={getPlaytime()} onMainMenu={handleMainMenu} />
+          <SpeedToggleButton />
+          <BackTo type="start" onClick={handleBackToStart} />
+        </div>
+      )}
+
+      {/* Location dialog - hide when game over */}
+      {!isGameOver && showDialog && currentLocation && currentLocation !== "map" && (
         <div className="dialog fade-in-center">
           <p>{currentLocation === "home" ? "Do you want to go home?" : `Do you want to enter the ${capitalize(currentLocation)}?`}</p>
 
@@ -370,8 +406,14 @@ function Map() {
       )}
 
       <div className="game-viewport" ref={mapRef}>
-        <SpeedToggleButton />
-        <div className="game-world map-background" style={{ transform: `translate(-${cameraPos.x}px, -${cameraPos.y}px)` }}>
+        {!isGameOver && <SpeedToggleButton />}
+        <div
+          className="game-world map-background"
+          style={{
+            transform: `translate(-${cameraPos.x}px, -${cameraPos.y}px)`,
+            pointerEvents: isGameOver ? "none" : "auto", // Disable pointer events when game over
+          }}
+        >
           {/* Main Map Location Pointers */}
           {mainMapLocationPointers.map((pointer) => (
             <div
@@ -380,6 +422,7 @@ function Map() {
               style={{
                 left: pointer.x,
                 top: pointer.y,
+                pointerEvents: isGameOver ? "none" : "auto",
               }}
               onClick={() => handleLocationClick(pointer.name)}
             >
@@ -395,60 +438,68 @@ function Map() {
         </div>
       </div>
 
-      <div className="game-hud">
-        <div className="mini-map">
-          <div className="mini-map-world">
-            {/* Mini-map Location Pointers */}
-            {miniMapLocationPointers.map((pointer) => (
+      {/* HUD elements - hide when game over */}
+      {!isGameOver && (
+        <div className="game-hud">
+          <div className="mini-map">
+            <div className="mini-map-world">
+              {/* Mini-map Location Pointers */}
+              {miniMapLocationPointers.map((pointer) => (
+                <div
+                  key={`mini-${pointer.name}`}
+                  className="mini-map-pointer"
+                  style={{
+                    left: `${(pointer.x / WORLD_WIDTH) * 100}%`,
+                    top: `${(pointer.y / WORLD_HEIGHT) * 100}%`,
+                  }}
+                >
+                  <img src={`/assets/icons/${pointer.name}_pin.png`} alt={`${pointer.label} pointer`} className="mini-pointer-image" />
+                </div>
+              ))}
               <div
-                key={`mini-${pointer.name}`}
-                className="mini-map-pointer"
+                className="mini-map-player"
                 style={{
-                  left: `${(pointer.x / WORLD_WIDTH) * 100}%`,
-                  top: `${(pointer.y / WORLD_HEIGHT) * 100}%`,
+                  left: `${((playerPos.x + PLAYER_SIZE / 2) / WORLD_WIDTH) * 100}%`,
+                  top: `${((playerPos.y + PLAYER_SIZE / 2) / WORLD_HEIGHT) * 100}%`,
                 }}
-              >
-                <img src={`/assets/icons/${pointer.name}_pin.png`} alt={`${pointer.label} pointer`} className="mini-pointer-image" />
+              />
+              <div
+                className="mini-map-viewport"
+                style={{
+                  left: `${(cameraPos.x / WORLD_WIDTH) * 100}%`,
+                  top: `${(cameraPos.y / WORLD_HEIGHT) * 100}%`,
+                  width: `${(viewportSize.width / WORLD_WIDTH) * 100}%`,
+                  height: `${(viewportSize.height / WORLD_HEIGHT) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Updated player-info with conditional rendering and click handler */}
+          <div className={`player-info ${shouldUseMinimizedBehavior() ? (isPlayerInfoExpanded ? "expanded" : "minimized") : ""}`} onClick={togglePlayerInfo}>
+            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
+            {/* Show player coords if expanded on mobile/tablet OR always on desktop */}
+            {(shouldUseMinimizedBehavior() ? isPlayerInfoExpanded : true) && (
+              <div className="player-coords">
+                {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
               </div>
-            ))}
-            <div
-              className="mini-map-player"
-              style={{
-                left: `${((playerPos.x + PLAYER_SIZE / 2) / WORLD_WIDTH) * 100}%`,
-                top: `${((playerPos.y + PLAYER_SIZE / 2) / WORLD_HEIGHT) * 100}%`,
-              }}
-            />
-            <div
-              className="mini-map-viewport"
-              style={{
-                left: `${(cameraPos.x / WORLD_WIDTH) * 100}%`,
-                top: `${(cameraPos.y / WORLD_HEIGHT) * 100}%`,
-                width: `${(viewportSize.width / WORLD_WIDTH) * 100}%`,
-                height: `${(viewportSize.height / WORLD_HEIGHT) * 100}%`,
-              }}
-            />
+            )}
+          </div>
+
+          <div className="controls-hint">
+            <div>🎮 Arrow Keys / WASD to move</div>
+            <div>🗺️ Explore the village!</div>
           </div>
         </div>
+      )}
 
-        {/* Updated player-info with conditional rendering and click handler */}
-        <div className={`player-info ${shouldUseMinimizedBehavior() ? (isPlayerInfoExpanded ? "expanded" : "minimized") : ""}`} onClick={togglePlayerInfo}>
-          <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
-          {/* Show player coords if expanded on mobile/tablet OR always on desktop */}
-          {(shouldUseMinimizedBehavior() ? isPlayerInfoExpanded : true) && (
-            <div className="player-coords">
-              {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            </div>
-          )}
-        </div>
-
-        <div className="controls-hint">
-          <div>🎮 Arrow Keys / WASD to move</div>
-          <div>🗺️ Explore the village!</div>
-        </div>
-      </div>
-
-      <WASDKey onKeyPress={handleArrowPress} isMapLocation={true} />
-      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
+      {/* WASD and Inventory - disable when game over */}
+      {!isGameOver && (
+        <>
+          <WASDKey onKeyPress={handleArrowPress} isMapLocation={true} />
+          {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
+        </>
+      )}
     </div>
   );
 }

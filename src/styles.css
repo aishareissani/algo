@@ -618,7 +618,6 @@ body {
   transform: translate(-50%, -50%);
   background: var(--map-activity-bg);
   backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
   border-radius: 16px;
   padding: 25px 35px;
   box-shadow: 0 8px 32px var(--map-activity-shadow);
@@ -676,6 +675,19 @@ body {
 @media screen and (max-width: 768px) {
   .controls-hint {
     display: none !important; /* Hide player hints on mobile */
+  }
+
+  .activity-overlay {
+    width: 55vw;
+    max-width: 230px;
+    padding: 10px 8px;
+  }
+
+  .activity-info h3 {
+    font-size: 12px;
+  }
+  .activity-info p {
+    font-size: 12px;
   }
 }
 
@@ -768,9 +780,9 @@ body {
 
   /* Adjust activity overlay for mobile */
   .activity-overlay {
-    width: 90vw;
-    max-width: 320px;
-    padding: 20px 25px;
+    width: 50vw;
+    max-width: 220px;
+    padding: 10px 15px;
   }
 
   .activity-info h3 {
