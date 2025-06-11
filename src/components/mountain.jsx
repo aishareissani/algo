@@ -6,8 +6,9 @@ import BackTo from "./BackTo"; // ADD THIS IMPORT (lowercase)
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import "../mountain.css";
-import ArrowKey from "./wasd_key";
+import WASDKey from "./wasd_key";
 import Task from "./task";
+import Sound, { playSound } from "./sound";
 
 function Mountain() {
   const { isFastForward } = useSpeedMode();
@@ -642,7 +643,7 @@ function Mountain() {
 
       {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
 
-      <ArrowKey onKeyPress={handleArrowPress} />
+      <WASDKey onKeyPress={handleArrowPress} />
 
       <Task currentLocation="mountain" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
     </div>

@@ -13,11 +13,9 @@
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 10px;
-  border: 3px solid #fff;
 }
 
 .walking-gif {
-  border: 3px solid #ff6b6b;
   animation: walkingPulse 2s infinite;
 }
 
@@ -25,11 +23,9 @@
   0%,
   100% {
     transform: scale(1);
-    border-color: #ff6b6b;
   }
   50% {
     transform: scale(1.05);
-    border-color: #ff8787;
   }
 }
 
@@ -44,28 +40,6 @@
   border-radius: 15px;
   backdrop-filter: blur(5px);
 }
-
-/* Styling berdasarkan lokasi */
-.home-activity {
-  background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
-}
-
-.restaurant-activity {
-  background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
-}
-
-.field-activity {
-  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
-}
-
-.mountain-activity {
-  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
-}
-
-.beach-activity {
-  background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%);
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
   .gif-container {
@@ -114,7 +88,6 @@
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
-  color: #2c3e50;
   text-transform: uppercase;
   letter-spacing: 1px;
 }

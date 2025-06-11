@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../game_over.css";
+import {
+  playSound,
+  stopBackgroundMusic,
+  resetMusicState,
+  playBackgroundMusic,
+  stopMusicHealthCheck, // TAMBAH ini
+  musicHealthCheck, // TAMBAH ini
+} from "./sound";
 
 const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedItems = new Set(), playtime = 0, characterName = "manda", playerName = "Player", onClose, isGameOver = false }) => {
   const [animationPhase, setAnimationPhase] = useState("enter");
@@ -9,6 +17,13 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
   // Disable all interactions when game over
   useEffect(() => {
     if (isGameOver) {
+      // Stop background music saat game over
+      sstopBackgroundMusic();
+      stopMusicHealthCheck();
+
+      // Play game over sound
+      playSound("over");
+
       // Disable all key events
       const disableKeys = (e) => {
         e.preventDefault();
@@ -93,6 +108,9 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
   };
 
   const handleNewGame = () => {
+    // Reset music state so it can play again
+    resetMusicState();
+
     // Clear any existing game data
     localStorage.removeItem("gameState");
     localStorage.removeItem("playerStats");
@@ -115,6 +133,10 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
       lastVisitedLocation: "home",
     };
 
+    // Start background music again
+    playBackgroundMusic();
+    musicHealthCheck(); //
+
     // Navigate immediately to map with fresh state
     navigate("/map", {
       state: {
@@ -127,10 +149,17 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
   };
 
   const handleMainMenu = () => {
+    // Reset music state
+    resetMusicState();
+
     // Clear any existing game data
     localStorage.removeItem("gameState");
     localStorage.removeItem("playerStats");
     localStorage.removeItem("gameProgress");
+
+    // Start background music again
+    playBackgroundMusic();
+    musicHealthCheck(); //
 
     // Navigate immediately to main menu
     navigate("/", { replace: true });

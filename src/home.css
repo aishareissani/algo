@@ -107,3 +107,8 @@
     margin-top: 150px; /* This margin directly affects where your map starts */
   }
 }
+
+.home-player .gif-container {
+  width: 120%;
+  height: 120%;
+}

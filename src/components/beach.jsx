@@ -4,8 +4,9 @@ import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import BackTo from "./BackTo"; // ADD THIS IMPORT
 import "../beach.css";
-import ArrowKey from "./wasd_key";
+import WASDKey from "./wasd_key";
 import Task from "./task";
+import Sound, { playSound } from "./sound";
 
 function Beach() {
   const { isFastForward } = useSpeedMode();
@@ -705,7 +706,7 @@ function Beach() {
         </div>
       </div>
 
-      <ArrowKey onKeyPress={handleArrowPress} />
+      <WASDKey onKeyPress={handleArrowPress} />
 
       <Task currentLocation="beach" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
     </div>

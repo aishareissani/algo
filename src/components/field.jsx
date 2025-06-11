@@ -4,8 +4,9 @@ import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import BackTo from "./BackTo"; // ADD THIS IMPORT
 import "../field.css";
-import ArrowKey from "./wasd_key";
+import WASDKey from "./wasd_key";
 import Task from "./task";
+import Sound, { playSound } from "./sound";
 
 function Field() {
   const { isFastForward } = useSpeedMode();
@@ -566,7 +567,7 @@ function Field() {
           <div>🗺️ Explore the field!</div>
         </div>
       </div>
-      <ArrowKey onKeyPress={handleArrowPress} />
+      <WASDKey onKeyPress={handleArrowPress} />
 
       <Task currentLocation="field" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
     </div>

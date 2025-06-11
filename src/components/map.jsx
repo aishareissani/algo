@@ -9,6 +9,13 @@ import WASDKey from "./wasd_key";
 import Task from "./task";
 import BackTo from "./BackTo";
 import Gif from "./gif";
+import {
+  playSound,
+  startWalkingSound,
+  stopWalkingSound,
+  stopBackgroundMusic,
+  stopMusicHealthCheck, // TAMBAH ini
+} from "./sound";
 
 function Map() {
   const { isFastForward } = useSpeedMode();
@@ -95,6 +102,20 @@ function Map() {
     if (playerStats.health <= 0 || playerStats.sleep <= 0) {
       setIsGameOver(true);
       setShowDialog(false);
+
+      // STOP semua audio systems
+      stopBackgroundMusic(); // Stop background music
+      stopMusicHealthCheck(); // Stop auto-restart checker
+      stopWalkingSound(); // Stop walking sound juga
+
+      // Clear movement interval juga
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+        moveIntervalRef.current = null;
+      }
+
+      // Play game over sound
+      playSound("over");
     }
   }, [playerStats.health, playerStats.sleep]);
 
@@ -165,19 +186,18 @@ function Map() {
     (direction) => {
       if (isGameOver) return;
 
-      // Set walking state
+      // Start walking sound dengan interval 400ms (bisa disesuaikan)
+      startWalkingSound(900);
+
       setIsWalking(true);
       setWalkingDirection(direction);
 
-      // Clear existing interval
       if (moveIntervalRef.current) {
         clearInterval(moveIntervalRef.current);
       }
 
-      // Initial movement
       handleArrowPress(direction);
 
-      // Start continuous movement
       moveIntervalRef.current = setInterval(() => {
         handleArrowPress(direction);
       }, 40);
@@ -187,6 +207,10 @@ function Map() {
 
   const stopMovement = useCallback(() => {
     setIsWalking(false);
+
+    // Stop walking sound
+    stopWalkingSound();
+
     if (moveIntervalRef.current) {
       clearInterval(moveIntervalRef.current);
       moveIntervalRef.current = null;
@@ -372,9 +396,15 @@ function Map() {
     setIsPlayerInfoExpanded(!isPlayerInfoExpanded);
   };
 
+  useEffect(() => {
+    if (playerStats.health <= 0 || playerStats.sleep <= 0) {
+      setIsGameOver(true);
+      setShowDialog(false);
+    }
+  }, [playerStats.health, playerStats.sleep]);
+
   return (
     <div className="game-container">
-      {/* Show GameOver component when game over */}
       {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={visitedLocations} usedItems={usedItems} playtime={getPlaytime()} characterName={characterName} playerName={playerName} isGameOver={true} />}
 
       {/* Task component with lowest z-index (below everything except map background) - hide when game over */}

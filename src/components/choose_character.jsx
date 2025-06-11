@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Sound, { playSound } from "./sound";
 
 const characters = [
   { id: 1, name: "manda" },
@@ -29,6 +30,7 @@ function ChooseCharacter() {
         },
       });
     }
+    playSound("start");
   };
 
   return (

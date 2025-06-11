@@ -2,12 +2,15 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
-import BackTo from "./BackTo"; // ADD THIS IMPORT
+import BackTo from "./BackTo";
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import "../home.css";
-import ArrowKey from "./wasd_key";
+import WASDKey from "./wasd_key";
 import Task from "./task";
+import Gif from "./gif";
+import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic } from "./sound";
+import GameOver from "./game_over";
 
 function Home() {
   const { isFastForward } = useSpeedMode();
@@ -20,7 +23,7 @@ function Home() {
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
-
+  const [currentGifActivity, setCurrentGifActivity] = useState(""); // Track GIF activity
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
 
@@ -30,14 +33,20 @@ function Home() {
   const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
   const [mobileZoom, setMobileZoom] = useState(0.299);
 
+  // Walking system states
+  const [isWalking, setIsWalking] = useState(false);
+  const [walkingDirection, setWalkingDirection] = useState("down");
+  const [isGameOver, setIsGameOver] = useState(false);
+
   const houseRef = useRef(null);
   const playerRef = useRef(null);
   const activityIntervalRef = useRef(null);
+  const moveIntervalRef = useRef(null);
 
   const WORLD_WIDTH = 3825;
   const WORLD_HEIGHT = 2008;
-  const PLAYER_SIZE = 190;
-  const PLAYER_SCALE = 1.5;
+  const PLAYER_SIZE = 190; // REDUCED SIZE from 190
+  const PLAYER_SCALE = 1.5; // REDUCED SCALE from 1.5
   const MOVE_SPEED = 25;
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
@@ -59,7 +68,6 @@ function Home() {
 
   const [playerStats, setPlayerStats] = useState(() => {
     const stats = { ...defaultStats };
-
     if (initialStats) {
       Object.keys(stats).forEach((key) => {
         if (key === "items") {
@@ -77,11 +85,25 @@ function Home() {
         }
       });
     }
-
     return stats;
   });
 
-  // Initialize tasks if they don't exist
+  // Game Over Detection
+  useEffect(() => {
+    if (playerStats.health <= 0 || playerStats.sleep <= 0) {
+      setIsGameOver(true);
+      setShowDialog(false);
+      stopBackgroundMusic();
+      stopWalkingSound();
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+        moveIntervalRef.current = null;
+      }
+      playSound("over");
+    }
+  }, [playerStats.health, playerStats.sleep]);
+
+  // Initialize tasks
   useEffect(() => {
     const taskLocations = {
       home: [
@@ -96,7 +118,6 @@ function Home() {
     setPlayerStats((prev) => {
       const updatedTasks = { ...prev.tasks };
       let needsUpdate = false;
-
       Object.keys(taskLocations).forEach((location) => {
         taskLocations[location].forEach((task) => {
           const taskKey = `${location}-${task.id}`;
@@ -106,12 +127,8 @@ function Home() {
           }
         });
       });
-
       if (needsUpdate) {
-        return {
-          ...prev,
-          tasks: updatedTasks,
-        };
+        return { ...prev, tasks: updatedTasks };
       }
       return prev;
     });
@@ -119,11 +136,7 @@ function Home() {
 
   const handleBackToMap = () => {
     navigate("/map", {
-      state: {
-        characterName,
-        playerName,
-        stats: playerStats,
-      },
+      state: { characterName, playerName, stats: playerStats },
     });
   };
 
@@ -131,7 +144,6 @@ function Home() {
     handleUseItem(item, setPlayerStats);
   };
 
-  // Function to mark a task as completed
   const completeTask = (taskId) => {
     const taskKey = `home-${taskId}`;
     setPlayerStats((prev) => ({
@@ -146,7 +158,6 @@ function Home() {
     }));
   };
 
-  // Function to toggle task completion (for manual toggling via UI)
   const toggleTaskCompletion = (taskId) => {
     const taskKey = `home-${taskId}`;
     setPlayerStats((prev) => ({
@@ -161,11 +172,12 @@ function Home() {
     }));
   };
 
-  const performActivity = (activityName, statChanges) => {
+  const performActivity = (activityName, statChanges, gifActivity) => {
     if (isPerformingActivity) return;
 
     setIsPerformingActivity(true);
     setCurrentActivity(activityName);
+    setCurrentGifActivity(gifActivity); // Set the GIF activity
     setActivityProgress(0);
     setShowDialog(false);
 
@@ -188,7 +200,6 @@ function Home() {
         Object.keys(statChanges).forEach((stat) => {
           const change = Number(statChanges[stat]);
           if (isNaN(change)) return;
-
           if (stat === "money" || stat === "experience" || stat === "skillPoints") {
             const prevValue = Number(prev[stat]) || 0;
             newStats[stat] = Math.max(0, prevValue + change);
@@ -202,17 +213,16 @@ function Home() {
 
       setTimeout(() => {
         setActivityProgress(100);
-
         setTimeout(() => {
           setIsPerformingActivity(false);
           setCurrentActivity("");
+          setCurrentGifActivity(""); // Reset GIF activity
           setActivityProgress(0);
         }, 500);
       }, 300);
     } else {
       const totalSteps = ACTIVITY_DURATION / ACTIVITY_UPDATE_INTERVAL;
       let currentStep = 0;
-
       const incrementalChanges = {};
       Object.keys(statChanges).forEach((stat) => {
         const change = Number(statChanges[stat]);
@@ -227,11 +237,9 @@ function Home() {
 
         setPlayerStats((prev) => {
           const newStats = { ...prev };
-
           Object.keys(incrementalChanges).forEach((stat) => {
             const increment = Number(incrementalChanges[stat]);
             if (isNaN(increment)) return;
-
             if (stat === "money" || stat === "experience" || stat === "skillPoints") {
               const prevValue = Number(prev[stat]) || 0;
               newStats[stat] = Math.max(0, prevValue + increment);
@@ -240,7 +248,6 @@ function Home() {
               newStats[stat] = Math.min(100, Math.max(0, prevValue + increment));
             }
           });
-
           return newStats;
         });
 
@@ -249,163 +256,101 @@ function Home() {
           setIsPerformingActivity(false);
           setActivityProgress(0);
           setCurrentActivity("");
+          setCurrentGifActivity(""); // Reset GIF activity
         }
       }, ACTIVITY_UPDATE_INTERVAL);
     }
   };
 
   const handleEnterLocation = () => {
-    console.log(`Performing activity at ${currentLocationHouse}`);
-
     if (currentLocationHouse === "Bed") {
-      performActivity("Sleeping", {
-        sleep: 100,
-        energy: 25,
-        health: -40,
-        happiness: 15,
-        experience: 1,
-      });
+      performActivity(
+        "Sleeping",
+        {
+          sleep: 100,
+          energy: 25,
+          health: -40,
+          happiness: 15,
+          experience: 1,
+        },
+        "tidur"
+      );
     } else if (currentLocationHouse === "Bath") {
-      performActivity("Taking a bath", {
-        cleanliness: 100,
-        happiness: 20,
-        experience: 1,
-      });
+      performActivity(
+        "Taking a bath",
+        {
+          cleanliness: 100,
+          happiness: 20,
+          experience: 1,
+        },
+        "mandi"
+      );
     } else if (currentLocationHouse === "Kitchen") {
-      performActivity("Eating", {
-        meal: 40,
-        happiness: 20,
-        experience: 1,
-      });
+      performActivity(
+        "Eating",
+        {
+          meal: 40,
+          happiness: 20,
+          experience: 1,
+        },
+        "makan"
+      );
     } else if (currentLocationHouse === "Cat") {
-      performActivity("Playing with cat", {
-        happiness: 50,
-        experience: 1,
-      });
+      performActivity(
+        "Playing with cat",
+        {
+          happiness: 50,
+          experience: 1,
+        },
+        "main kucing"
+      );
     } else if (currentLocationHouse === "Table") {
-      performActivity("Working from home", {
-        money: 100,
-        energy: -15,
-        sleep: -10,
-        meal: -10,
-        happiness: -10,
-        skillPoints: 1,
-      });
+      performActivity(
+        "Working from home",
+        {
+          money: 100,
+          energy: -15,
+          sleep: -10,
+          meal: -10,
+          happiness: -10,
+          skillPoints: 1,
+        },
+        "work from home"
+      );
     }
   };
 
-  useEffect(() => {
-    return () => {
-      if (activityIntervalRef.current) {
-        clearInterval(activityIntervalRef.current);
+  // Movement System
+  const startMovement = useCallback(
+    (direction) => {
+      if (isGameOver || isPerformingActivity) return;
+      startWalkingSound(900);
+      setIsWalking(true);
+      setWalkingDirection(direction);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
       }
-    };
+      handleArrowPress(direction);
+      moveIntervalRef.current = setInterval(() => {
+        handleArrowPress(direction);
+      }, 40);
+    },
+    [isGameOver, isPerformingActivity]
+  );
+
+  const stopMovement = useCallback(() => {
+    setIsWalking(false);
+    stopWalkingSound();
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
+    }
   }, []);
-
-  const isNearBed = (x, y) => {
-    return x >= 450 && x <= 700 && y >= 142 && y <= 617;
-  };
-  const isNearBath = (x, y) => {
-    return x >= 142 && x <= 1092 && y >= 1015 && y <= 1617;
-  };
-  const isNearKitchen = (x, y) => {
-    return x >= 3250 && x <= 3550 && y >= 650 && y <= 1000;
-  };
-  const isNearCat = (x, y) => {
-    return x >= 1992 && x <= 2242 && y >= 1342 && y <= 1642;
-  };
-  const isNearTable = (x, y) => {
-    return x >= 1875 && x <= 2125 && y >= 400 && y <= 750;
-  };
-
-  const dialogMessages = {
-    Bed: "Do you want to sleep?",
-    Bath: "Do you want to take a bath?",
-    Kitchen: "Do you want to eat?",
-    Cat: "Do you want to play with cat?",
-    Table: "Do you want to work from home?",
-  };
-
-  const renderDialogMessage = (message) => {
-    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
-  };
-
-  // Update viewport size when component mounts or window resizes
-  useEffect(() => {
-    const updateViewportSize = () => {
-      if (houseRef.current) {
-        setActualViewportSize({
-          width: houseRef.current.clientWidth,
-          height: houseRef.current.clientHeight,
-        });
-      }
-    };
-
-    updateViewportSize();
-    window.addEventListener("resize", updateViewportSize);
-    return () => window.removeEventListener("resize", updateViewportSize);
-  }, []);
-
-  // NEW: Calculate optimal zoom for mobile to eliminate empty space
-  useEffect(() => {
-    const calculateMobileZoom = () => {
-      if (actualViewportSize.width === 0 || actualViewportSize.height === 0) return;
-
-      // Check if we're on mobile (you can adjust this breakpoint)
-      const isMobile = window.innerWidth <= 768;
-
-      if (isMobile) {
-        // Calculate zoom to fill the viewport optimally
-        const widthZoom = actualViewportSize.width / WORLD_WIDTH;
-        const heightZoom = actualViewportSize.height / WORLD_HEIGHT;
-
-        // Use the larger zoom value to ensure no empty space
-        const optimalZoom = Math.max(widthZoom, heightZoom);
-
-        // Set minimum and maximum zoom limits for better gameplay
-        const minZoom = 0.15;
-        const maxZoom = 0.8;
-        const finalZoom = Math.max(minZoom, Math.min(maxZoom, optimalZoom));
-
-        console.log(`Mobile zoom calculated: ${finalZoom} (width: ${widthZoom}, height: ${heightZoom})`);
-
-        setMobileZoom(finalZoom);
-        setZoomLevel(finalZoom);
-      } else {
-        // Desktop zoom - use original value
-        setZoomLevel(0.299);
-      }
-    };
-
-    calculateMobileZoom();
-
-    // Recalculate on window resize
-    window.addEventListener("resize", calculateMobileZoom);
-    return () => window.removeEventListener("resize", calculateMobileZoom);
-  }, [actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
-
-  // Camera position calculation - updated to work with mobile zoom
-  useEffect(() => {
-    if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
-
-    const viewportWidthInWorld = actualViewportSize.width / zoomLevel;
-    const viewportHeightInWorld = actualViewportSize.height / zoomLevel;
-
-    let targetCameraX = playerPos.x - viewportWidthInWorld / 2;
-    let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
-
-    // Constrain camera to world boundaries
-    targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
-    targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
-
-    setCameraPos({ x: targetCameraX, y: targetCameraY });
-  }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
   const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
       let newY = prev.y;
-
       switch (direction) {
         case "up":
           newY = Math.max(0, prev.y - MOVE_SPEED);
@@ -422,15 +367,15 @@ function Home() {
         default:
           break;
       }
-
       return { x: newX, y: newY };
     });
   }, []);
 
+  // Keyboard handler
   useEffect(() => {
+    const keysPressed = new Set();
     const handleKeyDown = (e) => {
-      if (isPerformingActivity) return;
-
+      if (isGameOver || isPerformingActivity || keysPressed.has(e.key)) return;
       let direction = null;
       switch (e.key) {
         case "ArrowUp":
@@ -456,20 +401,113 @@ function Home() {
         default:
           break;
       }
-
       if (direction) {
         e.preventDefault();
-        handleArrowPress(direction);
+        keysPressed.add(e.key);
+        startMovement(direction);
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      const walkKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "W", "a", "A", "s", "S", "d", "D"];
+      if (walkKeys.includes(e.key)) {
+        keysPressed.delete(e.key);
+        const stillWalking = walkKeys.some((key) => keysPressed.has(key));
+        if (!stillWalking) {
+          stopMovement();
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPerformingActivity, handleArrowPress]);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+    };
+  }, [isGameOver, isPerformingActivity, startMovement, stopMovement]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (activityIntervalRef.current) {
+        clearInterval(activityIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Location detection functions
+  const isNearBed = (x, y) => x >= 450 && x <= 700 && y >= 142 && y <= 617;
+  const isNearBath = (x, y) => x >= 142 && x <= 1092 && y >= 1015 && y <= 1617;
+  const isNearKitchen = (x, y) => x >= 3250 && x <= 3550 && y >= 650 && y <= 1000;
+  const isNearCat = (x, y) => x >= 1992 && x <= 2242 && y >= 1342 && y <= 1642;
+  const isNearTable = (x, y) => x >= 1875 && x <= 2125 && y >= 400 && y <= 750;
+
+  const dialogMessages = {
+    Bed: "Do you want to sleep?",
+    Bath: "Do you want to take a bath?",
+    Kitchen: "Do you want to eat?",
+    Cat: "Do you want to play with cat?",
+    Table: "Do you want to work from home?",
+  };
+
+  const renderDialogMessage = (message) => {
+    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
+  };
+
+  // Viewport and zoom calculations
+  useEffect(() => {
+    const updateViewportSize = () => {
+      if (houseRef.current) {
+        setActualViewportSize({
+          width: houseRef.current.clientWidth,
+          height: houseRef.current.clientHeight,
+        });
+      }
+    };
+    updateViewportSize();
+    window.addEventListener("resize", updateViewportSize);
+    return () => window.removeEventListener("resize", updateViewportSize);
+  }, []);
+
+  useEffect(() => {
+    const calculateMobileZoom = () => {
+      if (actualViewportSize.width === 0 || actualViewportSize.height === 0) return;
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        const widthZoom = actualViewportSize.width / WORLD_WIDTH;
+        const heightZoom = actualViewportSize.height / WORLD_HEIGHT;
+        const optimalZoom = Math.max(widthZoom, heightZoom);
+        const minZoom = 0.15;
+        const maxZoom = 0.8;
+        const finalZoom = Math.max(minZoom, Math.min(maxZoom, optimalZoom));
+        setMobileZoom(finalZoom);
+        setZoomLevel(finalZoom);
+      } else {
+        setZoomLevel(0.299);
+      }
+    };
+    calculateMobileZoom();
+    window.addEventListener("resize", calculateMobileZoom);
+    return () => window.removeEventListener("resize", calculateMobileZoom);
+  }, [actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
+
+  useEffect(() => {
+    if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
+    const viewportWidthInWorld = actualViewportSize.width / zoomLevel;
+    const viewportHeightInWorld = actualViewportSize.height / zoomLevel;
+    let targetCameraX = playerPos.x - viewportWidthInWorld / 2;
+    let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
+    targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
+    targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
+    setCameraPos({ x: targetCameraX, y: targetCameraY });
+  }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
   useEffect(() => {
     if (isPerformingActivity) return;
-
     if (isNearBed(playerPos.x, playerPos.y)) {
       setCurrentLocationHouse("Bed");
       setShowDialog(true);
@@ -491,20 +529,20 @@ function Home() {
     }
   }, [playerPos, isPerformingActivity]);
 
-  useEffect(() => {
-    console.log("Current player stats:", playerStats);
-  }, [playerStats]);
-
   return (
     <div className="home-game-container">
-      <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
-        <SpeedToggleButton />
-        <BackTo type="map" onClick={handleBackToMap} /> {/* UPDATED: Using BackTo component */}
-      </div>
+      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={new Set(["home"])} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
+
+      {!isGameOver && (
+        <div>
+          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
+          <SpeedToggleButton />
+          <BackTo type="map" onClick={handleBackToMap} />
+        </div>
+      )}
 
       <div className="home-game-viewport" ref={houseRef}>
-        {showDialog && currentLocationHouse && !isPerformingActivity && (
+        {!isGameOver && showDialog && currentLocationHouse && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationHouse] || `Do you want to enter the ${currentLocationHouse}?`)}
             <button className="yes-btn" onClick={handleEnterLocation}>
@@ -516,7 +554,7 @@ function Home() {
           </div>
         )}
 
-        {isPerformingActivity && (
+        {!isGameOver && isPerformingActivity && (
           <div className="activity-overlay">
             <div className="activity-info">
               <h3>{currentActivity}...</h3>
@@ -535,6 +573,7 @@ function Home() {
             height: `${WORLD_HEIGHT}px`,
             transform: `translate(-${cameraPos.x * zoomLevel}px, -${cameraPos.y * zoomLevel}px) scale(${zoomLevel})`,
             transformOrigin: "0 0",
+            pointerEvents: isGameOver ? "none" : "auto",
           }}
         >
           <div
@@ -549,28 +588,40 @@ function Home() {
               position: "absolute",
             }}
           >
-            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="home-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
+            {/* PLAYER SPRITE - Show GIF if walking OR performing activity */}
+            {isWalking ? (
+              <Gif activity="jalan" location="rumah" isWalking={isWalking} characterName={characterName} walkingDirection={walkingDirection} />
+            ) : isPerformingActivity && currentGifActivity ? (
+              <Gif activity={currentGifActivity} location="rumah" isWalking={false} characterName={characterName} />
+            ) : (
+              <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="home-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
+            )}
           </div>
         </div>
       </div>
 
-      <div className="game-hud">
-        <div className="player-info">
-          <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
-          <div className="player-coords">
-            {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            {/* REMOVED OLD BUTTON */}
+      {!isGameOver && (
+        <div className="game-hud">
+          <div className="player-info">
+            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
+            <div className="player-coords">
+              {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
+            </div>
+          </div>
+          <div className="controls-hint">
+            <div>🎮 Arrow Keys / WASD to move</div>
+            <div>🗺️ Explore the home!</div>
           </div>
         </div>
-        <div className="controls-hint">
-          <div>🎮 Arrow Keys / WASD to move</div>
-          <div>🗺️ Explore the home!</div>
-        </div>
-      </div>
+      )}
 
-      <ArrowKey onKeyPress={handleArrowPress} />
-
-      <Task currentLocation="home" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
+      {!isGameOver && (
+        <>
+          <WASDKey onStartMovement={startMovement} onStopMovement={stopMovement} isMapLocation={false} isWalking={isWalking} walkingDirection={walkingDirection} />
+          {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
+          <Task currentLocation="home" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
+        </>
+      )}
     </div>
   );
 }

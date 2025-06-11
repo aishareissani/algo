@@ -24,6 +24,7 @@ const Gif = ({ activity, location, isWalking, characterName = "keni", walkingDir
       mandi: `${characterName}_mandi.gif`,
       makan: `${characterName}_makan.gif`,
       "work from home": `${characterName}_wfh.gif`,
+      "main kucing": `${characterName}_main_kucing.gif`,
 
       // Restoran
       "pesan makan": `${characterName}_makan.gif`,
@@ -55,21 +56,8 @@ const Gif = ({ activity, location, isWalking, characterName = "keni", walkingDir
     return basePath + (activityGifs[activity] || "default.gif");
   };
 
-  // Fungsi untuk mendapatkan class CSS berdasarkan lokasi
-  const getLocationClass = (location) => {
-    const locationClasses = {
-      rumah: "home-activity",
-      restoran: "restaurant-activity",
-      lapangan: "field-activity",
-      gunung: "mountain-activity",
-      pantai: "beach-activity",
-    };
-
-    return locationClasses[location] || "default-activity";
-  };
-
   return (
-    <div className={`gif-container ${getLocationClass(location)}`}>
+    <div className="gif-container">
       <img
         src={getGifPath(location, activity)}
         alt={`${activity} gif`}
@@ -77,11 +65,9 @@ const Gif = ({ activity, location, isWalking, characterName = "keni", walkingDir
         onError={(e) => {
           e.target.src = "/assets/gif/default.gif";
         }}
+        draggable={false}
       />
-      <div className="activity-label">
-        {activity.charAt(0).toUpperCase() + activity.slice(1)}
-        {isWalking && activity === "jalan" && <span className="direction-indicator"> ({walkingDirection})</span>}
-      </div>
+      {/* HAPUS SEMUA label dan tulisan */}
     </div>
   );
 };
