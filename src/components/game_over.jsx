@@ -18,7 +18,7 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
   useEffect(() => {
     if (isGameOver) {
       // Stop background music saat game over
-      sstopBackgroundMusic();
+      stopBackgroundMusic();
       stopMusicHealthCheck();
 
       // Play game over sound

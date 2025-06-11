@@ -77,8 +77,8 @@
 /* Player */
 .home-player {
   position: absolute;
-  width: 40px;
-  height: 60px;
+  width: 80px; /* SAMA dengan home dan map */
+  height: 80px; /* SAMA dengan home dan map */
   z-index: 10;
   transition: none;
 }
@@ -111,4 +111,12 @@
 .home-player .gif-container {
   width: 120%;
   height: 120%;
+}
+
+/* GANTI JADI INI: */
+.home-player .gif-container {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0;
+  padding: 0;
 }

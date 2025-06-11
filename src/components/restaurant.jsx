@@ -2,12 +2,14 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
-import BackTo from "./BackTo"; // ADD THIS IMPORT (lowercase)
+import BackTo from "./BackTo";
 import Inventory from "./inventory";
 import "../restaurant.css";
 import WASDKey from "./wasd_key";
 import Task from "./task";
-import Sound, { playSound } from "./sound";
+import Gif from "./gif";
+import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic } from "./sound";
+import GameOver from "./game_over";
 
 function Resto() {
   const { isFastForward } = useSpeedMode();
@@ -20,22 +22,25 @@ function Resto() {
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
+  const [currentGifActivity, setCurrentGifActivity] = useState("");
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
-
   const [mobileZoom, setMobileZoom] = useState(0.299);
+
+  // Walking system states
+  const [isWalking, setIsWalking] = useState(false);
+  const [walkingDirection, setWalkingDirection] = useState("down");
+  const [isGameOver, setIsGameOver] = useState(false);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(0.299);
-  const [actualViewportSize, setActualViewportSize] = useState({
-    width: 0,
-    height: 0,
-  });
+  const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
 
   const restoRef = useRef(null);
   const playerRef = useRef(null);
   const activityIntervalRef = useRef(null);
+  const moveIntervalRef = useRef(null);
 
   const WORLD_WIDTH = 3825;
   const WORLD_HEIGHT = 2008;
@@ -62,7 +67,6 @@ function Resto() {
 
   const [playerStats, setPlayerStats] = useState(() => {
     const stats = { ...defaultStats };
-
     if (initialStats) {
       Object.keys(stats).forEach((key) => {
         if (key === "items") {
@@ -80,9 +84,23 @@ function Resto() {
         }
       });
     }
-
     return stats;
   });
+
+  // Game Over Detection
+  useEffect(() => {
+    if (playerStats.health <= 0 || playerStats.sleep <= 0) {
+      setIsGameOver(true);
+      setShowDialog(false);
+      stopBackgroundMusic();
+      stopWalkingSound();
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+        moveIntervalRef.current = null;
+      }
+      playSound("over");
+    }
+  }, [playerStats.health, playerStats.sleep]);
 
   // Initialize tasks
   useEffect(() => {
@@ -97,7 +115,6 @@ function Resto() {
     setPlayerStats((prev) => {
       const updatedTasks = { ...prev.tasks };
       let needsUpdate = false;
-
       Object.keys(taskLocations).forEach((location) => {
         taskLocations[location].forEach((task) => {
           const taskKey = `${location}-${task.id}`;
@@ -107,12 +124,8 @@ function Resto() {
           }
         });
       });
-
       if (needsUpdate) {
-        return {
-          ...prev,
-          tasks: updatedTasks,
-        };
+        return { ...prev, tasks: updatedTasks };
       }
       return prev;
     });
@@ -120,15 +133,10 @@ function Resto() {
 
   const handlebackToMap = () => {
     navigate("/map", {
-      state: {
-        characterName,
-        playerName,
-        stats: playerStats,
-      },
+      state: { characterName, playerName, stats: playerStats },
     });
   };
 
-  // Function to mark a task as completed
   const completeTask = (taskId) => {
     const taskKey = `restaurant-${taskId}`;
     setPlayerStats((prev) => ({
@@ -143,7 +151,6 @@ function Resto() {
     }));
   };
 
-  // Function to toggle task completion (for manual toggling via UI)
   const toggleTaskCompletion = (taskId) => {
     const taskKey = `restaurant-${taskId}`;
     setPlayerStats((prev) => ({
@@ -188,11 +195,12 @@ function Resto() {
     });
   };
 
-  const performActivity = (activityName, statChanges, collectItem = null) => {
+  const performActivity = (activityName, statChanges, gifActivity, collectItem = null) => {
     if (isPerformingActivity) return;
 
     setIsPerformingActivity(true);
     setCurrentActivity(activityName);
+    setCurrentGifActivity(gifActivity);
     setActivityProgress(0);
     setShowDialog(false);
 
@@ -211,7 +219,6 @@ function Resto() {
         Object.keys(statChanges).forEach((stat) => {
           const change = Number(statChanges[stat]);
           if (isNaN(change)) return;
-
           if (stat === "money" || stat === "experience" || stat === "skillPoints") {
             const prevValue = Number(prev[stat]) || 0;
             newStats[stat] = Math.max(0, prevValue + change);
@@ -232,13 +239,13 @@ function Resto() {
         setTimeout(() => {
           setIsPerformingActivity(false);
           setCurrentActivity("");
+          setCurrentGifActivity("");
           setActivityProgress(0);
         }, 500);
       }, 300);
     } else {
       const totalSteps = ACTIVITY_DURATION / ACTIVITY_UPDATE_INTERVAL;
       let currentStep = 0;
-
       const incrementalChanges = {};
       Object.keys(statChanges).forEach((stat) => {
         const change = Number(statChanges[stat]);
@@ -256,7 +263,6 @@ function Resto() {
           Object.keys(incrementalChanges).forEach((stat) => {
             const increment = Number(incrementalChanges[stat]);
             if (isNaN(increment)) return;
-
             if (stat === "money" || stat === "experience" || stat === "skillPoints") {
               const prevValue = Number(prev[stat]) || 0;
               newStats[stat] = Math.max(0, prevValue + increment);
@@ -276,14 +282,13 @@ function Resto() {
           setIsPerformingActivity(false);
           setActivityProgress(0);
           setCurrentActivity("");
+          setCurrentGifActivity("");
         }
       }, ACTIVITY_UPDATE_INTERVAL);
     }
   };
 
   const handleEnterLocation = () => {
-    console.log(`Performing activity at ${currentLocationResto}`);
-
     if (currentLocationResto === "Takeaway") {
       performActivity(
         "Ordering Takeaway",
@@ -292,6 +297,7 @@ function Resto() {
           money: -20,
           experience: 1,
         },
+        "pesen takeaway",
         {
           name: "Takeaway Meal",
           category: "Daily",
@@ -299,119 +305,63 @@ function Resto() {
         }
       );
     } else if (currentLocationResto === "Eat") {
-      performActivity("Dining In", {
-        happiness: 30,
-        energy: 25,
-        meal: 40,
-        money: -20,
-        experience: 1,
-      });
+      performActivity(
+        "Dining In",
+        {
+          happiness: 30,
+          energy: 25,
+          meal: 40,
+          money: -20,
+          experience: 1,
+        },
+        "pesan makan"
+      );
     } else if (currentLocationResto === "Drink") {
-      performActivity("Having a Drink", {
-        happiness: 15,
-        energy: 25,
-        meal: 10,
-        money: -5,
-        experience: 1,
-      });
+      performActivity(
+        "Having a Drink",
+        {
+          happiness: 15,
+          energy: 25,
+          meal: 10,
+          money: -5,
+          experience: 1,
+        },
+        "pesen minum"
+      );
     }
   };
 
-  const isNearCashier = (x, y) => {
-    return x >= 2575 && x <= 2725 && y >= 142 && y <= 550;
-  };
-
-  const isNearTable = (x, y) => {
-    return (x >= 1750 && x <= 2050 && y >= 750 && y <= 1025) || (x >= 1750 && x <= 2050 && y >= 1375 && y <= 1725) || (x >= 525 && x <= 825 && y >= 1375 && y <= 1725) || (x >= 525 && x <= 825 && y >= 750 && y <= 1025);
-  };
-
-  const isNearChair = (x, y) => {
-    return x >= 2700 && x <= 3682 && y >= 975 && y <= 1200;
-  };
-
-  const dialogMessages = {
-    Takeaway: "Would you like to order some takeaway?",
-    Eat: "Would you like to eat here at the restaurant?",
-    Drink: "Would you like to sit down and enjoy a drink?",
-  };
-
-  const renderDialogMessage = (message) => {
-    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
-  };
-
-  const handleUseItem = (item) => {
-    if (item.name !== "Takeaway Meal") return;
-
-    setPlayerStats((prev) => {
-      const idx = prev.items.findIndex((it) => it.name === item.name);
-      if (idx === -1) return prev;
-
-      const items = [...prev.items];
-      items[idx] = { ...items[idx], quantity: items[idx].quantity - 1 };
-      const cleaned = items.filter((it) => it.quantity > 0);
-
-      const energy = Math.min(100, prev.energy + 25);
-      const meal = Math.min(100, prev.meal + 40);
-
-      return { ...prev, energy, meal, items: cleaned };
-    });
-  };
-
-  useEffect(() => {
-    return () => {
-      if (activityIntervalRef.current) {
-        clearInterval(activityIntervalRef.current);
+  // Movement System (same as others)
+  const startMovement = useCallback(
+    (direction) => {
+      if (isGameOver || isPerformingActivity) return;
+      startWalkingSound(900);
+      setIsWalking(true);
+      setWalkingDirection(direction);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
       }
-    };
-  }, []);
+      handleArrowPress(direction);
+      moveIntervalRef.current = setInterval(() => {
+        handleArrowPress(direction);
+      }, 40);
+    },
+    [isGameOver, isPerformingActivity]
+  );
 
-  useEffect(() => {
-    const updateViewportSize = () => {
-      if (restoRef.current) {
-        setActualViewportSize({
-          width: restoRef.current.clientWidth,
-          height: restoRef.current.clientHeight,
-        });
-      }
-    };
-
-    updateViewportSize();
-    window.addEventListener("resize", updateViewportSize);
-    return () => window.removeEventListener("resize", updateViewportSize);
-  }, []);
-
-  useEffect(() => {
-    if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
-
-    const scaledWorldWidth = WORLD_WIDTH * zoomLevel;
-    const scaledWorldHeight = WORLD_HEIGHT * zoomLevel;
-
-    const viewportWidthInWorld = actualViewportSize.width / zoomLevel;
-    const viewportHeightInWorld = actualViewportSize.height / zoomLevel;
-
-    let targetCameraX = playerPos.x - viewportWidthInWorld / 2;
-    let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
-
-    if (scaledWorldWidth < actualViewportSize.width) {
-      targetCameraX = (WORLD_WIDTH - viewportWidthInWorld) / 2;
-    } else {
-      targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
+  const stopMovement = useCallback(() => {
+    setIsWalking(false);
+    stopWalkingSound();
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
     }
-
-    if (scaledWorldHeight < actualViewportSize.height) {
-      targetCameraY = (WORLD_HEIGHT - viewportHeightInWorld) / 2;
-    } else {
-      targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
-    }
-
-    setCameraPos({ x: targetCameraX, y: targetCameraY });
-  }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
+  }, []);
 
   const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
       let newY = prev.y;
-
       switch (direction) {
         case "up":
           newY = Math.max(0, prev.y - MOVE_SPEED);
@@ -428,15 +378,15 @@ function Resto() {
         default:
           break;
       }
-
       return { x: newX, y: newY };
     });
   }, []);
 
+  // Keyboard handler (same as others)
   useEffect(() => {
+    const keysPressed = new Set();
     const handleKeyDown = (e) => {
-      if (isPerformingActivity) return;
-
+      if (isGameOver || isPerformingActivity || keysPressed.has(e.key)) return;
       let direction = null;
       switch (e.key) {
         case "ArrowUp":
@@ -462,20 +412,123 @@ function Resto() {
         default:
           break;
       }
-
       if (direction) {
         e.preventDefault();
-        handleArrowPress(direction);
+        keysPressed.add(e.key);
+        startMovement(direction);
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      const walkKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "W", "a", "A", "s", "S", "d", "D"];
+      if (walkKeys.includes(e.key)) {
+        keysPressed.delete(e.key);
+        const stillWalking = walkKeys.some((key) => keysPressed.has(key));
+        if (!stillWalking) {
+          stopMovement();
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPerformingActivity, handleArrowPress]);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+    };
+  }, [isGameOver, isPerformingActivity, startMovement, stopMovement]);
+
+  // Location detection functions
+  const isNearCashier = (x, y) => x >= 2575 && x <= 2725 && y >= 142 && y <= 550;
+  const isNearTable = (x, y) => (x >= 1750 && x <= 2050 && y >= 750 && y <= 1025) || (x >= 1750 && x <= 2050 && y >= 1375 && y <= 1725) || (x >= 525 && x <= 825 && y >= 1375 && y <= 1725) || (x >= 525 && x <= 825 && y >= 750 && y <= 1025);
+  const isNearChair = (x, y) => x >= 2700 && x <= 3682 && y >= 975 && y <= 1200;
+
+  const dialogMessages = {
+    Takeaway: "Would you like to order some takeaway?",
+    Eat: "Would you like to eat here at the restaurant?",
+    Drink: "Would you like to sit down and enjoy a drink?",
+  };
+
+  const renderDialogMessage = (message) => {
+    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
+  };
+
+  const handleUseItem = (item) => {
+    if (item.name !== "Takeaway Meal") return;
+    setPlayerStats((prev) => {
+      const idx = prev.items.findIndex((it) => it.name === item.name);
+      if (idx === -1) return prev;
+      const items = [...prev.items];
+      items[idx] = { ...items[idx], quantity: items[idx].quantity - 1 };
+      const cleaned = items.filter((it) => it.quantity > 0);
+      const energy = Math.min(100, prev.energy + 25);
+      const meal = Math.min(100, prev.meal + 40);
+      return { ...prev, energy, meal, items: cleaned };
+    });
+  };
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (activityIntervalRef.current) {
+        clearInterval(activityIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Viewport calculations (same as others)
+  useEffect(() => {
+    const updateViewportSize = () => {
+      if (restoRef.current) {
+        setActualViewportSize({
+          width: restoRef.current.clientWidth,
+          height: restoRef.current.clientHeight,
+        });
+      }
+    };
+    updateViewportSize();
+    window.addEventListener("resize", updateViewportSize);
+    return () => window.removeEventListener("resize", updateViewportSize);
+  }, []);
+
+  useEffect(() => {
+    const calculateMobileZoom = () => {
+      if (actualViewportSize.width === 0 || actualViewportSize.height === 0) return;
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        const widthZoom = actualViewportSize.width / WORLD_WIDTH;
+        const heightZoom = actualViewportSize.height / WORLD_HEIGHT;
+        const optimalZoom = Math.max(widthZoom, heightZoom);
+        const minZoom = 0.15;
+        const maxZoom = 0.8;
+        const finalZoom = Math.max(minZoom, Math.min(maxZoom, optimalZoom));
+        setMobileZoom(finalZoom);
+        setZoomLevel(finalZoom);
+      } else {
+        setZoomLevel(0.299);
+      }
+    };
+    calculateMobileZoom();
+    window.addEventListener("resize", calculateMobileZoom);
+    return () => window.removeEventListener("resize", calculateMobileZoom);
+  }, [actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
+
+  useEffect(() => {
+    if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
+    const viewportWidthInWorld = actualViewportSize.width / zoomLevel;
+    const viewportHeightInWorld = actualViewportSize.height / zoomLevel;
+    let targetCameraX = playerPos.x - viewportWidthInWorld / 2;
+    let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
+    targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
+    targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
+    setCameraPos({ x: targetCameraX, y: targetCameraY });
+  }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
   useEffect(() => {
     if (isPerformingActivity) return;
-
     if (isNearCashier(playerPos.x, playerPos.y)) {
       setcurrentLocationResto("Takeaway");
       setShowDialog(true);
@@ -491,70 +544,20 @@ function Resto() {
     }
   }, [playerPos, isPerformingActivity]);
 
-  // NEW: Calculate optimal zoom for mobile to eliminate empty space
-  useEffect(() => {
-    const calculateMobileZoom = () => {
-      if (actualViewportSize.width === 0 || actualViewportSize.height === 0) return;
-
-      // Check if we're on mobile (you can adjust this breakpoint)
-      const isMobile = window.innerWidth <= 768;
-
-      if (isMobile) {
-        // Calculate zoom to fill the viewport optimally
-        const widthZoom = actualViewportSize.width / WORLD_WIDTH;
-        const heightZoom = actualViewportSize.height / WORLD_HEIGHT;
-
-        // Use the larger zoom value to ensure no empty space
-        const optimalZoom = Math.max(widthZoom, heightZoom);
-
-        // Set minimum and maximum zoom limits for better gameplay
-        const minZoom = 0.15;
-        const maxZoom = 0.8;
-        const finalZoom = Math.max(minZoom, Math.min(maxZoom, optimalZoom));
-
-        console.log(`Mobile zoom calculated: ${finalZoom} (width: ${widthZoom}, height: ${heightZoom})`);
-
-        setMobileZoom(finalZoom);
-        setZoomLevel(finalZoom);
-      } else {
-        // Desktop zoom - use original value
-        setZoomLevel(0.299);
-      }
-    };
-
-    calculateMobileZoom();
-
-    // Recalculate on window resize
-    window.addEventListener("resize", calculateMobileZoom);
-    return () => window.removeEventListener("resize", calculateMobileZoom);
-  }, [actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
-
-  // Camera position calculation - updated to work with mobile zoom
-  useEffect(() => {
-    if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
-
-    const viewportWidthInWorld = actualViewportSize.width / zoomLevel;
-    const viewportHeightInWorld = actualViewportSize.height / zoomLevel;
-
-    let targetCameraX = playerPos.x - viewportWidthInWorld / 2;
-    let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
-
-    // Constrain camera to world boundaries
-    targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
-    targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
-
-    setCameraPos({ x: targetCameraX, y: targetCameraY });
-  }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
-
   return (
     <div className="resto-game-container">
-      <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleUseItem} />
-        <SpeedToggleButton />
-        <BackTo type="map" onClick={handlebackToMap} /> {/* UPDATED: Using BackTo component */}
-      </div>
+      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={new Set(["restaurant"])} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
+
+      {!isGameOver && (
+        <div>
+          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleUseItem} />
+          <SpeedToggleButton />
+          <BackTo type="map" onClick={handlebackToMap} />
+        </div>
+      )}
+
       <div className="resto-game-viewport" ref={restoRef}>
-        {showDialog && currentLocationResto && !isPerformingActivity && (
+        {!isGameOver && showDialog && currentLocationResto && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationResto] || `Do you want to enter the ${currentLocationResto}?`)}
             <button className="yes-btn" onClick={handleEnterLocation}>
@@ -565,7 +568,8 @@ function Resto() {
             </button>
           </div>
         )}
-        {isPerformingActivity && (
+
+        {!isGameOver && isPerformingActivity && (
           <div className="activity-overlay">
             <div className="activity-info">
               <h3>{currentActivity}...</h3>
@@ -576,6 +580,7 @@ function Resto() {
             </div>
           </div>
         )}
+
         <div
           className="resto-game-world resto-background"
           style={{
@@ -583,6 +588,7 @@ function Resto() {
             height: `${WORLD_HEIGHT}px`,
             transform: `translate(-${cameraPos.x * zoomLevel}px, -${cameraPos.y * zoomLevel}px) scale(${zoomLevel})`,
             transformOrigin: "0 0",
+            pointerEvents: isGameOver ? "none" : "auto",
           }}
         >
           <div
@@ -597,30 +603,39 @@ function Resto() {
               position: "absolute",
             }}
           >
-            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="resto-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
+            {isWalking ? (
+              <Gif activity="jalan" location="restoran" isWalking={isWalking} characterName={characterName} walkingDirection={walkingDirection} />
+            ) : isPerformingActivity && currentGifActivity ? (
+              <Gif activity={currentGifActivity} location="restoran" isWalking={false} characterName={characterName} />
+            ) : (
+              <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="resto-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
+            )}
           </div>
         </div>
       </div>
 
-      <div className="game-hud">
-        <div className="player-info">
-          <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
-          <div className="player-coords">
-            {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            {/* REMOVED OLD BUTTON */}
+      {!isGameOver && (
+        <div className="game-hud">
+          <div className="player-info">
+            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
+            <div className="player-coords">
+              {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
+            </div>
+          </div>
+          <div className="controls-hint">
+            <div>🎮 Arrow Keys / WASD to move</div>
+            <div>🗺️ Explore the restaurant!</div>
           </div>
         </div>
-        <div className="controls-hint">
-          <div>🎮 Arrow Keys / WASD to move</div>
-          <div>🗺️ Explore the restaurant!</div>
-        </div>
-      </div>
+      )}
 
-      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleUseItem} />}
-
-      <WASDKey onKeyPress={handleArrowPress} />
-
-      <Task currentLocation="restaurant" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
+      {!isGameOver && (
+        <>
+          {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleUseItem} />}
+          <WASDKey onStartMovement={startMovement} onStopMovement={stopMovement} isMapLocation={false} isWalking={isWalking} walkingDirection={walkingDirection} />
+          <Task currentLocation="restaurant" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
+        </>
+      )}
     </div>
   );
 }

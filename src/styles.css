@@ -81,7 +81,7 @@
   --map-back-btn-hover-2: #764ba2;
   --map-back-btn-hover-shadow-1: rgba(79, 172, 254, 0.4);
   --map-back-btn-hover-shadow-2: rgba(0, 0, 0, 0.15);
-  --map-back-btn-hover-shadow-3: rgba(255, 255, 255, 0.3);
+  --map-back-btn-hover-shadow-3: rgba(255, 255, 255, 0.5);
   --map-activity-bg: rgba(255, 255, 255, 0.8);
   --map-activity-border: #795548;
   --map-activity-shadow: rgba(0, 0, 0, 0.2);
@@ -385,8 +385,8 @@ body {
 
 .player {
   position: absolute;
-  width: 85px;
-  height: 105px;
+  width: 80px; /* GANTI dari 85px */
+  height: 80px; /* GANTI dari 105px */
   z-index: 10;
   transition: none;
 }
@@ -612,14 +612,14 @@ body {
 
 /* Redesigned Activity Overlay and Progress Bar (dialog-style) */
 .activity-overlay {
-  position: absolute;
-  top: 50%;
+  position: fixed;
+  bottom: 40px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   background: var(--map-activity-bg);
   backdrop-filter: blur(5px);
   border-radius: 16px;
-  padding: 25px 35px;
+  padding: 5px 15px;
   box-shadow: 0 8px 32px var(--map-activity-shadow);
   text-align: center;
   border: 3px solid var(--map-activity-border);
@@ -631,7 +631,7 @@ body {
 .activity-info h3 {
   margin: 0 0 15px 0;
   color: var(--map-activity-text);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   letter-spacing: 0.5s;
   line-height: 1.6;
@@ -648,7 +648,7 @@ body {
 /* Progress Bar Styled to Match Dialog */
 .activity-progress-bar {
   width: 100%;
-  height: 20px;
+  height: 15px;
   background: var(--map-activity-progress-bg);
   border-radius: 12px;
   overflow: hidden;

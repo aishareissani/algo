@@ -1,14 +1,16 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
-import BackTo from "./BackTo"; // ADD THIS IMPORT (lowercase)
+import BackTo from "./BackTo";
 import Inventory from "./inventory";
 import { handleUseItem } from "../utils/itemHandlers";
 import "../mountain.css";
 import WASDKey from "./wasd_key";
 import Task from "./task";
-import Sound, { playSound } from "./sound";
+import Gif from "./gif";
+import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic } from "./sound";
+import GameOver from "./game_over";
 
 function Mountain() {
   const { isFastForward } = useSpeedMode();
@@ -21,22 +23,25 @@ function Mountain() {
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
+  const [currentGifActivity, setCurrentGifActivity] = useState("");
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
-
   const [mobileZoom, setMobileZoom] = useState(0.299);
+
+  // Walking system states
+  const [isWalking, setIsWalking] = useState(false);
+  const [walkingDirection, setWalkingDirection] = useState("down");
+  const [isGameOver, setIsGameOver] = useState(false);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(0.299);
-  const [actualViewportSize, setActualViewportSize] = useState({
-    width: 0,
-    height: 0,
-  });
+  const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
 
   const mountainRef = useRef(null);
   const playerRef = useRef(null);
   const activityIntervalRef = useRef(null);
+  const moveIntervalRef = useRef(null);
 
   const WORLD_WIDTH = 3825;
   const WORLD_HEIGHT = 2008;
@@ -63,7 +68,6 @@ function Mountain() {
 
   const [playerStats, setPlayerStats] = useState(() => {
     const stats = { ...defaultStats };
-
     if (initialStats) {
       Object.keys(stats).forEach((key) => {
         if (key === "items") {
@@ -81,9 +85,23 @@ function Mountain() {
         }
       });
     }
-
     return stats;
   });
+
+  // Game Over Detection
+  useEffect(() => {
+    if (playerStats.health <= 0 || playerStats.sleep <= 0) {
+      setIsGameOver(true);
+      setShowDialog(false);
+      stopBackgroundMusic();
+      stopWalkingSound();
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+        moveIntervalRef.current = null;
+      }
+      playSound("over");
+    }
+  }, [playerStats.health, playerStats.sleep]);
 
   // Initialize tasks
   useEffect(() => {
@@ -99,7 +117,6 @@ function Mountain() {
     setPlayerStats((prev) => {
       const updatedTasks = { ...prev.tasks };
       let needsUpdate = false;
-
       Object.keys(taskLocations).forEach((location) => {
         taskLocations[location].forEach((task) => {
           const taskKey = `${location}-${task.id}`;
@@ -109,12 +126,8 @@ function Mountain() {
           }
         });
       });
-
       if (needsUpdate) {
-        return {
-          ...prev,
-          tasks: updatedTasks,
-        };
+        return { ...prev, tasks: updatedTasks };
       }
       return prev;
     });
@@ -122,11 +135,7 @@ function Mountain() {
 
   const handleBackToMap = () => {
     navigate("/map", {
-      state: {
-        characterName,
-        playerName,
-        stats: playerStats,
-      },
+      state: { characterName, playerName, stats: playerStats },
     });
   };
 
@@ -134,7 +143,6 @@ function Mountain() {
     handleUseItem(item, setPlayerStats);
   };
 
-  // Function to mark a task as completed
   const completeTask = (taskId) => {
     const taskKey = `mountain-${taskId}`;
     setPlayerStats((prev) => ({
@@ -149,7 +157,6 @@ function Mountain() {
     }));
   };
 
-  // Function to toggle task completion (for manual toggling via UI)
   const toggleTaskCompletion = (taskId) => {
     const taskKey = `mountain-${taskId}`;
     setPlayerStats((prev) => ({
@@ -194,11 +201,12 @@ function Mountain() {
     });
   };
 
-  const performActivity = (activityName, statChanges, collectItem = null) => {
+  const performActivity = (activityName, statChanges, gifActivity, collectItem = null) => {
     if (isPerformingActivity) return;
 
     setIsPerformingActivity(true);
     setCurrentActivity(activityName);
+    setCurrentGifActivity(gifActivity);
     setActivityProgress(0);
     setShowDialog(false);
 
@@ -219,7 +227,6 @@ function Mountain() {
         Object.keys(statChanges).forEach((stat) => {
           const change = Number(statChanges[stat]);
           if (isNaN(change)) return;
-
           if (stat === "money" || stat === "experience" || stat === "skillPoints") {
             const prevValue = Number(prev[stat]) || 0;
             newStats[stat] = Math.max(0, prevValue + change);
@@ -240,13 +247,13 @@ function Mountain() {
         setTimeout(() => {
           setIsPerformingActivity(false);
           setCurrentActivity("");
+          setCurrentGifActivity("");
           setActivityProgress(0);
         }, 500);
       }, 300);
     } else {
       const totalSteps = ACTIVITY_DURATION / ACTIVITY_UPDATE_INTERVAL;
       let currentStep = 0;
-
       const incrementalChanges = {};
       Object.keys(statChanges).forEach((stat) => {
         const change = Number(statChanges[stat]);
@@ -264,7 +271,6 @@ function Mountain() {
           Object.keys(incrementalChanges).forEach((stat) => {
             const increment = Number(incrementalChanges[stat]);
             if (isNaN(increment)) return;
-
             if (stat === "money" || stat === "experience" || stat === "skillPoints") {
               const prevValue = Number(prev[stat]) || 0;
               newStats[stat] = Math.max(0, prevValue + increment);
@@ -284,29 +290,36 @@ function Mountain() {
           setIsPerformingActivity(false);
           setActivityProgress(0);
           setCurrentActivity("");
+          setCurrentGifActivity("");
         }
       }, ACTIVITY_UPDATE_INTERVAL);
     }
   };
 
   const handleEnterLocation = () => {
-    console.log(`Performing activity at ${currentLocationmountain}`);
-
     if (currentLocationmountain === "Hike") {
-      performActivity("Hiking up the mountain", {
-        energy: -30,
-        health: 15,
-        happiness: 15,
-        meal: -25,
-        skillPoints: 1,
-      });
+      performActivity(
+        "Hiking up the mountain",
+        {
+          energy: -30,
+          health: 15,
+          happiness: 15,
+          meal: -25,
+          skillPoints: 1,
+        },
+        "mendaki"
+      );
     } else if (currentLocationmountain === "Stream") {
-      performActivity("Playing in the mountain stream", {
-        happiness: 35,
-        cleanliness: 20,
-        energy: -15,
-        experience: 1,
-      });
+      performActivity(
+        "Playing in the mountain stream",
+        {
+          happiness: 35,
+          cleanliness: 20,
+          energy: -15,
+          experience: 1,
+        },
+        "ke air main air"
+      );
     } else if (currentLocationmountain === "Flower") {
       const mountainFlowers = [
         { name: "Rose", icon: "rose" },
@@ -323,6 +336,7 @@ function Mountain() {
           energy: -20,
           skillPoints: 1,
         },
+        "simpan bunga",
         {
           name: randomFlower.name,
           category: "Flower",
@@ -343,6 +357,7 @@ function Mountain() {
           energy: -20,
           skillPoints: 1,
         },
+        "simpan bebatuan",
         {
           name: randomRock.name,
           category: "Rocks",
@@ -352,88 +367,37 @@ function Mountain() {
     }
   };
 
-  const isNearHike = (x, y) => {
-    return x >= 2575 && x <= 3682 && y >= 142 && y <= 692;
-  };
-
-  const isNearStream = (x, y) => {
-    return x >= 225 && x <= 1775 && y >= 142 && y <= 917;
-  };
-
-  const isNearFlower = (x, y) => {
-    return x >= 1950 && x <= 2425 && y >= 142 && y <= 267;
-  };
-
-  const isNearRock = (x, y) => {
-    return x >= 1225 && x <= 1375 && y >= 1067 && y <= 1342;
-  };
-
-  const dialogMessages = {
-    Hike: "Do you want to go for a hike up the mountain?",
-    Stream: "Do you want to play in the mountain stream?",
-    Flower: "Do you want to pick a flower?",
-    Rock: "Do you want to collect a rock?",
-  };
-
-  const renderDialogMessage = (message) => {
-    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (activityIntervalRef.current) {
-        clearInterval(activityIntervalRef.current);
+  // Movement System (same as others)
+  const startMovement = useCallback(
+    (direction) => {
+      if (isGameOver || isPerformingActivity) return;
+      startWalkingSound(900);
+      setIsWalking(true);
+      setWalkingDirection(direction);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
       }
-    };
-  }, []);
+      handleArrowPress(direction);
+      moveIntervalRef.current = setInterval(() => {
+        handleArrowPress(direction);
+      }, 40);
+    },
+    [isGameOver, isPerformingActivity]
+  );
 
-  useEffect(() => {
-    const updateViewportSize = () => {
-      if (mountainRef.current) {
-        setActualViewportSize({
-          width: mountainRef.current.clientWidth,
-          height: mountainRef.current.clientHeight,
-        });
-      }
-    };
-
-    updateViewportSize();
-    window.addEventListener("resize", updateViewportSize);
-    return () => window.removeEventListener("resize", updateViewportSize);
-  }, []);
-
-  useEffect(() => {
-    if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
-
-    const scaledWorldWidth = WORLD_WIDTH * zoomLevel;
-    const scaledWorldHeight = WORLD_HEIGHT * zoomLevel;
-
-    const viewportWidthInWorld = actualViewportSize.width / zoomLevel;
-    const viewportHeightInWorld = actualViewportSize.height / zoomLevel;
-
-    let targetCameraX = playerPos.x - viewportWidthInWorld / 2;
-    let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
-
-    if (scaledWorldWidth < actualViewportSize.width) {
-      targetCameraX = (WORLD_WIDTH - viewportWidthInWorld) / 2;
-    } else {
-      targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
+  const stopMovement = useCallback(() => {
+    setIsWalking(false);
+    stopWalkingSound();
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
     }
-
-    if (scaledWorldHeight < actualViewportSize.height) {
-      targetCameraY = (WORLD_HEIGHT - viewportHeightInWorld) / 2;
-    } else {
-      targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
-    }
-
-    setCameraPos({ x: targetCameraX, y: targetCameraY });
-  }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
+  }, []);
 
   const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
       let newY = prev.y;
-
       switch (direction) {
         case "up":
           newY = Math.max(0, prev.y - MOVE_SPEED);
@@ -450,15 +414,15 @@ function Mountain() {
         default:
           break;
       }
-
       return { x: newX, y: newY };
     });
   }, []);
 
+  // Keyboard handler (same as others)
   useEffect(() => {
+    const keysPressed = new Set();
     const handleKeyDown = (e) => {
-      if (isPerformingActivity) return;
-
+      if (isGameOver || isPerformingActivity || keysPressed.has(e.key)) return;
       let direction = null;
       switch (e.key) {
         case "ArrowUp":
@@ -484,20 +448,111 @@ function Mountain() {
         default:
           break;
       }
-
       if (direction) {
         e.preventDefault();
-        handleArrowPress(direction);
+        keysPressed.add(e.key);
+        startMovement(direction);
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      const walkKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "W", "a", "A", "s", "S", "d", "D"];
+      if (walkKeys.includes(e.key)) {
+        keysPressed.delete(e.key);
+        const stillWalking = walkKeys.some((key) => keysPressed.has(key));
+        if (!stillWalking) {
+          stopMovement();
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPerformingActivity, handleArrowPress]);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+    };
+  }, [isGameOver, isPerformingActivity, startMovement, stopMovement]);
+
+  // Location detection functions
+  const isNearHike = (x, y) => x >= 2575 && x <= 3682 && y >= 142 && y <= 692;
+  const isNearStream = (x, y) => x >= 225 && x <= 1775 && y >= 142 && y <= 917;
+  const isNearFlower = (x, y) => x >= 1950 && x <= 2425 && y >= 142 && y <= 267;
+  const isNearRock = (x, y) => x >= 1225 && x <= 1375 && y >= 1067 && y <= 1342;
+
+  const dialogMessages = {
+    Hike: "Do you want to go for a hike up the mountain?",
+    Stream: "Do you want to play in the mountain stream?",
+    Flower: "Do you want to pick a flower?",
+    Rock: "Do you want to collect a rock?",
+  };
+
+  const renderDialogMessage = (message) => {
+    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
+  };
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (activityIntervalRef.current) {
+        clearInterval(activityIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Viewport calculations (same as others)
+  useEffect(() => {
+    const updateViewportSize = () => {
+      if (mountainRef.current) {
+        setActualViewportSize({
+          width: mountainRef.current.clientWidth,
+          height: mountainRef.current.clientHeight,
+        });
+      }
+    };
+    updateViewportSize();
+    window.addEventListener("resize", updateViewportSize);
+    return () => window.removeEventListener("resize", updateViewportSize);
+  }, []);
+
+  useEffect(() => {
+    const calculateMobileZoom = () => {
+      if (actualViewportSize.width === 0 || actualViewportSize.height === 0) return;
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        const widthZoom = actualViewportSize.width / WORLD_WIDTH;
+        const heightZoom = actualViewportSize.height / WORLD_HEIGHT;
+        const optimalZoom = Math.max(widthZoom, heightZoom);
+        const minZoom = 0.15;
+        const maxZoom = 0.8;
+        const finalZoom = Math.max(minZoom, Math.min(maxZoom, optimalZoom));
+        setMobileZoom(finalZoom);
+        setZoomLevel(finalZoom);
+      } else {
+        setZoomLevel(0.299);
+      }
+    };
+    calculateMobileZoom();
+    window.addEventListener("resize", calculateMobileZoom);
+    return () => window.removeEventListener("resize", calculateMobileZoom);
+  }, [actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
+
+  useEffect(() => {
+    if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
+    const viewportWidthInWorld = actualViewportSize.width / zoomLevel;
+    const viewportHeightInWorld = actualViewportSize.height / zoomLevel;
+    let targetCameraX = playerPos.x - viewportWidthInWorld / 2;
+    let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
+    targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
+    targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
+    setCameraPos({ x: targetCameraX, y: targetCameraY });
+  }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
   useEffect(() => {
     if (isPerformingActivity) return;
-
     if (isNearHike(playerPos.x, playerPos.y)) {
       setCurrentLocationmountain("Hike");
       setShowDialog(true);
@@ -516,70 +571,20 @@ function Mountain() {
     }
   }, [playerPos, isPerformingActivity]);
 
-  // NEW: Calculate optimal zoom for mobile to eliminate empty space
-  useEffect(() => {
-    const calculateMobileZoom = () => {
-      if (actualViewportSize.width === 0 || actualViewportSize.height === 0) return;
-
-      // Check if we're on mobile (you can adjust this breakpoint)
-      const isMobile = window.innerWidth <= 768;
-
-      if (isMobile) {
-        // Calculate zoom to fill the viewport optimally
-        const widthZoom = actualViewportSize.width / WORLD_WIDTH;
-        const heightZoom = actualViewportSize.height / WORLD_HEIGHT;
-
-        // Use the larger zoom value to ensure no empty space
-        const optimalZoom = Math.max(widthZoom, heightZoom);
-
-        // Set minimum and maximum zoom limits for better gameplay
-        const minZoom = 0.15;
-        const maxZoom = 0.8;
-        const finalZoom = Math.max(minZoom, Math.min(maxZoom, optimalZoom));
-
-        console.log(`Mobile zoom calculated: ${finalZoom} (width: ${widthZoom}, height: ${heightZoom})`);
-
-        setMobileZoom(finalZoom);
-        setZoomLevel(finalZoom);
-      } else {
-        // Desktop zoom - use original value
-        setZoomLevel(0.299);
-      }
-    };
-
-    calculateMobileZoom();
-
-    // Recalculate on window resize
-    window.addEventListener("resize", calculateMobileZoom);
-    return () => window.removeEventListener("resize", calculateMobileZoom);
-  }, [actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
-
-  // Camera position calculation - updated to work with mobile zoom
-  useEffect(() => {
-    if (actualViewportSize.width === 0 || actualViewportSize.height === 0 || zoomLevel === 0) return;
-
-    const viewportWidthInWorld = actualViewportSize.width / zoomLevel;
-    const viewportHeightInWorld = actualViewportSize.height / zoomLevel;
-
-    let targetCameraX = playerPos.x - viewportWidthInWorld / 2;
-    let targetCameraY = playerPos.y - viewportHeightInWorld / 2;
-
-    // Constrain camera to world boundaries
-    targetCameraX = Math.max(0, Math.min(WORLD_WIDTH - viewportWidthInWorld, targetCameraX));
-    targetCameraY = Math.max(0, Math.min(WORLD_HEIGHT - viewportHeightInWorld, targetCameraY));
-
-    setCameraPos({ x: targetCameraX, y: targetCameraY });
-  }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
-
   return (
     <div className="mountain-game-container">
-      <div>
-        <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
-        <SpeedToggleButton />
-        <BackTo type="map" onClick={handleBackToMap} /> {/* UPDATED: Using BackTo component */}
-      </div>
+      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={new Set(["mountain"])} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
+
+      {!isGameOver && (
+        <div>
+          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
+          <SpeedToggleButton />
+          <BackTo type="map" onClick={handleBackToMap} />
+        </div>
+      )}
+
       <div className="mountain-game-viewport" ref={mountainRef}>
-        {showDialog && currentLocationmountain && !isPerformingActivity && (
+        {!isGameOver && showDialog && currentLocationmountain && !isPerformingActivity && (
           <div className="dialog fade-in-center">
             {renderDialogMessage(dialogMessages[currentLocationmountain] || `Do you want to enter the ${currentLocationmountain}?`)}
             <button className="yes-btn" onClick={handleEnterLocation}>
@@ -590,7 +595,8 @@ function Mountain() {
             </button>
           </div>
         )}
-        {isPerformingActivity && (
+
+        {!isGameOver && isPerformingActivity && (
           <div className="activity-overlay">
             <div className="activity-info">
               <h3>{currentActivity}...</h3>
@@ -601,6 +607,7 @@ function Mountain() {
             </div>
           </div>
         )}
+
         <div
           className="mountain-game-world mountain-background"
           style={{
@@ -608,6 +615,7 @@ function Mountain() {
             height: `${WORLD_HEIGHT}px`,
             transform: `translate(-${cameraPos.x * zoomLevel}px, -${cameraPos.y * zoomLevel}px) scale(${zoomLevel})`,
             transformOrigin: "0 0",
+            pointerEvents: isGameOver ? "none" : "auto",
           }}
         >
           <div
@@ -622,30 +630,39 @@ function Mountain() {
               position: "absolute",
             }}
           >
-            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="mountain-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
+            {isWalking ? (
+              <Gif activity="jalan" location="gunung" isWalking={isWalking} characterName={characterName} walkingDirection={walkingDirection} />
+            ) : isPerformingActivity && currentGifActivity ? (
+              <Gif activity={currentGifActivity} location="gunung" isWalking={false} characterName={characterName} />
+            ) : (
+              <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="mountain-player-sprite" draggable={false} style={{ width: "100%", height: "100%" }} />
+            )}
           </div>
         </div>
       </div>
 
-      <div className="game-hud">
-        <div className="player-info">
-          <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
-          <div className="player-coords">
-            {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
-            {/* REMOVED OLD BUTTON */}
+      {!isGameOver && (
+        <div className="game-hud">
+          <div className="player-info">
+            <img src={`/assets/avatar/${characterName}.png`} alt={characterName} className="hud-avatar" />
+            <div className="player-coords">
+              {playerName.toUpperCase()} • X: {Math.floor(playerPos.x)} Y: {Math.floor(playerPos.y)}
+            </div>
+          </div>
+          <div className="controls-hint">
+            <div>🎮 Arrow Keys / WASD to move</div>
+            <div>🗺️ Explore the mountain!</div>
           </div>
         </div>
-        <div className="controls-hint">
-          <div>🎮 Arrow Keys / WASD to move</div>
-          <div>🗺️ Explore the mountain!</div>
-        </div>
-      </div>
+      )}
 
-      {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
-
-      <WASDKey onKeyPress={handleArrowPress} />
-
-      <Task currentLocation="mountain" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
+      {!isGameOver && (
+        <>
+          {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
+          <WASDKey onStartMovement={startMovement} onStopMovement={stopMovement} isMapLocation={false} isWalking={isWalking} walkingDirection={walkingDirection} />
+          <Task currentLocation="mountain" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
+        </>
+      )}
     </div>
   );
 }

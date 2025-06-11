@@ -16,6 +16,7 @@
 }
 
 .walking-gif {
+  border: 3px solid #ff6b6b;
   animation: walkingPulse 2s infinite;
 }
 
@@ -23,9 +24,11 @@
   0%,
   100% {
     transform: scale(1);
+    border-color: #ff6b6b;
   }
   50% {
     transform: scale(1.05);
+    border-color: #ff8787;
   }
 }
 
@@ -40,6 +43,28 @@
   border-radius: 15px;
   backdrop-filter: blur(5px);
 }
+
+/* Styling berdasarkan lokasi */
+.home-activity {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+}
+
+.restaurant-activity {
+  background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+}
+
+.field-activity {
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+}
+
+.mountain-activity {
+  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+}
+
+.beach-activity {
+  background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%);
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .gif-container {
@@ -88,6 +113,7 @@
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
+  color: #2c3e50;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -128,4 +154,68 @@
   font-size: 12px;
   color: #666;
   font-weight: normal;
+}
+
+.home-player .gif-container,
+.field-player .gif-container,
+.beach-player .gif-container,
+.mountain-player .gif-container,
+.resto-player .gif-container,
+.player .gif-container {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  align-items: unset !important;
+  justify-content: unset !important;
+}
+
+.home-player .activity-gif,
+.field-player .activity-gif,
+.beach-player .activity-gif,
+.mountain-player .activity-gif,
+.resto-player .activity-gif,
+.player .activity-gif {
+  width: 210% !important;
+  height: 210% !important;
+  max-width: unset !important;
+  max-height: unset !important;
+  border: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  object-fit: contain !important;
+  image-rendering: pixelated !important;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.home-player .walking-gif,
+.field-player .walking-gif,
+.beach-player .walking-gif,
+.mountain-player .walking-gif,
+.resto-player .walking-gif,
+.player .walking-gif {
+  /* Sama dengan .activity-gif */
+  width: 110% !important;
+  height: 110% !important;
+  border: none !important;
+  animation: none !important;
+}
+
+/* Hilangkan label di context player: */
+.home-player .activity-label,
+.field-player .activity-label,
+.beach-player .activity-label,
+.mountain-player .activity-label,
+.resto-player .activity-label,
+.player .activity-label {
+  display: none !important;
+}
+
+/* Jika secara global perlu, tambahkan untuk pengaman: */
+.gif-container {
+  box-sizing: border-box;
 }

@@ -531,7 +531,21 @@ function Home() {
 
   return (
     <div className="home-game-container">
-      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={new Set(["home"])} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
+      {isGameOver && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            zIndex: 9999,
+            pointerEvents: "auto",
+          }}
+        >
+          <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={new Set(["home"])} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />
+        </div>
+      )}
 
       {!isGameOver && (
         <div>

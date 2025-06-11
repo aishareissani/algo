@@ -614,6 +614,29 @@
     padding: 12px;
     max-height: 160px;
   }
+
+  .eat-prompt {
+    border-radius: 12px;
+    padding: 10px 2px;
+    max-width: 40px;
+  }
+
+  .eat-prompt p {
+    font-size: 12px;
+    line-height: 14px;
+  }
+
+  .eat-prompt-buttons {
+    gap: 10px;
+  }
+
+  .eat-prompt .yes-btn,
+  .eat-prompt .no-btn {
+    padding: 4px 10px;
+    font-size: 10px;
+    border-radius: 6px;
+    position: relative;
+  }
 }
 
 /* Tablet adjustments */

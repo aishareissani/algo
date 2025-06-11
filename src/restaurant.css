@@ -77,8 +77,8 @@
 /* Player */
 .resto-player {
   position: absolute;
-  width: 40px;
-  height: 60px;
+  width: 80px; /* SAMA dengan home dan map */
+  height: 80px; /* SAMA dengan home dan map */
   z-index: 10;
   transition: none;
 }
