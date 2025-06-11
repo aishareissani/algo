@@ -269,7 +269,7 @@ function Home() {
         {
           sleep: 100,
           energy: 25,
-          health: -40,
+          health: 40,
           happiness: 15,
           experience: 1,
         },

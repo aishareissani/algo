@@ -150,19 +150,26 @@
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .back-to-toggle-button {
     transform: none !important;
+    /* Tambahkan z-index yang lebih tinggi */
+    z-index: 2000 !important;
+    /* Pastikan pointer events aktif */
+    pointer-events: auto !important;
   }
 
   /* For location screens - positioned inside viewport with 10px gaps */
   .back-to-toggle-button.back-to-home,
   .back-to-toggle-button.back-to-start {
-    top: 10px !important; /* 10px gap from top border of viewport */
-    left: 10px !important; /* 10px gap from left border of viewport */
+    top: 10px !important;
+    left: 10px !important;
+    /* Pastikan tidak ter-overlap */
+    position: fixed !important;
   }
 
   /* For map screen - positioned below mini-map area */
   .back-to-toggle-button.back-to-map {
-    top: 300px !important; /* Below mini-map */
-    left: 25px !important; /* 10px gap from left edge */
+    top: 300px !important;
+    left: 25px !important;
+    position: fixed !important;
   }
 }
 

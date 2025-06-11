@@ -8,7 +8,7 @@
   --map-body-text: #4d4d4d;
   --map-loading-title: #fff;
   --map-loading-shadow: #3b5a30;
-  --map-button-bg-1: #8cb369;
+  --map-button-bg-1: #3b5a30;
   --map-button-bg-2: #5a8c3b;
   --map-button-text: #fff;
   --map-button-shadow-1: rgba(0, 0, 0, 0.3);
@@ -29,7 +29,7 @@
   --map-arrow-hover-shadow: rgba(255, 255, 255, 0.5);
   --map-arrow-hover-border: rgba(255, 255, 255, 0.5);
   --map-container-bg: #e3f2fd;
-  --map-viewport-border: #795548;
+  --map-viewport-border: #3b5a30;
   --map-viewport-bg: #f0f9e6;
   --map-viewport-shadow-1: rgba(121, 216, 88, 0.3);
   --map-viewport-shadow-2: rgba(255, 255, 255, 0.2);
@@ -41,17 +41,17 @@
   --map-mini-pointer-shadow: rgba(0, 0, 0, 0.4);
   --map-player-shadow: rgba(0, 0, 0, 0.5);
   --map-mini-map-bg: #f8f8ff;
-  --map-mini-map-border: #795548;
+  --map-mini-map-border: #3b5a30;
   --map-mini-map-shadow: rgba(0, 0, 0, 0.15);
   --map-mini-map-player-bg: #d83232;
   --map-mini-map-player-glow: #e9d669;
   --map-mini-map-viewport-border: #f8f8ff;
   --map-mini-map-viewport-bg: rgba(255, 255, 255, 0.2);
   --map-player-info-bg: #f8f8ff;
-  --map-player-info-border: #795548;
+  --map-player-info-border: #3b5a30;
   --map-player-info-text: #4d4d4d;
   --map-player-info-shadow: rgba(0, 0, 0, 0.15);
-  --map-hud-avatar-border: #795548;
+  --map-hud-avatar-border: #3b5a30;
   --map-hud-avatar-bg: #f8f8ff;
   --map-hud-avatar-glow: rgba(121, 216, 88, 0.3);
   --map-controls-bg: #f8f8ff;
@@ -59,7 +59,7 @@
   --map-controls-text: #4d4d4d;
   --map-controls-shadow: rgba(0, 0, 0, 0.15);
   --map-dialog-bg: rgba(255, 255, 255, 0.8);
-  --map-dialog-border: #795548;
+  --map-dialog-border: #3b5a30;
   --map-dialog-shadow: rgba(0, 0, 0, 0.2);
   --map-dialog-text: #4d4d4d;
   --map-dialog-btn-shadow: rgba(0, 0, 0, 0.15);
@@ -83,12 +83,12 @@
   --map-back-btn-hover-shadow-2: rgba(0, 0, 0, 0.15);
   --map-back-btn-hover-shadow-3: rgba(255, 255, 255, 0.5);
   --map-activity-bg: rgba(255, 255, 255, 0.8);
-  --map-activity-border: #795548;
+  --map-activity-border: #3b5a30;
   --map-activity-shadow: rgba(0, 0, 0, 0.2);
   --map-activity-text: #4d4d4d;
   --map-activity-progress-bg: rgba(224, 224, 224, 0.8);
   --map-activity-progress-shadow: rgba(0, 0, 0, 0.1);
-  --map-activity-progress-fill: #795548;
+  --map-activity-progress-fill: #3b5a30;
   --map-activity-progress-fill-shadow: rgba(121, 217, 89, 0.3);
 }
 

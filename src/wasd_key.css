@@ -2,26 +2,26 @@
 
 :root {
   /* WASD Colors */
-  --wasd-main: #795548;
-  --wasd-hover: #795548;
+  --wasd-main: #3b5a30;
+  --wasd-hover: #3b5a30;
   --wasd-active: #00ffb4;
-  --wasd-key-shadow: 0 4px 0 #795548;
-  --wasd-key-pressed: 0 2px 0 #795548;
+  --wasd-key-shadow: 0 4px 0 #3b5a30;
+  --wasd-key-pressed: 0 2px 0 #3b5a30;
   --wasd-pad-bg: #f8f8fe;
-  --wasd-pad-border: #795548;
+  --wasd-pad-border: #3b5a30;
   --wasd-key-bg-1: #f9fff8;
   --wasd-key-bg-2: #dcfada;
   --wasd-key-text: #273a16;
   --wasd-key-hover-text: #0b2106;
-  --wasd-key-hover-border: #795548;
-  --wasd-key-hover-shadow: 0 6px 0 #795548;
+  --wasd-key-hover-border: #3b5a30;
+  --wasd-key-hover-shadow: 0 6px 0 #3b5a30;
   --wasd-key-active-text: #fff;
   --wasd-key-active-border: #456c35;
   --wasd-key-active-bg: rgba(0, 255, 180, 0.4);
   --wasd-key-active-border-glow: rgba(0, 255, 180, 0.7);
   --wasd-key-w-bg-1: #a4f78f;
   --wasd-key-w-bg-2: #79d959;
-  --wasd-key-w-border: #795548;
+  --wasd-key-w-border: #3b5a30;
   --wasd-key-shine: rgba(255, 255, 255, 0.3);
   --wasd-text-shadow: rgba(255, 255, 255, 0.7);
   --wasd-walking-bg: rgba(0, 0, 0, 0.6);
@@ -214,7 +214,7 @@ body {
     box-shadow: var(--wasd-key-pressed);
   }
   50% {
-    box-shadow: 0 2px 0 #795548, 0 0 10px rgba(0, 255, 180, 0.5);
+    box-shadow: 0 2px 0 #3b5a30, 0 0 10px rgba(0, 255, 180, 0.5);
   }
   100% {
     box-shadow: var(--wasd-key-pressed);

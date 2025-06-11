@@ -199,8 +199,8 @@
 .resto-player .walking-gif,
 .player .walking-gif {
   /* Sama dengan .activity-gif */
-  width: 110% !important;
-  height: 110% !important;
+  width: 120% !important;
+  height: 120% !important;
   border: none !important;
   animation: none !important;
 }

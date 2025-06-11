@@ -2,11 +2,11 @@ import React from "react";
 import "../gif.css";
 
 const Gif = ({ activity, location, isWalking, characterName = "keni", walkingDirection = "down" }) => {
-  // Fungsi untuk mendapatkan path gif berdasarkan aktivitas dan lokasi
-  const getGifPath = (location, activity) => {
-    const basePath = "/assets/gif/";
+  const basePath = "/assets/gif/";
 
-    // Jika sedang jalan dan isWalking true, gunakan gif jalan sesuai arah
+  // Kalau bukan keni
+  if (characterName !== "keni") {
+    // Khusus untuk walking, tetap pakai GIF walking sesuai karakter
     if (activity === "jalan" && isWalking) {
       const walkingGifs = {
         right: `${characterName}_jalan_kanan.gif`,
@@ -14,10 +14,50 @@ const Gif = ({ activity, location, isWalking, characterName = "keni", walkingDir
         up: `${characterName}_jalan_atas.gif`,
         down: `${characterName}_jalan_bawah.gif`,
       };
+      return (
+        <div className="gif-container">
+          <img
+            src={`${basePath}${walkingGifs[walkingDirection]}`}
+            alt="walking gif"
+            className="activity-gif walking-gif"
+            onError={(e) => {
+              e.target.src = "/assets/gif/default.gif";
+            }}
+            draggable={false}
+          />
+        </div>
+      );
+    }
+
+    // Untuk aktivitas lainnya, pakai idle gif
+    return (
+      <div className="gif-container">
+        <img
+          src={`${basePath}${characterName}_idle.gif`}
+          alt="idle gif"
+          className="activity-gif"
+          onError={(e) => {
+            e.target.src = "/assets/gif/default.gif";
+          }}
+          draggable={false}
+        />
+      </div>
+    );
+  }
+
+  // Untuk keni, jalankan logika lengkap seperti sebelumnya
+  const getGifPath = (location, activity) => {
+    const walkingGifs = {
+      right: `${characterName}_jalan_kanan.gif`,
+      left: `${characterName}_jalan_kiri.gif`,
+      up: `${characterName}_jalan_atas.gif`,
+      down: `${characterName}_jalan_bawah.gif`,
+    };
+
+    if (activity === "jalan" && isWalking) {
       return basePath + walkingGifs[walkingDirection];
     }
 
-    // Mapping aktivitas ke nama file gif (dengan prefix karakter)
     const activityGifs = {
       // Rumah
       tidur: `${characterName}_tidur.gif`,
@@ -50,7 +90,6 @@ const Gif = ({ activity, location, isWalking, characterName = "keni", walkingDir
       "simpan kerang": `${characterName}_item.gif`,
       "simpan bunga pantai": `${characterName}_item.gif`,
 
-      // Universal (jalan default jika tidak ada isWalking)
       jalan: `${characterName}_jalan_bawah.gif`,
     };
 
@@ -62,13 +101,12 @@ const Gif = ({ activity, location, isWalking, characterName = "keni", walkingDir
       <img
         src={getGifPath(location, activity)}
         alt={`${activity} gif`}
-        className={`activity-gif ${activity === "jalan" ? "walking-gif" : ""}`}
+        className={`activity-gif${activity === "jalan" ? " walking-gif" : ""}`}
         onError={(e) => {
           e.target.src = "/assets/gif/default.gif";
         }}
         draggable={false}
       />
-      {/* HAPUS SEMUA label dan tulisan */}
     </div>
   );
 };
