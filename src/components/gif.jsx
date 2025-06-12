@@ -79,7 +79,7 @@ const Gif = ({ activity, location, isWalking, characterName = "keni", walkingDir
 
       // Gunung
       mendaki: `${characterName}_mendaki.gif`,
-      "ke air main air": `${characterName}_air.gif`,
+      "main air": `${characterName}_air.gif`,
       "simpan bunga": `${characterName}_item.gif`,
       "simpan bebatuan": `${characterName}_item.gif`,
 

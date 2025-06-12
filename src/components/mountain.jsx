@@ -336,7 +336,7 @@ function Mountain() {
           experience: 2,
           health: -5,
         },
-        "hiking"
+        "mendaki"
       );
     } else if (currentLocationmountain === "Stream") {
       performActivity(
@@ -347,34 +347,50 @@ function Mountain() {
           cleanliness: 5,
           experience: 1,
         },
-        "stream"
+        "main air"
       );
     } else if (currentLocationmountain === "Flower") {
+      // Sama seperti di Beach - random flower
+      const flowers = [
+        { name: "Rose", icon: "rose" },
+        { name: "Daisy", icon: "daisy" },
+        { name: "Sunflower", icon: "sunflower" },
+        { name: "Tulip", icon: "tulip" },
+      ];
+      const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
+
       performActivity(
         "Collecting Flower",
         {
           happiness: 10,
           experience: 1,
         },
-        "collecting flower",
+        "simpan bunga",
         {
-          name: "Wild Flower",
-          category: "Collectible",
-          icon: "flower_icon", // Make sure you have this icon
+          name: randomFlower.name, // Dynamic flower name
+          category: "Flowers", // Same category as beach
+          icon: randomFlower.icon, // Dynamic icon
         }
       );
     } else if (currentLocationmountain === "Rock") {
+      // Random rock types
+      const rocks = [
+        { name: "Quartz", icon: "quartz" },
+        { name: "Granite", icon: "granite" },
+      ];
+      const randomRock = rocks[Math.floor(Math.random() * rocks.length)];
+
       performActivity(
         "Collecting Rock",
         {
           happiness: 5,
           experience: 0.5,
         },
-        "collecting rock",
+        "simpan bebatuan",
         {
-          name: "Cool Rock",
-          category: "Collectible",
-          icon: "rock_icon", // Make sure you have this icon
+          name: randomRock.name, // Dynamic rock name
+          category: "Collectible", // Keep same category
+          icon: randomRock.icon, // Dynamic icon
         }
       );
     }
