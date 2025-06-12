@@ -623,7 +623,7 @@ body {
   box-shadow: 0 8px 32px var(--map-activity-shadow);
   text-align: center;
   border: 3px solid var(--map-activity-border);
-  z-index: 1000;
+  z-index: 1000000;
   animation: fadeIn 0.3s ease-out;
   min-width: 300px;
 }
@@ -681,7 +681,7 @@ body {
     width: 55vw;
     max-width: 230px;
     padding: 10px 8px;
-    z-index: 1000;
+    z-index: 10000000;
   }
 
   .activity-info h3 {
