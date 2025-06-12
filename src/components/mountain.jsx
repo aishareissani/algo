@@ -58,6 +58,8 @@ function Mountain() {
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
 
+  const [dialogDismissed, setDialogDismissed] = useState(false);
+
   const defaultStats = {
     meal: 50,
     sleep: 50,
@@ -489,10 +491,10 @@ function Mountain() {
   }, [isGameOver, isPerformingActivity, startMovement, stopMovement]);
 
   // Fungsi Deteksi Lokasi di dalam Mountain
-  const isNearHike = (x, y) => x >= 1000 && x <= 1300 && y >= 300 && y <= 600;
-  const isNearStream = (x, y) => x >= 2500 && x <= 2800 && y >= 800 && y <= 1100;
-  const isNearFlower = (x, y) => x >= 500 && x <= 750 && y >= 1500 && y <= 1750;
-  const isNearRock = (x, y) => x >= 3000 && x <= 3300 && y >= 200 && y <= 450;
+  const isNearHike = (x, y) => x >= 2700 && x <= 3635 && y >= 200 && y <= 625;
+  const isNearStream = (x, y) => x >= 200 && x <= 1825 && y >= 175 && y <= 800;
+  const isNearFlower = (x, y) => x >= 1925 && x <= 2400 && y >= 150 && y <= 400;
+  const isNearRock = (x, y) => x >= 1200 && x <= 1400 && y >= 950 && y <= 1275;
 
   const dialogMessages = {
     Hike: "Do you want to start a hike?",
@@ -565,23 +567,22 @@ function Mountain() {
   // Deteksi Lokasi di Mountain
   useEffect(() => {
     if (isPerformingActivity) return;
-    if (isNearHike(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Hike");
-      setShowDialog(true);
-    } else if (isNearStream(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Stream");
-      setShowDialog(true);
-    } else if (isNearFlower(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Flower");
-      setShowDialog(true);
-    } else if (isNearRock(playerPos.x, playerPos.y)) {
-      setCurrentLocationmountain("Rock");
-      setShowDialog(true);
+
+    let newLocation = null;
+    if (isNearHike(playerPos.x, playerPos.y)) newLocation = "Hike";
+    else if (isNearStream(playerPos.x, playerPos.y)) newLocation = "Stream";
+    else if (isNearFlower(playerPos.x, playerPos.y)) newLocation = "Flower";
+    else if (isNearRock(playerPos.x, playerPos.y)) newLocation = "Rock";
+
+    if (newLocation) {
+      setCurrentLocationmountain(newLocation);
+      if (!dialogDismissed) setShowDialog(true);
     } else {
       setCurrentLocationmountain(null);
       setShowDialog(false);
+      setDialogDismissed(false);
     }
-  }, [playerPos, isPerformingActivity, isNearHike, isNearStream, isNearFlower, isNearRock]);
+  }, [playerPos, isPerformingActivity, dialogDismissed, isNearHike, isNearStream, isNearFlower, isNearRock]); // ✅ BENAR!
 
   return (
     <div className="mountain-game-container">
@@ -616,7 +617,13 @@ function Mountain() {
             <button className="yes-btn" onClick={handleEnterLocation}>
               Yes
             </button>
-            <button className="no-btn" onClick={() => setShowDialog(false)}>
+            <button
+              className="no-btn"
+              onClick={() => {
+                setShowDialog(false);
+                setDialogDismissed(true);
+              }}
+            >
               No
             </button>
           </div>

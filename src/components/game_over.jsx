@@ -226,7 +226,6 @@ const GameOver = ({
               <span className="summary-value">{actualVisitedLocationsArray.length}/5</span>
             </div>
           </div>
-          <div style={{ marginTop: "10px", fontSize: "12px", color: "#666" }}>Visited: {actualVisitedLocationsArray.length > 0 ? actualVisitedLocationsArray.join(", ") : "None"}</div>
         </div>
 
         <div className="game-over-actions">

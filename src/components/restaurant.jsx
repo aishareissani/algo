@@ -57,6 +57,8 @@ function Resto() {
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
 
+  const [dialogDismissed, setDialogDismissed] = useState(false);
+
   const defaultStats = {
     meal: 50,
     sleep: 50,
@@ -564,20 +566,21 @@ function Resto() {
   // Location Detection for activities (Unchanged)
   useEffect(() => {
     if (isPerformingActivity) return;
-    if (isNearCashier(playerPos.x, playerPos.y)) {
-      setcurrentLocationResto("Takeaway");
-      setShowDialog(true);
-    } else if (isNearTable(playerPos.x, playerPos.y)) {
-      setcurrentLocationResto("Eat");
-      setShowDialog(true);
-    } else if (isNearChair(playerPos.x, playerPos.y)) {
-      setcurrentLocationResto("Drink");
-      setShowDialog(true);
+
+    let newLocation = null;
+    if (isNearCashier(playerPos.x, playerPos.y)) newLocation = "Takeaway";
+    else if (isNearTable(playerPos.x, playerPos.y)) newLocation = "Eat";
+    else if (isNearChair(playerPos.x, playerPos.y)) newLocation = "Drink";
+
+    if (newLocation) {
+      setcurrentLocationResto(newLocation);
+      if (!dialogDismissed) setShowDialog(true);
     } else {
       setcurrentLocationResto(null);
       setShowDialog(false);
+      setDialogDismissed(false); // Reset dismiss saat keluar area!
     }
-  }, [playerPos, isPerformingActivity, isNearCashier, isNearTable, isNearChair]);
+  }, [playerPos, isPerformingActivity, dialogDismissed]);
 
   return (
     <div className="resto-game-container">
@@ -599,7 +602,13 @@ function Resto() {
             <button className="yes-btn" onClick={handleEnterLocation}>
               Yes
             </button>
-            <button className="no-btn" onClick={() => setShowDialog(false)}>
+            <button
+              className="no-btn"
+              onClick={() => {
+                setShowDialog(false);
+                setDialogDismissed(true);
+              }}
+            >
               No
             </button>
           </div>

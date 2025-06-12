@@ -56,6 +56,8 @@ function Beach() {
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
 
+  const [dialogDismissed, setDialogDismissed] = useState(false);
+
   const defaultStats = {
     meal: 50,
     sleep: 50,
@@ -347,7 +349,6 @@ function Beach() {
         "Making a sand castle",
         {
           happiness: 50,
-          energy: 20,
           meal: -5,
           cleanliness: -10,
           skillPoints: 1,
@@ -403,7 +404,7 @@ function Beach() {
           meal: -20,
           skillPoints: 1,
         },
-        "simpan bintang laut", // Corrected GIF activity description for starfish
+        "simpan kerang", // Corrected GIF activity description for starfish
         {
           name: "Starfish",
           category: "Marine",
@@ -609,29 +610,24 @@ function Beach() {
   // Location Detection for activities (Unchanged)
   useEffect(() => {
     if (isPerformingActivity) return;
-    if (isNearSwim(playerPos.x, playerPos.y)) {
-      setCurrentLocationbeach("Swim");
-      setShowDialog(true);
-    } else if (isNearSunbath(playerPos.x, playerPos.y)) {
-      setCurrentLocationbeach("Sunbath");
-      setShowDialog(true);
-    } else if (isNearSandcastle(playerPos.x, playerPos.y)) {
-      setCurrentLocationbeach("Sandcastle");
-      setShowDialog(true);
-    } else if (isNearSeashell(playerPos.x, playerPos.y)) {
-      setCurrentLocationbeach("Seashell");
-      setShowDialog(true);
-    } else if (isNearFlower(playerPos.x, playerPos.y)) {
-      setCurrentLocationbeach("Flower");
-      setShowDialog(true);
-    } else if (isNearStarFish(playerPos.x, playerPos.y)) {
-      setCurrentLocationbeach("StarFish");
-      setShowDialog(true);
+
+    let newLocation = null;
+    if (isNearSwim(playerPos.x, playerPos.y)) newLocation = "Swim";
+    else if (isNearSunbath(playerPos.x, playerPos.y)) newLocation = "Sunbath";
+    else if (isNearSandcastle(playerPos.x, playerPos.y)) newLocation = "Sandcastle";
+    else if (isNearSeashell(playerPos.x, playerPos.y)) newLocation = "Seashell";
+    else if (isNearFlower(playerPos.x, playerPos.y)) newLocation = "Flower";
+    else if (isNearStarFish(playerPos.x, playerPos.y)) newLocation = "StarFish";
+
+    if (newLocation) {
+      setCurrentLocationbeach(newLocation);
+      if (!dialogDismissed) setShowDialog(true);
     } else {
       setCurrentLocationbeach(null);
       setShowDialog(false);
+      setDialogDismissed(false); // Reset dismiss saat keluar area!
     }
-  }, [playerPos, isPerformingActivity, isNearSwim, isNearSunbath, isNearSandcastle, isNearSeashell, isNearFlower, isNearStarFish]);
+  }, [playerPos, isPerformingActivity, dialogDismissed]);
 
   return (
     <div className="beach-game-container">
@@ -653,7 +649,13 @@ function Beach() {
             <button className="yes-btn" onClick={handleEnterLocation}>
               Yes
             </button>
-            <button className="no-btn" onClick={() => setShowDialog(false)}>
+            <button
+              className="no-btn"
+              onClick={() => {
+                setShowDialog(false);
+                setDialogDismissed(true);
+              }}
+            >
               No
             </button>
           </div>

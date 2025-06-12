@@ -57,6 +57,8 @@ function Field() {
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
 
+  const [dialogDismissed, setDialogDismissed] = useState(false);
+
   const defaultStats = {
     meal: 50,
     sleep: 50,
@@ -553,23 +555,22 @@ function Field() {
   // Location Detection for activities (Unchanged)
   useEffect(() => {
     if (isPerformingActivity) return;
-    if (isNearSwing(playerPos.x, playerPos.y)) {
-      setCurrentLocationfield("Swing");
-      setShowDialog(true);
-    } else if (isNearPicnic(playerPos.x, playerPos.y)) {
-      setCurrentLocationfield("Picnic");
-      setShowDialog(true);
-    } else if (isNearChair(playerPos.x, playerPos.y)) {
-      setCurrentLocationfield("Chair");
-      setShowDialog(true);
-    } else if (isNearFountain(playerPos.x, playerPos.y)) {
-      setCurrentLocationfield("Fountain");
-      setShowDialog(true);
+
+    let newLocation = null;
+    if (isNearSwing(playerPos.x, playerPos.y)) newLocation = "Swing";
+    else if (isNearPicnic(playerPos.x, playerPos.y)) newLocation = "Picnic";
+    else if (isNearChair(playerPos.x, playerPos.y)) newLocation = "Chair";
+    else if (isNearFountain(playerPos.x, playerPos.y)) newLocation = "Fountain";
+
+    if (newLocation) {
+      setCurrentLocationfield(newLocation);
+      if (!dialogDismissed) setShowDialog(true);
     } else {
       setCurrentLocationfield(null);
       setShowDialog(false);
+      setDialogDismissed(false); // Reset dismiss saat keluar area!
     }
-  }, [playerPos, isPerformingActivity, isNearSwing, isNearPicnic, isNearChair, isNearFountain]);
+  }, [playerPos, isPerformingActivity, dialogDismissed]);
 
   return (
     <div className="field-game-container">
@@ -591,7 +592,13 @@ function Field() {
             <button className="yes-btn" onClick={handleEnterLocation}>
               Yes
             </button>
-            <button className="no-btn" onClick={() => setShowDialog(false)}>
+            <button
+              className="no-btn"
+              onClick={() => {
+                setShowDialog(false);
+                setDialogDismissed(true);
+              }}
+            >
               No
             </button>
           </div>

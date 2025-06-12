@@ -57,6 +57,8 @@ function Home() {
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
 
+  const [dialogDismissed, setDialogDismissed] = useState(false);
+
   const defaultStats = {
     meal: 50,
     sleep: 50,
@@ -536,26 +538,23 @@ function Home() {
   // Deteksi Lokasi
   useEffect(() => {
     if (isPerformingActivity) return;
-    if (isNearBed(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Bed");
-      setShowDialog(true);
-    } else if (isNearBath(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Bath");
-      setShowDialog(true);
-    } else if (isNearKitchen(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Kitchen");
-      setShowDialog(true);
-    } else if (isNearCat(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Cat");
-      setShowDialog(true);
-    } else if (isNearTable(playerPos.x, playerPos.y)) {
-      setCurrentLocationHouse("Table");
-      setShowDialog(true);
+
+    let newLocation = null;
+    if (isNearBed(playerPos.x, playerPos.y)) newLocation = "Bed";
+    else if (isNearBath(playerPos.x, playerPos.y)) newLocation = "Bath";
+    else if (isNearKitchen(playerPos.x, playerPos.y)) newLocation = "Kitchen";
+    else if (isNearCat(playerPos.x, playerPos.y)) newLocation = "Cat";
+    else if (isNearTable(playerPos.x, playerPos.y)) newLocation = "Table";
+
+    if (newLocation) {
+      setCurrentLocationHouse(newLocation);
+      if (!dialogDismissed) setShowDialog(true);
     } else {
       setCurrentLocationHouse(null);
       setShowDialog(false);
+      setDialogDismissed(false); // Reset dismiss saat keluar area!
     }
-  }, [playerPos, isPerformingActivity, isNearBed, isNearBath, isNearKitchen, isNearCat, isNearTable]);
+  }, [playerPos, isPerformingActivity, dialogDismissed]);
 
   return (
     <div className="home-game-container">
@@ -576,7 +575,13 @@ function Home() {
             <button className="yes-btn" onClick={handleEnterLocation}>
               Yes
             </button>
-            <button className="no-btn" onClick={() => setShowDialog(false)}>
+            <button
+              className="no-btn"
+              onClick={() => {
+                setShowDialog(false);
+                setDialogDismissed(true);
+              }}
+            >
               No
             </button>
           </div>
