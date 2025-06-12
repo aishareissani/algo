@@ -3,14 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import BackTo from "./BackTo";
-import Inventory from "./inventory";
-import { handleUseItem } from "../utils/itemHandlers";
 import "../home.css";
 import WASDKey from "./wasd_key";
 import Task from "./task";
 import Gif from "./gif";
-import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic } from "./sound";
+import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic, playBackgroundMusic, musicHealthCheck } from "./sound";
 import GameOver from "./game_over";
+import { handleUseItem } from "../utils/itemHandlers"; // Assuming you have this utility
 
 function Home() {
   const { isFastForward } = useSpeedMode();
@@ -18,25 +17,32 @@ function Home() {
   const navigate = useNavigate();
 
   const { characterName = "manda", playerName = "Player", stats: initialStats = {} } = location.state || {};
+
+  // Inisialisasi visitedLocations tanpa menambahkan "home" secara otomatis
+  const [visitedLocations, setVisitedLocations] = useState(() => {
+    const stored = localStorage.getItem("gameVisitedLocations");
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  });
+
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationHouse, setCurrentLocationHouse] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
   const [activityProgress, setActivityProgress] = useState(0);
   const [currentActivity, setCurrentActivity] = useState("");
-  const [currentGifActivity, setCurrentGifActivity] = useState(""); // Track GIF activity
+  const [currentGifActivity, setCurrentGifActivity] = useState("");
   const [showInventory, setShowInventory] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
+  const [mobileZoom, setMobileZoom] = useState(0.299);
+
+  // States untuk sistem berjalan dan game over
+  const [isWalking, setIsWalking] = useState(false);
+  const [walkingDirection, setWalkingDirection] = useState("down");
+  const [isGameOver, setIsGameOver] = useState(false);
 
   const [playerPos, setPlayerPos] = useState({ x: 2000, y: 1300 });
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const [zoomLevel, setZoomLevel] = useState(0.299);
   const [actualViewportSize, setActualViewportSize] = useState({ width: 0, height: 0 });
-  const [mobileZoom, setMobileZoom] = useState(0.299);
-
-  // Walking system states
-  const [isWalking, setIsWalking] = useState(false);
-  const [walkingDirection, setWalkingDirection] = useState("down");
-  const [isGameOver, setIsGameOver] = useState(false);
 
   const houseRef = useRef(null);
   const playerRef = useRef(null);
@@ -45,8 +51,8 @@ function Home() {
 
   const WORLD_WIDTH = 3825;
   const WORLD_HEIGHT = 2008;
-  const PLAYER_SIZE = 190; // REDUCED SIZE from 190
-  const PLAYER_SCALE = 1.5; // REDUCED SCALE from 1.5
+  const PLAYER_SIZE = 190;
+  const PLAYER_SCALE = 1.5;
   const MOVE_SPEED = 25;
   const ACTIVITY_DURATION = 10000;
   const ACTIVITY_UPDATE_INTERVAL = 1000;
@@ -64,6 +70,7 @@ function Home() {
     skillPoints: 0,
     items: [],
     tasks: {},
+    lastVisitedLocation: "home",
   };
 
   const [playerStats, setPlayerStats] = useState(() => {
@@ -88,7 +95,22 @@ function Home() {
     return stats;
   });
 
-  // Game Over Detection
+  // Effect to mark "home" as visited when entering Home.jsx
+  useEffect(() => {
+    setVisitedLocations((prev) => {
+      const newSet = new Set(prev);
+      if (!newSet.has("home")) {
+        newSet.add("home");
+      }
+      return newSet;
+    });
+  }, []); // Run only once on component mount
+
+  useEffect(() => {
+    localStorage.setItem("gameVisitedLocations", JSON.stringify([...visitedLocations]));
+  }, [visitedLocations]);
+
+  // Deteksi Game Over
   useEffect(() => {
     if (playerStats.health <= 0 || playerStats.sleep <= 0) {
       setIsGameOver(true);
@@ -103,7 +125,7 @@ function Home() {
     }
   }, [playerStats.health, playerStats.sleep]);
 
-  // Initialize tasks
+  // Inisialisasi tugas
   useEffect(() => {
     const taskLocations = {
       home: [
@@ -136,7 +158,12 @@ function Home() {
 
   const handleBackToMap = () => {
     navigate("/map", {
-      state: { characterName, playerName, stats: playerStats },
+      state: {
+        characterName,
+        playerName,
+        stats: playerStats,
+        // No need to pass visitedLocations directly from here, Map.jsx will handle it
+      },
     });
   };
 
@@ -177,11 +204,11 @@ function Home() {
 
     setIsPerformingActivity(true);
     setCurrentActivity(activityName);
-    setCurrentGifActivity(gifActivity); // Set the GIF activity
+    setCurrentGifActivity(gifActivity);
     setActivityProgress(0);
     setShowDialog(false);
 
-    // Mark corresponding task as completed
+    // Menandai tugas sebagai selesai
     if (currentLocationHouse === "Bed") {
       completeTask("bed");
     } else if (currentLocationHouse === "Bath") {
@@ -216,7 +243,7 @@ function Home() {
         setTimeout(() => {
           setIsPerformingActivity(false);
           setCurrentActivity("");
-          setCurrentGifActivity(""); // Reset GIF activity
+          setCurrentGifActivity("");
           setActivityProgress(0);
         }, 500);
       }, 300);
@@ -256,7 +283,7 @@ function Home() {
           setIsPerformingActivity(false);
           setActivityProgress(0);
           setCurrentActivity("");
-          setCurrentGifActivity(""); // Reset GIF activity
+          setCurrentGifActivity("");
         }
       }, ACTIVITY_UPDATE_INTERVAL);
     }
@@ -320,33 +347,7 @@ function Home() {
     }
   };
 
-  // Movement System
-  const startMovement = useCallback(
-    (direction) => {
-      if (isGameOver || isPerformingActivity) return;
-      startWalkingSound(900);
-      setIsWalking(true);
-      setWalkingDirection(direction);
-      if (moveIntervalRef.current) {
-        clearInterval(moveIntervalRef.current);
-      }
-      handleArrowPress(direction);
-      moveIntervalRef.current = setInterval(() => {
-        handleArrowPress(direction);
-      }, 40);
-    },
-    [isGameOver, isPerformingActivity]
-  );
-
-  const stopMovement = useCallback(() => {
-    setIsWalking(false);
-    stopWalkingSound();
-    if (moveIntervalRef.current) {
-      clearInterval(moveIntervalRef.current);
-      moveIntervalRef.current = null;
-    }
-  }, []);
-
+  // Sistem Pergerakan
   const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
@@ -371,7 +372,33 @@ function Home() {
     });
   }, []);
 
-  // Keyboard handler
+  const startMovement = useCallback(
+    (direction) => {
+      if (isGameOver || isPerformingActivity) return;
+      startWalkingSound(900);
+      setIsWalking(true);
+      setWalkingDirection(direction);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+      handleArrowPress(direction);
+      moveIntervalRef.current = setInterval(() => {
+        handleArrowPress(direction);
+      }, 40);
+    },
+    [isGameOver, isPerformingActivity, handleArrowPress]
+  );
+
+  const stopMovement = useCallback(() => {
+    setIsWalking(false);
+    stopWalkingSound();
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
+    }
+  }, []);
+
+  // Keyboard Handler
   useEffect(() => {
     const keysPressed = new Set();
     const handleKeyDown = (e) => {
@@ -430,16 +457,7 @@ function Home() {
     };
   }, [isGameOver, isPerformingActivity, startMovement, stopMovement]);
 
-  // Cleanup
-  useEffect(() => {
-    return () => {
-      if (activityIntervalRef.current) {
-        clearInterval(activityIntervalRef.current);
-      }
-    };
-  }, []);
-
-  // Location detection functions
+  // Fungsi Deteksi Lokasi
   const isNearBed = (x, y) => x >= 450 && x <= 700 && y >= 142 && y <= 617;
   const isNearBath = (x, y) => x >= 142 && x <= 1092 && y >= 1015 && y <= 1617;
   const isNearKitchen = (x, y) => x >= 3250 && x <= 3550 && y >= 650 && y <= 1000;
@@ -458,7 +476,16 @@ function Home() {
     return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
 
-  // Viewport and zoom calculations
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (activityIntervalRef.current) {
+        clearInterval(activityIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Viewport calculations
   useEffect(() => {
     const updateViewportSize = () => {
       if (houseRef.current) {
@@ -506,6 +533,7 @@ function Home() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
+  // Deteksi Lokasi
   useEffect(() => {
     if (isPerformingActivity) return;
     if (isNearBed(playerPos.x, playerPos.y)) {
@@ -527,25 +555,11 @@ function Home() {
       setCurrentLocationHouse(null);
       setShowDialog(false);
     }
-  }, [playerPos, isPerformingActivity]);
+  }, [playerPos, isPerformingActivity, isNearBed, isNearBath, isNearKitchen, isNearCat, isNearTable]);
 
   return (
     <div className="home-game-container">
-      {isGameOver && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            zIndex: 9999,
-            pointerEvents: "auto",
-          }}
-        >
-          <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={new Set(["home"])} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />
-        </div>
-      )}
+      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={visitedLocations} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
 
       {!isGameOver && (
         <div>
@@ -602,7 +616,6 @@ function Home() {
               position: "absolute",
             }}
           >
-            {/* PLAYER SPRITE - Show GIF if walking OR performing activity */}
             {isWalking ? (
               <Gif activity="jalan" location="rumah" isWalking={isWalking} characterName={characterName} walkingDirection={walkingDirection} />
             ) : isPerformingActivity && currentGifActivity ? (
@@ -632,7 +645,6 @@ function Home() {
       {!isGameOver && (
         <>
           <WASDKey onStartMovement={startMovement} onStopMovement={stopMovement} isMapLocation={false} isWalking={isWalking} walkingDirection={walkingDirection} />
-          {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
           <Task currentLocation="home" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
         </>
       )}

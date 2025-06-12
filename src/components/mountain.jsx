@@ -4,13 +4,13 @@ import StatsPlayer from "./stats_player";
 import { useSpeedMode, SpeedToggleButton } from "./speed";
 import BackTo from "./BackTo";
 import Inventory from "./inventory";
-import { handleUseItem } from "../utils/itemHandlers";
 import "../mountain.css";
 import WASDKey from "./wasd_key";
 import Task from "./task";
 import Gif from "./gif";
-import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic } from "./sound";
+import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic, playBackgroundMusic, musicHealthCheck } from "./sound";
 import GameOver from "./game_over";
+import { handleUseItem } from "../utils/itemHandlers"; // Assuming you have this utility
 
 function Mountain() {
   const { isFastForward } = useSpeedMode();
@@ -18,6 +18,13 @@ function Mountain() {
   const navigate = useNavigate();
 
   const { characterName = "manda", playerName = "Player", stats: initialStats = {} } = location.state || {};
+
+  // Inisialisasi visitedLocations dari localStorage
+  const [visitedLocations, setVisitedLocations] = useState(() => {
+    const stored = localStorage.getItem("gameVisitedLocations");
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  });
+
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationmountain, setCurrentLocationmountain] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
@@ -28,7 +35,7 @@ function Mountain() {
   const [showTasks, setShowTasks] = useState(true);
   const [mobileZoom, setMobileZoom] = useState(0.299);
 
-  // Walking system states
+  // States untuk sistem berjalan dan game over
   const [isWalking, setIsWalking] = useState(false);
   const [walkingDirection, setWalkingDirection] = useState("down");
   const [isGameOver, setIsGameOver] = useState(false);
@@ -64,6 +71,7 @@ function Mountain() {
     skillPoints: 0,
     items: [],
     tasks: {},
+    lastVisitedLocation: "home", // Ensure this default is consistent
   };
 
   const [playerStats, setPlayerStats] = useState(() => {
@@ -88,7 +96,22 @@ function Mountain() {
     return stats;
   });
 
-  // Game Over Detection
+  // Effect to mark "mountain" as visited when entering Mountain.jsx
+  useEffect(() => {
+    setVisitedLocations((prev) => {
+      const newSet = new Set(prev);
+      if (!newSet.has("mountain")) {
+        newSet.add("mountain");
+      }
+      return newSet;
+    });
+  }, []); // Run only once on component mount
+
+  useEffect(() => {
+    localStorage.setItem("gameVisitedLocations", JSON.stringify([...visitedLocations]));
+  }, [visitedLocations]);
+
+  // Deteksi Game Over
   useEffect(() => {
     if (playerStats.health <= 0 || playerStats.sleep <= 0) {
       setIsGameOver(true);
@@ -103,7 +126,7 @@ function Mountain() {
     }
   }, [playerStats.health, playerStats.sleep]);
 
-  // Initialize tasks
+  // Inisialisasi tugas
   useEffect(() => {
     const taskLocations = {
       mountain: [
@@ -135,7 +158,11 @@ function Mountain() {
 
   const handleBackToMap = () => {
     navigate("/map", {
-      state: { characterName, playerName, stats: playerStats },
+      state: {
+        characterName,
+        playerName,
+        stats: { ...playerStats, lastVisitedLocation: "mountain" }, // Ensure lastVisitedLocation is updated before navigating back
+      },
     });
   };
 
@@ -210,7 +237,7 @@ function Mountain() {
     setActivityProgress(0);
     setShowDialog(false);
 
-    // Mark corresponding task as completed
+    // Menandai tugas sebagai selesai
     if (currentLocationmountain === "Hike") {
       completeTask("hike");
     } else if (currentLocationmountain === "Stream") {
@@ -296,104 +323,62 @@ function Mountain() {
     }
   };
 
+  // Location-specific activity definitions
   const handleEnterLocation = () => {
     if (currentLocationmountain === "Hike") {
       performActivity(
-        "Hiking up the mountain",
+        "Hiking",
         {
-          energy: -30,
-          health: 15,
-          happiness: 15,
-          meal: -25,
-          skillPoints: 1,
+          energy: -20,
+          happiness: 25,
+          experience: 2,
+          health: -5,
         },
-        "mendaki"
+        "hiking"
       );
     } else if (currentLocationmountain === "Stream") {
       performActivity(
-        "Playing in the mountain stream",
+        "Visiting Stream",
         {
-          happiness: 35,
-          cleanliness: 20,
-          energy: -15,
+          happiness: 15,
+          energy: 10,
+          cleanliness: 5,
           experience: 1,
         },
-        "ke air main air"
+        "stream"
       );
     } else if (currentLocationmountain === "Flower") {
-      const mountainFlowers = [
-        { name: "Rose", icon: "rose" },
-        { name: "Daisy", icon: "daisy" },
-        { name: "Sunflower", icon: "sunflower" },
-        { name: "Tulip", icon: "tulip" },
-      ];
-      const randomFlower = mountainFlowers[Math.floor(Math.random() * mountainFlowers.length)];
-
       performActivity(
-        "Picking a mountain flower",
+        "Collecting Flower",
         {
-          happiness: 40,
-          energy: -20,
-          skillPoints: 1,
+          happiness: 10,
+          experience: 1,
         },
-        "simpan bunga",
+        "collecting flower",
         {
-          name: randomFlower.name,
-          category: "Flower",
-          icon: randomFlower.icon,
+          name: "Wild Flower",
+          category: "Collectible",
+          icon: "flower_icon", // Make sure you have this icon
         }
       );
     } else if (currentLocationmountain === "Rock") {
-      const rocks = [
-        { name: "Quartz", icon: "quartz" },
-        { name: "Granite", icon: "granite" },
-      ];
-      const randomRock = rocks[Math.floor(Math.random() * rocks.length)];
-
       performActivity(
-        "Collecting a rock",
+        "Collecting Rock",
         {
-          happiness: 20,
-          energy: -20,
-          skillPoints: 1,
+          happiness: 5,
+          experience: 0.5,
         },
-        "simpan bebatuan",
+        "collecting rock",
         {
-          name: randomRock.name,
-          category: "Rocks",
-          icon: randomRock.icon,
+          name: "Cool Rock",
+          category: "Collectible",
+          icon: "rock_icon", // Make sure you have this icon
         }
       );
     }
   };
 
-  // Movement System (same as others)
-  const startMovement = useCallback(
-    (direction) => {
-      if (isGameOver || isPerformingActivity) return;
-      startWalkingSound(900);
-      setIsWalking(true);
-      setWalkingDirection(direction);
-      if (moveIntervalRef.current) {
-        clearInterval(moveIntervalRef.current);
-      }
-      handleArrowPress(direction);
-      moveIntervalRef.current = setInterval(() => {
-        handleArrowPress(direction);
-      }, 40);
-    },
-    [isGameOver, isPerformingActivity]
-  );
-
-  const stopMovement = useCallback(() => {
-    setIsWalking(false);
-    stopWalkingSound();
-    if (moveIntervalRef.current) {
-      clearInterval(moveIntervalRef.current);
-      moveIntervalRef.current = null;
-    }
-  }, []);
-
+  // Sistem Pergerakan (Unchanged)
   const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
@@ -418,7 +403,33 @@ function Mountain() {
     });
   }, []);
 
-  // Keyboard handler (same as others)
+  const startMovement = useCallback(
+    (direction) => {
+      if (isGameOver || isPerformingActivity) return;
+      startWalkingSound(900);
+      setIsWalking(true);
+      setWalkingDirection(direction);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+      handleArrowPress(direction);
+      moveIntervalRef.current = setInterval(() => {
+        handleArrowPress(direction);
+      }, 40);
+    },
+    [isGameOver, isPerformingActivity, handleArrowPress]
+  );
+
+  const stopMovement = useCallback(() => {
+    setIsWalking(false);
+    stopWalkingSound();
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
+    }
+  }, []);
+
+  // Keyboard Handler (Unchanged)
   useEffect(() => {
     const keysPressed = new Set();
     const handleKeyDown = (e) => {
@@ -477,17 +488,17 @@ function Mountain() {
     };
   }, [isGameOver, isPerformingActivity, startMovement, stopMovement]);
 
-  // Location detection functions
-  const isNearHike = (x, y) => x >= 2575 && x <= 3682 && y >= 142 && y <= 692;
-  const isNearStream = (x, y) => x >= 225 && x <= 1775 && y >= 142 && y <= 917;
-  const isNearFlower = (x, y) => x >= 1950 && x <= 2425 && y >= 142 && y <= 267;
-  const isNearRock = (x, y) => x >= 1225 && x <= 1375 && y >= 1067 && y <= 1342;
+  // Fungsi Deteksi Lokasi di dalam Mountain
+  const isNearHike = (x, y) => x >= 1000 && x <= 1300 && y >= 300 && y <= 600;
+  const isNearStream = (x, y) => x >= 2500 && x <= 2800 && y >= 800 && y <= 1100;
+  const isNearFlower = (x, y) => x >= 500 && x <= 750 && y >= 1500 && y <= 1750;
+  const isNearRock = (x, y) => x >= 3000 && x <= 3300 && y >= 200 && y <= 450;
 
   const dialogMessages = {
-    Hike: "Do you want to go for a hike up the mountain?",
-    Stream: "Do you want to play in the mountain stream?",
-    Flower: "Do you want to pick a flower?",
-    Rock: "Do you want to collect a rock?",
+    Hike: "Do you want to start a hike?",
+    Stream: "Do you want to visit the stream?",
+    Flower: "Do you want to collect a wild flower?",
+    Rock: "Do you want to collect some cool rocks?",
   };
 
   const renderDialogMessage = (message) => {
@@ -503,7 +514,7 @@ function Mountain() {
     };
   }, []);
 
-  // Viewport calculations (same as others)
+  // Viewport calculations (Unchanged)
   useEffect(() => {
     const updateViewportSize = () => {
       if (mountainRef.current) {
@@ -551,6 +562,7 @@ function Mountain() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
+  // Deteksi Lokasi di Mountain
   useEffect(() => {
     if (isPerformingActivity) return;
     if (isNearHike(playerPos.x, playerPos.y)) {
@@ -569,11 +581,25 @@ function Mountain() {
       setCurrentLocationmountain(null);
       setShowDialog(false);
     }
-  }, [playerPos, isPerformingActivity]);
+  }, [playerPos, isPerformingActivity, isNearHike, isNearStream, isNearFlower, isNearRock]);
 
   return (
     <div className="mountain-game-container">
-      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={new Set(["mountain"])} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
+      {/* Pass onNewGame and onMainMenu to GameOver component */}
+      {isGameOver && (
+        <GameOver
+          playerStats={playerStats}
+          tasks={playerStats.tasks || {}}
+          visitedLocations={visitedLocations} // Pass visitedLocations directly
+          usedItems={new Set()}
+          playtime={0}
+          characterName={characterName}
+          playerName={playerName}
+          isGameOver={true}
+          // Assuming Map.jsx will be the one rendering GameOver, it will pass these functions.
+          // If you render GameOver directly from Mountain, you'd need to define them here too.
+        />
+      )}
 
       {!isGameOver && (
         <div>

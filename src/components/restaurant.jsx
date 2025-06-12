@@ -1,22 +1,29 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatsPlayer from "./stats_player";
-import { useSpeedMode, SpeedToggleButton } from "./speed";
-import BackTo from "./BackTo";
 import Inventory from "./inventory";
-import "../restaurant.css";
+import GameOver from "./game_over";
+import { useSpeedMode, SpeedToggleButton } from "./speed";
+import { handleUseItem } from "../utils/itemHandlers";
 import WASDKey from "./wasd_key";
 import Task from "./task";
+import BackTo from "./BackTo";
 import Gif from "./gif";
-import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic } from "./sound";
-import GameOver from "./game_over";
+import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic, playBackgroundMusic, musicHealthCheck } from "./sound";
+import "../restaurant.css";
 
 function Resto() {
   const { isFastForward } = useSpeedMode();
   const location = useLocation();
   const navigate = useNavigate();
-
   const { characterName = "manda", playerName = "Player", stats: initialStats = {} } = location.state || {};
+
+  // Initialize visitedLocations from localStorage
+  const [visitedLocations, setVisitedLocations] = useState(() => {
+    const stored = localStorage.getItem("gameVisitedLocations");
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  });
+
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationResto, setcurrentLocationResto] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
@@ -27,7 +34,7 @@ function Resto() {
   const [showTasks, setShowTasks] = useState(true);
   const [mobileZoom, setMobileZoom] = useState(0.299);
 
-  // Walking system states
+  // States for walking system and game over
   const [isWalking, setIsWalking] = useState(false);
   const [walkingDirection, setWalkingDirection] = useState("down");
   const [isGameOver, setIsGameOver] = useState(false);
@@ -63,6 +70,7 @@ function Resto() {
     skillPoints: 0,
     items: [],
     tasks: {},
+    lastVisitedLocation: "home", // Ensure this default is consistent
   };
 
   const [playerStats, setPlayerStats] = useState(() => {
@@ -87,7 +95,22 @@ function Resto() {
     return stats;
   });
 
-  // Game Over Detection
+  // Effect to mark "restaurant" as visited when entering Resto.jsx
+  useEffect(() => {
+    setVisitedLocations((prev) => {
+      const newSet = new Set(prev);
+      if (!newSet.has("restaurant")) {
+        newSet.add("restaurant");
+      }
+      return newSet;
+    });
+  }, []); // Run only once on component mount
+
+  useEffect(() => {
+    localStorage.setItem("gameVisitedLocations", JSON.stringify([...visitedLocations]));
+  }, [visitedLocations]);
+
+  // Detect Game Over
   useEffect(() => {
     if (playerStats.health <= 0 || playerStats.sleep <= 0) {
       setIsGameOver(true);
@@ -133,7 +156,11 @@ function Resto() {
 
   const handlebackToMap = () => {
     navigate("/map", {
-      state: { characterName, playerName, stats: playerStats },
+      state: {
+        characterName,
+        playerName,
+        stats: { ...playerStats, lastVisitedLocation: "restaurant" }, // Ensure lastVisitedLocation is updated before navigating back
+      },
     });
   };
 
@@ -204,7 +231,7 @@ function Resto() {
     setActivityProgress(0);
     setShowDialog(false);
 
-    // Mark corresponding task as completed
+    // Mark task as complete
     if (currentLocationResto === "Takeaway") {
       completeTask("takeaway");
     } else if (currentLocationResto === "Eat") {
@@ -331,33 +358,7 @@ function Resto() {
     }
   };
 
-  // Movement System (same as others)
-  const startMovement = useCallback(
-    (direction) => {
-      if (isGameOver || isPerformingActivity) return;
-      startWalkingSound(900);
-      setIsWalking(true);
-      setWalkingDirection(direction);
-      if (moveIntervalRef.current) {
-        clearInterval(moveIntervalRef.current);
-      }
-      handleArrowPress(direction);
-      moveIntervalRef.current = setInterval(() => {
-        handleArrowPress(direction);
-      }, 40);
-    },
-    [isGameOver, isPerformingActivity]
-  );
-
-  const stopMovement = useCallback(() => {
-    setIsWalking(false);
-    stopWalkingSound();
-    if (moveIntervalRef.current) {
-      clearInterval(moveIntervalRef.current);
-      moveIntervalRef.current = null;
-    }
-  }, []);
-
+  // Movement System (Unchanged)
   const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
@@ -382,7 +383,33 @@ function Resto() {
     });
   }, []);
 
-  // Keyboard handler (same as others)
+  const startMovement = useCallback(
+    (direction) => {
+      if (isGameOver || isPerformingActivity) return;
+      startWalkingSound(900);
+      setIsWalking(true);
+      setWalkingDirection(direction);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+      handleArrowPress(direction);
+      moveIntervalRef.current = setInterval(() => {
+        handleArrowPress(direction);
+      }, 40);
+    },
+    [isGameOver, isPerformingActivity, handleArrowPress]
+  );
+
+  const stopMovement = useCallback(() => {
+    setIsWalking(false);
+    stopWalkingSound();
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
+    }
+  }, []);
+
+  // Keyboard Handler (Unchanged)
   useEffect(() => {
     const keysPressed = new Set();
     const handleKeyDown = (e) => {
@@ -441,23 +468,12 @@ function Resto() {
     };
   }, [isGameOver, isPerformingActivity, startMovement, stopMovement]);
 
-  // Location detection functions
-  const isNearCashier = (x, y) => x >= 2575 && x <= 2725 && y >= 142 && y <= 550;
-  const isNearTable = (x, y) => (x >= 1750 && x <= 2050 && y >= 750 && y <= 1025) || (x >= 1750 && x <= 2050 && y >= 1375 && y <= 1725) || (x >= 525 && x <= 825 && y >= 1375 && y <= 1725) || (x >= 525 && x <= 825 && y >= 750 && y <= 1025);
-  const isNearChair = (x, y) => x >= 2700 && x <= 3682 && y >= 975 && y <= 1200;
-
-  const dialogMessages = {
-    Takeaway: "Would you like to order some takeaway?",
-    Eat: "Would you like to eat here at the restaurant?",
-    Drink: "Would you like to sit down and enjoy a drink?",
-  };
-
-  const renderDialogMessage = (message) => {
-    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
-  };
-
-  const handleUseItem = (item) => {
-    if (item.name !== "Takeaway Meal") return;
+  // Function to handle item use (keep as is if it's external handler)
+  const handleItemUse = (item) => {
+    // This seems to be an external handler, so keep it as is.
+    // If "Takeaway Meal" is an item that can be used from inventory,
+    // ensure this function is called from your Inventory component.
+    if (item.name !== "Takeaway Meal") return; // Example: only handle "Takeaway Meal" here
     setPlayerStats((prev) => {
       const idx = prev.items.findIndex((it) => it.name === item.name);
       if (idx === -1) return prev;
@@ -470,7 +486,10 @@ function Resto() {
     });
   };
 
-  // Cleanup
+  // Function to handle item use (this one was repeated, removed the duplicate)
+  // const handleItemUse = (item) => { handleUseItem(item, setPlayerStats); }; // This line was at the top, keep only one
+
+  // Cleanup (Unchanged)
   useEffect(() => {
     return () => {
       if (activityIntervalRef.current) {
@@ -479,7 +498,7 @@ function Resto() {
     };
   }, []);
 
-  // Viewport calculations (same as others)
+  // Viewport calculations (Unchanged)
   useEffect(() => {
     const updateViewportSize = () => {
       if (restoRef.current) {
@@ -527,6 +546,22 @@ function Resto() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
+  // Location Detection for activities (Unchanged)
+  const isNearCashier = (x, y) => x >= 2575 && x <= 2725 && y >= 142 && y <= 550;
+  const isNearTable = (x, y) => (x >= 1750 && x <= 2050 && y >= 750 && y <= 1025) || (x >= 1750 && x <= 2050 && y >= 1375 && y <= 1725) || (x >= 525 && x <= 825 && y >= 1375 && y <= 1725) || (x >= 525 && x <= 825 && y >= 750 && y <= 1025);
+  const isNearChair = (x, y) => x >= 2700 && x <= 3682 && y >= 975 && y <= 1200;
+
+  const dialogMessages = {
+    Takeaway: "Would you like to order some takeaway?",
+    Eat: "Would you like to eat here at the restaurant?",
+    Drink: "Would you like to sit down and enjoy a drink?",
+  };
+
+  const renderDialogMessage = (message) => {
+    return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
+  };
+
+  // Location Detection for activities (Unchanged)
   useEffect(() => {
     if (isPerformingActivity) return;
     if (isNearCashier(playerPos.x, playerPos.y)) {
@@ -542,15 +577,16 @@ function Resto() {
       setcurrentLocationResto(null);
       setShowDialog(false);
     }
-  }, [playerPos, isPerformingActivity]);
+  }, [playerPos, isPerformingActivity, isNearCashier, isNearTable, isNearChair]);
 
   return (
     <div className="resto-game-container">
-      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={new Set(["restaurant"])} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
+      {/* Pass visitedLocations to GameOver component */}
+      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={visitedLocations} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
 
       {!isGameOver && (
         <div>
-          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleUseItem} />
+          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
           <SpeedToggleButton />
           <BackTo type="map" onClick={handlebackToMap} />
         </div>
@@ -631,7 +667,7 @@ function Resto() {
 
       {!isGameOver && (
         <>
-          {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleUseItem} />}
+          {showInventory && <Inventory items={playerStats.items} onClose={() => setShowInventory(false)} onUseItem={handleItemUse} />}
           <WASDKey onStartMovement={startMovement} onStopMovement={stopMovement} isMapLocation={false} isWalking={isWalking} walkingDirection={walkingDirection} />
           <Task currentLocation="restaurant" isInsideLocation={true} customPosition={{ top: "65px" }} externalTasks={playerStats.tasks} onTaskComplete={toggleTaskCompletion} />
         </>

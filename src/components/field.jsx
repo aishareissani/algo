@@ -7,8 +7,10 @@ import "../field.css";
 import WASDKey from "./wasd_key";
 import Task from "./task";
 import Gif from "./gif";
-import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic } from "./sound";
+import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic, playBackgroundMusic, musicHealthCheck } from "./sound";
 import GameOver from "./game_over";
+// Assuming you have an itemHandlers utility if "collectItem" is used
+// import { handleUseItem } from "../utils/itemHandlers"; // Uncomment if you have this
 
 function Field() {
   const { isFastForward } = useSpeedMode();
@@ -16,6 +18,13 @@ function Field() {
   const navigate = useNavigate();
 
   const { characterName = "manda", playerName = "Player", stats: initialStats = {} } = location.state || {};
+
+  // Initialize visitedLocations from localStorage
+  const [visitedLocations, setVisitedLocations] = useState(() => {
+    const stored = localStorage.getItem("gameVisitedLocations");
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  });
+
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationfield, setCurrentLocationfield] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
@@ -25,7 +34,7 @@ function Field() {
   const [showTasks, setShowTasks] = useState(true);
   const [mobileZoom, setMobileZoom] = useState(0.299);
 
-  // Walking system states
+  // States for walking system and game over
   const [isWalking, setIsWalking] = useState(false);
   const [walkingDirection, setWalkingDirection] = useState("down");
   const [isGameOver, setIsGameOver] = useState(false);
@@ -61,6 +70,7 @@ function Field() {
     skillPoints: 0,
     items: [],
     tasks: {},
+    lastVisitedLocation: "home",
   };
 
   const [playerStats, setPlayerStats] = useState(() => {
@@ -85,7 +95,22 @@ function Field() {
     return stats;
   });
 
-  // Game Over Detection
+  useEffect(() => {
+    localStorage.setItem("gameVisitedLocations", JSON.stringify([...visitedLocations]));
+  }, [visitedLocations]);
+
+  // Mark field as visited when entering the location
+  useEffect(() => {
+    setVisitedLocations((prev) => {
+      const newSet = new Set(prev);
+      if (!newSet.has("field")) {
+        newSet.add("field");
+      }
+      return newSet;
+    });
+  }, []); // Run only once on component mount
+
+  // Detect Game Over
   useEffect(() => {
     if (playerStats.health <= 0 || playerStats.sleep <= 0) {
       setIsGameOver(true);
@@ -132,7 +157,11 @@ function Field() {
 
   const handleBackToMap = () => {
     navigate("/map", {
-      state: { characterName, playerName, stats: playerStats },
+      state: {
+        characterName,
+        playerName,
+        stats: { ...playerStats, lastVisitedLocation: "field" }, // Ensure lastVisitedLocation is updated
+      },
     });
   };
 
@@ -164,7 +193,39 @@ function Field() {
     }));
   };
 
-  const performActivity = (activityName, statChanges, gifActivity) => {
+  // Assuming addItemToInventory is defined elsewhere or not used in field activities
+  // If it's used for collecting items in the field, you'll need to define it or import it.
+  const addItemToInventory = (itemName, category, icon, onStatsUpdate) => {
+    onStatsUpdate((prev) => {
+      const existingItemIndex = prev.items.findIndex((item) => item.name === itemName);
+      const updatedItems = [...prev.items];
+      const newExperience = prev.experience + 1; // Assuming collecting gives XP
+
+      if (existingItemIndex !== -1) {
+        updatedItems[existingItemIndex] = {
+          ...updatedItems[existingItemIndex],
+          quantity: updatedItems[existingItemIndex].quantity + 1,
+        };
+      } else {
+        const newItem = {
+          id: Date.now(),
+          name: itemName,
+          category: category,
+          icon: icon,
+          quantity: 1,
+        };
+        updatedItems.push(newItem);
+      }
+
+      return {
+        ...prev,
+        items: updatedItems,
+        experience: newExperience,
+      };
+    });
+  };
+
+  const performActivity = (activityName, statChanges, gifActivity, collectItem = null) => {
     if (isPerformingActivity) return;
 
     setIsPerformingActivity(true);
@@ -173,7 +234,7 @@ function Field() {
     setActivityProgress(0);
     setShowDialog(false);
 
-    // Mark corresponding task as completed
+    // Mark task as complete
     if (currentLocationfield === "Swing") {
       completeTask("swing");
     } else if (currentLocationfield === "Picnic") {
@@ -200,6 +261,10 @@ function Field() {
         });
         return newStats;
       });
+
+      if (collectItem) {
+        addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
+      }
 
       setTimeout(() => {
         setActivityProgress(100);
@@ -242,6 +307,9 @@ function Field() {
         });
 
         if (currentStep >= totalSteps) {
+          if (collectItem) {
+            addItemToInventory(collectItem.name, collectItem.category, collectItem.icon, setPlayerStats);
+          }
           clearInterval(activityIntervalRef.current);
           setIsPerformingActivity(false);
           setActivityProgress(0);
@@ -298,33 +366,7 @@ function Field() {
     }
   };
 
-  // Movement System (same as Beach)
-  const startMovement = useCallback(
-    (direction) => {
-      if (isGameOver || isPerformingActivity) return;
-      startWalkingSound(900);
-      setIsWalking(true);
-      setWalkingDirection(direction);
-      if (moveIntervalRef.current) {
-        clearInterval(moveIntervalRef.current);
-      }
-      handleArrowPress(direction);
-      moveIntervalRef.current = setInterval(() => {
-        handleArrowPress(direction);
-      }, 40);
-    },
-    [isGameOver, isPerformingActivity]
-  );
-
-  const stopMovement = useCallback(() => {
-    setIsWalking(false);
-    stopWalkingSound();
-    if (moveIntervalRef.current) {
-      clearInterval(moveIntervalRef.current);
-      moveIntervalRef.current = null;
-    }
-  }, []);
-
+  // Movement System (Unchanged)
   const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
@@ -349,7 +391,33 @@ function Field() {
     });
   }, []);
 
-  // Keyboard handler (same as Beach)
+  const startMovement = useCallback(
+    (direction) => {
+      if (isGameOver || isPerformingActivity) return;
+      startWalkingSound(900);
+      setIsWalking(true);
+      setWalkingDirection(direction);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+      handleArrowPress(direction);
+      moveIntervalRef.current = setInterval(() => {
+        handleArrowPress(direction);
+      }, 40);
+    },
+    [isGameOver, isPerformingActivity, handleArrowPress]
+  );
+
+  const stopMovement = useCallback(() => {
+    setIsWalking(false);
+    stopWalkingSound();
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
+    }
+  }, []);
+
+  // Keyboard Handler (Unchanged)
   useEffect(() => {
     const keysPressed = new Set();
     const handleKeyDown = (e) => {
@@ -408,7 +476,7 @@ function Field() {
     };
   }, [isGameOver, isPerformingActivity, startMovement, stopMovement]);
 
-  // Location detection functions
+  // Location Detection Functions
   const isNearSwing = (x, y) => x >= 2450 && x <= 2825 && y >= 142 && y <= 475;
   const isNearPicnic = (x, y) => x >= 750 && x <= 1150 && y >= 975 && y <= 1575;
   const isNearChair = (x, y) => x >= 725 && x <= 1075 && y >= 200 && y <= 450;
@@ -425,7 +493,7 @@ function Field() {
     return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
 
-  // Cleanup
+  // Cleanup (Unchanged)
   useEffect(() => {
     return () => {
       if (activityIntervalRef.current) {
@@ -434,7 +502,7 @@ function Field() {
     };
   }, []);
 
-  // Viewport calculations (same as Beach)
+  // Viewport calculations (Unchanged)
   useEffect(() => {
     const updateViewportSize = () => {
       if (fieldRef.current) {
@@ -482,6 +550,7 @@ function Field() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
+  // Location Detection for activities (Unchanged)
   useEffect(() => {
     if (isPerformingActivity) return;
     if (isNearSwing(playerPos.x, playerPos.y)) {
@@ -500,15 +569,16 @@ function Field() {
       setCurrentLocationfield(null);
       setShowDialog(false);
     }
-  }, [playerPos, isPerformingActivity]);
+  }, [playerPos, isPerformingActivity, isNearSwing, isNearPicnic, isNearChair, isNearFountain]);
 
   return (
     <div className="field-game-container">
-      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={new Set(["field"])} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
+      {/* Pass visitedLocations to GameOver component */}
+      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={visitedLocations} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
 
       {!isGameOver && (
         <div>
-          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
+          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} /* Removed onUseItem as it's not defined or passed in this component */ />
           <SpeedToggleButton />
           <BackTo type="map" onClick={handleBackToMap} />
         </div>

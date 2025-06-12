@@ -7,8 +7,9 @@ import "../beach.css";
 import WASDKey from "./wasd_key";
 import Task from "./task";
 import Gif from "./gif";
-import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic } from "./sound";
+import { playSound, startWalkingSound, stopWalkingSound, stopBackgroundMusic, playBackgroundMusic, musicHealthCheck } from "./sound";
 import GameOver from "./game_over";
+import { handleUseItem } from "../utils/itemHandlers"; // Assuming you have this utility
 
 function Beach() {
   const { isFastForward } = useSpeedMode();
@@ -16,6 +17,13 @@ function Beach() {
   const navigate = useNavigate();
 
   const { characterName = "manda", playerName = "Player", stats: initialStats = {} } = location.state || {};
+
+  // Initialize visitedLocations from localStorage
+  const [visitedLocations, setVisitedLocations] = useState(() => {
+    const stored = localStorage.getItem("gameVisitedLocations");
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  });
+
   const [showDialog, setShowDialog] = useState(false);
   const [currentLocationbeach, setCurrentLocationbeach] = useState(null);
   const [isPerformingActivity, setIsPerformingActivity] = useState(false);
@@ -25,7 +33,7 @@ function Beach() {
   const [showTasks, setShowTasks] = useState(true);
   const [mobileZoom, setMobileZoom] = useState(0.299);
 
-  // Walking system states
+  // States for walking system and game over
   const [isWalking, setIsWalking] = useState(false);
   const [walkingDirection, setWalkingDirection] = useState("down");
   const [isGameOver, setIsGameOver] = useState(false);
@@ -61,6 +69,7 @@ function Beach() {
     skillPoints: 0,
     items: [],
     tasks: {},
+    lastVisitedLocation: "home",
   };
 
   const [playerStats, setPlayerStats] = useState(() => {
@@ -85,7 +94,22 @@ function Beach() {
     return stats;
   });
 
-  // Game Over Detection
+  useEffect(() => {
+    localStorage.setItem("gameVisitedLocations", JSON.stringify([...visitedLocations]));
+  }, [visitedLocations]);
+
+  // Mark beach as visited when entering the location
+  useEffect(() => {
+    setVisitedLocations((prev) => {
+      const newSet = new Set(prev);
+      if (!newSet.has("beach")) {
+        newSet.add("beach");
+      }
+      return newSet;
+    });
+  }, []);
+
+  // Detect Game Over
   useEffect(() => {
     if (playerStats.health <= 0 || playerStats.sleep <= 0) {
       setIsGameOver(true);
@@ -134,7 +158,7 @@ function Beach() {
 
   const handleBackToMap = () => {
     navigate("/map", {
-      state: { characterName, playerName, stats: playerStats },
+      state: { characterName, playerName, stats: { ...playerStats, lastVisitedLocation: "beach" } }, // Ensure lastVisitedLocation is updated
     });
   };
 
@@ -205,7 +229,7 @@ function Beach() {
     setActivityProgress(0);
     setShowDialog(false);
 
-    // Mark corresponding task as completed
+    // Mark task as complete
     if (currentLocationbeach === "Swim") {
       completeTask("swim");
     } else if (currentLocationbeach === "Sunbath") {
@@ -379,7 +403,7 @@ function Beach() {
           meal: -20,
           skillPoints: 1,
         },
-        "simpan kerang",
+        "simpan bintang laut", // Corrected GIF activity description for starfish
         {
           name: "Starfish",
           category: "Marine",
@@ -389,33 +413,7 @@ function Beach() {
     }
   };
 
-  // Movement System (same as Home)
-  const startMovement = useCallback(
-    (direction) => {
-      if (isGameOver || isPerformingActivity) return;
-      startWalkingSound(900);
-      setIsWalking(true);
-      setWalkingDirection(direction);
-      if (moveIntervalRef.current) {
-        clearInterval(moveIntervalRef.current);
-      }
-      handleArrowPress(direction);
-      moveIntervalRef.current = setInterval(() => {
-        handleArrowPress(direction);
-      }, 40);
-    },
-    [isGameOver, isPerformingActivity]
-  );
-
-  const stopMovement = useCallback(() => {
-    setIsWalking(false);
-    stopWalkingSound();
-    if (moveIntervalRef.current) {
-      clearInterval(moveIntervalRef.current);
-      moveIntervalRef.current = null;
-    }
-  }, []);
-
+  // Movement System (Unchanged)
   const handleArrowPress = useCallback((direction) => {
     setPlayerPos((prev) => {
       let newX = prev.x;
@@ -440,7 +438,33 @@ function Beach() {
     });
   }, []);
 
-  // Keyboard handler (same as Home)
+  const startMovement = useCallback(
+    (direction) => {
+      if (isGameOver || isPerformingActivity) return;
+      startWalkingSound(900);
+      setIsWalking(true);
+      setWalkingDirection(direction);
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+      handleArrowPress(direction);
+      moveIntervalRef.current = setInterval(() => {
+        handleArrowPress(direction);
+      }, 40);
+    },
+    [isGameOver, isPerformingActivity, handleArrowPress]
+  );
+
+  const stopMovement = useCallback(() => {
+    setIsWalking(false);
+    stopWalkingSound();
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
+    }
+  }, []);
+
+  // Keyboard Handler (Unchanged)
   useEffect(() => {
     const keysPressed = new Set();
     const handleKeyDown = (e) => {
@@ -499,7 +523,7 @@ function Beach() {
     };
   }, [isGameOver, isPerformingActivity, startMovement, stopMovement]);
 
-  // Location detection functions
+  // Location Detection Functions
   const isNearSwim = (x, y) => x >= 2275 && x <= 3682 && y >= 142 && y <= 1865;
   const isNearSunbath = (x, y) => (x >= 1450 && x <= 1725 && y >= 1150 && y <= 1425) || (x >= 1450 && x <= 1725 && y >= 725 && y <= 925) || (x >= 675 && x <= 950 && y >= 725 && y <= 925) || (x >= 675 && x <= 950 && y >= 1150 && y <= 1425);
   const isNearSandcastle = (x, y) => (x >= 1850 && x <= 1975 && y >= 1375 && y <= 1675) || (x >= 400 && x <= 550 && y >= 600 && y <= 675);
@@ -520,7 +544,12 @@ function Beach() {
     return message.split("\n").map((line, idx) => <p key={idx}>{line}</p>);
   };
 
-  // Cleanup
+  // Function to handle item use (from "../utils/itemHandlers")
+  const handleItemUse = (item) => {
+    handleUseItem(item, setPlayerStats);
+  };
+
+  // Cleanup (Unchanged)
   useEffect(() => {
     return () => {
       if (activityIntervalRef.current) {
@@ -529,7 +558,7 @@ function Beach() {
     };
   }, []);
 
-  // Viewport calculations (same as Home)
+  // Viewport calculations (Unchanged)
   useEffect(() => {
     const updateViewportSize = () => {
       if (beachRef.current) {
@@ -577,6 +606,7 @@ function Beach() {
     setCameraPos({ x: targetCameraX, y: targetCameraY });
   }, [playerPos, zoomLevel, actualViewportSize, WORLD_WIDTH, WORLD_HEIGHT]);
 
+  // Location Detection for activities (Unchanged)
   useEffect(() => {
     if (isPerformingActivity) return;
     if (isNearSwim(playerPos.x, playerPos.y)) {
@@ -601,15 +631,16 @@ function Beach() {
       setCurrentLocationbeach(null);
       setShowDialog(false);
     }
-  }, [playerPos, isPerformingActivity]);
+  }, [playerPos, isPerformingActivity, isNearSwim, isNearSunbath, isNearSandcastle, isNearSeashell, isNearFlower, isNearStarFish]);
 
   return (
     <div className="beach-game-container">
-      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={new Set(["beach"])} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
+      {/* Pass visitedLocations to GameOver component */}
+      {isGameOver && <GameOver playerStats={playerStats} tasks={playerStats.tasks || {}} visitedLocations={visitedLocations} usedItems={new Set()} playtime={0} characterName={characterName} playerName={playerName} isGameOver={true} />}
 
       {!isGameOver && (
         <div>
-          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} />
+          <StatsPlayer stats={playerStats} onStatsUpdate={setPlayerStats} onUseItem={handleItemUse} />
           <SpeedToggleButton />
           <BackTo type="map" onClick={handleBackToMap} />
         </div>
