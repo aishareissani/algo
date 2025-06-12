@@ -47,44 +47,36 @@ body::-webkit-scrollbar {
 /* --- GAME OVER OVERLAY --- */
 .game-over-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, var(--game-over-overlay-bg-1), var(--game-over-overlay-bg-2));
+  overflow: hidden !important;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99999; /* Highest z-index to be above everything */
+  z-index: 99999;
   font-family: "Press Start 2P", system-ui;
   backdrop-filter: blur(10px);
-  padding: 10px;
+  padding: 0; /* NO padding di overlay */
   box-sizing: border-box;
-  overflow: hidden; /* Prevent any scrolling on overlay */
 }
 
-/* --- MAIN CONTAINER --- */
 .game-over-container {
+  width: 100%;
+  max-width: 380px;
+  height: 90vh;
+  min-height: 0;
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   background: var(--game-over-white);
   border: 3px solid var(--game-over-labels);
   border-radius: 20px;
   box-shadow: 0 15px 40px var(--game-over-container-shadow);
-  width: 100%;
-  max-width: 380px;
-  max-height: 85vh;
-  overflow-y: auto;
-  overflow-x: hidden;
   padding: 20px;
-  text-align: center;
-  animation: gameOverEnter 0.7s ease-out;
-  z-index: 99999;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
   box-sizing: border-box;
-  /* Hide scrollbar for this container */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  text-align: center;
 }
 
 .game-over-container::-webkit-scrollbar {
