@@ -64,7 +64,6 @@ export const playBackgroundMusic = () => {
 
 // Fungsi untuk ensure music tetap playing
 export const ensureBackgroundMusicPlaying = () => {
-  // TAMBAHKAN pengecekan isGameOver atau flag lainnya
   if (backgroundMusic && !isMusicPlaying && !isMusicStopped) {
     console.log("Restarting background music...");
     playBackgroundMusic();
@@ -78,7 +77,7 @@ export const stopBackgroundMusic = () => {
     isMusicPlaying = false;
     isMusicStopped = true;
 
-    // TAMBAH: Stop health check juga
+    // Stop health check juga
     stopMusicHealthCheck();
 
     console.log("Background music stopped permanently");
@@ -109,39 +108,72 @@ const sounds = {
   levelUp: "/assets/sound/level.mp3",
   start: "/assets/sound/start.mp3",
   over: "/assets/sound/over.mp3",
+  jalan: "/assets/sound/jalan.mp3",
 };
 
-export const playSound = (soundName) => {
+// PERBAIKAN: Satu fungsi playSound dengan volume parameter
+export const playSound = (soundName, volume = 0.7) => {
   if (sounds[soundName]) {
     const audio = new Audio(sounds[soundName]);
-    audio.volume = 0.7;
-    audio.play().catch(console.error);
+    audio.volume = volume; // Set volume sesuai parameter
+    audio.play().catch((error) => {
+      console.warn(`Failed to play ${soundName}:`, error);
+    });
   } else {
     console.warn(`Sound ${soundName} not found`);
   }
 };
 
-// Walking sound controls
+// Fungsi khusus untuk level up dengan volume lebih kecil
+export const playLevelUpSound = (volume = 0.3) => {
+  if (sounds.levelUp) {
+    const audio = new Audio(sounds.levelUp);
+    audio.volume = volume; // Volume lebih kecil untuk level up
+    audio.play().catch((error) => {
+      console.warn(`Failed to play levelUp:`, error);
+    });
+  }
+};
+
+// PERBAIKAN: Walking sound controls dengan volume parameter
 export const startWalkingSound = (intervalMs = 500) => {
+  console.log("Starting walking sound, current active:", isWalkingSoundActive);
+
   if (isWalkingSoundActive) return;
 
   isWalkingSoundActive = true;
-  playSound("jalan");
+
+  // Play first sound immediately dengan volume lebih kecil
+  playSound("jalan", 0.4);
+
+  // Clear any existing interval first
+  if (walkingSoundInterval) {
+    clearInterval(walkingSoundInterval);
+  }
 
   walkingSoundInterval = setInterval(() => {
+    console.log("Walking sound interval tick, active:", isWalkingSoundActive);
     if (isWalkingSoundActive) {
-      playSound("jalan");
+      playSound("jalan", 0.4); // Volume walking sound 40%
+    } else {
+      // Auto-cleanup if not active
+      clearInterval(walkingSoundInterval);
+      walkingSoundInterval = null;
     }
   }, intervalMs);
 };
 
 export const stopWalkingSound = () => {
+  console.log("Stopping walking sound, was active:", isWalkingSoundActive);
+
   isWalkingSoundActive = false;
 
   if (walkingSoundInterval) {
     clearInterval(walkingSoundInterval);
     walkingSoundInterval = null;
   }
+
+  console.log("Walking sound stopped successfully");
 };
 
 // Auto-restart music checker (panggil ini secara berkala)
@@ -169,16 +201,26 @@ export const stopMusicHealthCheck = () => {
   }
 };
 
+// TAMBAHAN: Cleanup all audio
+export const cleanupAllAudio = () => {
+  stopWalkingSound();
+  stopBackgroundMusic();
+  stopMusicHealthCheck();
+  console.log("All audio systems cleaned up");
+};
+
 export default {
   playBackgroundMusic,
   stopBackgroundMusic,
   pauseBackgroundMusic,
   resumeBackgroundMusic,
   playSound,
+  playLevelUpSound, // TAMBAH ini ke export
   startWalkingSound,
   stopWalkingSound,
   ensureBackgroundMusicPlaying,
   musicHealthCheck,
-  stopMusicHealthCheck, // TAMBAH ini
+  stopMusicHealthCheck,
   resetMusicState,
+  cleanupAllAudio,
 };

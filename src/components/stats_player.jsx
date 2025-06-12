@@ -3,8 +3,9 @@ import "../stats.css";
 import { useSpeedMode } from "./speed";
 import Inventory from "./inventory";
 import GameOver from "./game_over";
+import { playSound } from "./sound";
 
-function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visitedLocations = new Set(["home"]), usedItems = new Set(), playtime = 0, onMainMenu, isInsideLocation = false }) {
+function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visitedLocations = new Set(["home"]), usedItems = new Set(), onMainMenu, isInsideLocation = false }) {
   // Destructure stats object
   const { meal = 50, sleep = 50, health = 80, energy = 80, happiness = 50, cleanliness = 50, money = 100, experience = 0, level = 1, skillPoints = 0, items = [] } = stats;
 
@@ -139,6 +140,12 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visit
       const calculatedLevel = baseLevel + xpLevels + spLevels;
 
       if (calculatedLevel > stats.level) {
+        // OPSI 1: Pakai playSound dengan volume 30%
+        playSound("levelUp", 0.1);
+
+        // OPSI 2: Atau pakai fungsi khusus level up
+        // playLevelUpSound(0.3);
+
         // Show level up notification
         setLevelUpData({ newLevel: calculatedLevel, oldLevel: stats.level });
         setShowLevelUpNotification(true);
@@ -233,7 +240,6 @@ function StatsPlayer({ stats = {}, onStatsUpdate, onResetStats, onUseItem, visit
           tasks={stats.tasks || {}}
           visitedLocations={visitedLocations}
           usedItems={usedItems}
-          playtime={playtime}
           onNewGame={() => {
             // Reset all stats and close game over
             if (onResetStats) {

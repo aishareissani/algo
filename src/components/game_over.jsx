@@ -10,7 +10,7 @@ import {
   musicHealthCheck, // TAMBAH ini
 } from "./sound";
 
-const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedItems = new Set(), playtime = 0, characterName = "manda", playerName = "Player", onClose, isGameOver = false }) => {
+const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedItems = new Set(), characterName = "manda", playerName = "Player", onClose, isGameOver = false }) => {
   const [animationPhase, setAnimationPhase] = useState("enter");
   const navigate = useNavigate();
 
@@ -249,10 +249,6 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
             <div className="summary-item">
               <span className="summary-label">Money</span>
               <span className="summary-value">${playerStats.money || 0}</span>
-            </div>
-            <div className="summary-item">
-              <span className="summary-label">Playtime</span>
-              <span className="summary-value">{formatTime(playtime)}</span>
             </div>
             <div className="summary-item">
               <span className="summary-label">Locations</span>
