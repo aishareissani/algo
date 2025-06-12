@@ -1,36 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../game_over.css";
-import {
-  playSound,
-  stopBackgroundMusic,
-  resetMusicState,
-  playBackgroundMusic,
-  stopMusicHealthCheck, // TAMBAH ini
-  musicHealthCheck, // TAMBAH ini
-} from "./sound";
+import { playSound, stopBackgroundMusic, resetMusicState, playBackgroundMusic, stopMusicHealthCheck, musicHealthCheck } from "./sound";
 
 const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedItems = new Set(), characterName = "manda", playerName = "Player", onClose, isGameOver = false }) => {
   const [animationPhase, setAnimationPhase] = useState("enter");
   const navigate = useNavigate();
 
+  // FIX: Pastikan visitedLocations mencakup semua lokasi yang mungkin dikunjungi
+  const getAllVisitedLocations = () => {
+    // Mulai dengan lokasi yang diberikan
+    const allLocations = new Set(visitedLocations);
+
+    // Tambahkan lokasi berdasarkan tasks yang completed
+    Object.keys(tasks).forEach((taskKey) => {
+      if (tasks[taskKey]?.completed) {
+        const location = taskKey.split("-")[0]; // ambil nama lokasi dari taskKey
+        allLocations.add(location);
+      }
+    });
+
+    // Tambahkan lokasi berdasarkan items yang ada (beberapa item spesifik lokasi)
+    if (playerStats.items) {
+      playerStats.items.forEach((item) => {
+        if (item.category === "Marine" || item.name.includes("Shell") || item.name.includes("Starfish")) {
+          allLocations.add("beach");
+        }
+        if (item.category === "Flowers" && (item.name === "Rose" || item.name === "Daisy")) {
+          allLocations.add("mountain");
+        }
+        if (item.name === "Takeaway Meal") {
+          allLocations.add("restaurant");
+        }
+        if (item.category === "Rocks") {
+          allLocations.add("mountain");
+        }
+      });
+    }
+
+    // Selalu include home karena game dimulai dari sana
+    allLocations.add("home");
+
+    return allLocations;
+  };
+
   // Disable all interactions when game over
   useEffect(() => {
     if (isGameOver) {
-      // Stop background music saat game over
       stopBackgroundMusic();
       stopMusicHealthCheck();
-
-      // Play game over sound
       playSound("over");
 
-      // Disable all key events
       const disableKeys = (e) => {
         e.preventDefault();
         e.stopPropagation();
       };
 
-      // Disable all click events except for game over buttons
       const disableClicks = (e) => {
         if (!e.target.closest(".game-over-container")) {
           e.preventDefault();
@@ -76,7 +101,8 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
 
   const calculateLocationScore = () => {
     const totalLocations = 5;
-    const visited = visitedLocations.size;
+    const actualVisitedLocations = getAllVisitedLocations(); // Gunakan function yang sudah diperbaiki
+    const visited = actualVisitedLocations.size;
     return (visited / totalLocations) * 100;
   };
 
@@ -108,15 +134,12 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
   };
 
   const handleNewGame = () => {
-    // Reset music state so it can play again
     resetMusicState();
 
-    // Clear any existing game data
     localStorage.removeItem("gameState");
     localStorage.removeItem("playerStats");
     localStorage.removeItem("gameProgress");
 
-    // Create fresh stats for new game
     const freshStats = {
       meal: 50,
       sleep: 50,
@@ -133,11 +156,9 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
       lastVisitedLocation: "home",
     };
 
-    // Start background music again
     playBackgroundMusic();
-    musicHealthCheck(); //
+    musicHealthCheck();
 
-    // Navigate immediately to map with fresh state
     navigate("/map", {
       state: {
         characterName,
@@ -149,24 +170,21 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
   };
 
   const handleMainMenu = () => {
-    // Reset music state
     resetMusicState();
 
-    // Clear any existing game data
     localStorage.removeItem("gameState");
     localStorage.removeItem("playerStats");
     localStorage.removeItem("gameProgress");
 
-    // Start background music again
     playBackgroundMusic();
-    musicHealthCheck(); //
+    musicHealthCheck();
 
-    // Navigate immediately to main menu
     navigate("/", { replace: true });
   };
 
   const finalScore = calculateFinalScore();
   const scoreExpression = getScoreExpression(finalScore);
+  const actualVisitedLocations = getAllVisitedLocations(); // Untuk ditampilkan di UI juga
 
   useEffect(() => {
     const timer1 = setTimeout(() => setAnimationPhase("show-score"), 400);
@@ -177,7 +195,6 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
     };
   }, []);
 
-  // Determine game over cause
   const getGameOverCause = () => {
     if (playerStats.health <= 0) return "Health reached 0%";
     if (playerStats.sleep <= 0) return "Sleep reached 0%";
@@ -252,7 +269,7 @@ const GameOver = ({ playerStats, tasks = {}, visitedLocations = new Set(), usedI
             </div>
             <div className="summary-item">
               <span className="summary-label">Locations</span>
-              <span className="summary-value">{visitedLocations.size}/5</span>
+              <span className="summary-value">{actualVisitedLocations.size}/5</span>
             </div>
           </div>
         </div>
